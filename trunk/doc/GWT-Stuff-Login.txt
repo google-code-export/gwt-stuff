@@ -10,3 +10,4 @@ Module XML:
 <inherits name="org.mcarthur.sandy.gwt.login.Login"/> :
     This inherits the LoginPanel widgets for use in your project.
 
+License: Apache License, Version 2.0
