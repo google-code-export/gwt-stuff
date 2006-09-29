@@ -2,10 +2,8 @@ package org.mcarthur.sandy.gwt.login.client;
 
 import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.user.client.Timer;
-import com.google.gwt.user.client.ui.DockPanel;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.RootPanel;
-import com.google.gwt.user.client.ui.TabPanel;
 
 /**
  * EntryPoint for Testing Login Widgets.
