@@ -11,3 +11,5 @@ location I do. If you have GWT installed somewhere else then odds are
 the build fails with an error about "package com.google.... does not exists"
 then you'll need to tell ant where to find the GWT base dir. eg:
 $ ant -Dgwt.basedir=c:\gwt-0.0.0\
+
+License: Apache License, Version 2.0
