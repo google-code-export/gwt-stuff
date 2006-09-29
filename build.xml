@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<project name="GWT-Stuff" default="all" basedir=".">
+    <description>
+        Build file for GWT-Stuff
+    </description>
+
+    <target name="init">
+        <tstamp/>
+
+        <property name="gwt.basedir" value="C:/gwt-windows-1.1.10/"/>
+        <property name="gwt.user.jar" value="${gwt.basedir}/gwt-user.jar"/>
+
+        <path id="project.class.path">
+            <pathelement path="${java.class.path}/"/>
+            <pathelement path="${gwt.user.jar}"/>
+        </path>
+    </target>
+
+
+    <target name="compile" depends="init" description="Compile src to bin">
+        <mkdir dir="bin"/>
+        <javac srcdir="src:test" destdir="bin" includes="**" debug="on" optimize="off" source="1.4">
+            <classpath refid="project.class.path"/>
+        </javac>
+    </target>
+
+    <target name="package" depends="compile" description="Package up the whole project as a jar">
+        <jar destfile="GWT-Stuff.jar">
+            <fileset dir="bin">
+                <include name="**/*.class"/>
+            </fileset>
+            <!-- Get everything; source, modules, html files -->
+            <fileset dir="src">
+                <include name="**"/>
+            </fileset>
+            <fileset dir="test">
+                <include name="**"/>
+            </fileset>
+        </jar>
+        <copy file="doc/GWT-Stuff.txt" todir="."/>
+    </target>
+
+    <target name="package-login" depends="compile" description="Package up the Login module as a jar">
+        <jar destfile="GWT-Stuff-Login.jar">
+            <fileset dir="bin">
+                <include name="org/mcarthur/sandy/gwt/login/**/*.class"/>
+            </fileset>
+            <!-- Get everything; source, modules, html files -->
+            <fileset dir="src">
+                <include name="org/mcarthur/sandy/gwt/login/**"/>
+            </fileset>
+            <fileset dir="test">
+                <include name="org/mcarthur/sandy/gwt/login/**"/>
+            </fileset>
+        </jar>
+        <copy file="doc/GWT-Stuff-Login.txt" todir="."/>
+    </target>
+
+    <target name="javadoc" depends="init" description="Generate Javadocs">
+        <property name="javadoc.dir" value="doc/javadoc"/>
+        <mkdir dir="${javadoc.dir}"/>
+        <javadoc destdir="${javadoc.dir}" use="true" author="true" version="true">
+            <packageset dir="src">
+                <include name="**"/>
+            </packageset>
+            <group title="Login Panel" packages="org.mcarthur.sandy.gwt.login:org.mcarthur.sandy.gwt.login.*"/>
+            <link href="http://java.sun.com/j2se/1.5.0/docs/api/"/>
+        </javadoc>
+    </target>
+
+    <target name="clean">
+        <!-- Delete the bin directory tree -->
+        <delete dir="bin"/>
+        <delete file="GWT-Stuff.jar"/>
+        <delete file="GWT-Stuff.txt"/>
+        <delete file="GWT-Stuff-Login.jar"/>
+        <delete file="GWT-Stuff-Login.txt"/>
+        <delete dir="doc/javadoc"/>
+    </target>
+
+    <target name="all" depends="package,package-login"/>
+
+</project>
