@@ -1,0 +1,10 @@
+GWT-Stuff.jar - The complete GWT-Stuff library.
+
+GWT-Stuff.jar contails all modules provided by the GWT-Stuff project.
+
+Dependencies: none
+
+Module XML:
+
+<inherits name="org.mcarthur.sandy.gwt.login.Login"/> :
+    This inherits the LoginPanel widgets for use in your project.
