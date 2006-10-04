@@ -7,24 +7,45 @@
     <target name="init">
         <tstamp/>
 
-        <property name="gwt.basedir" value="C:/gwt-windows-1.1.10/"/>
-        <property name="gwt.user.jar" value="${gwt.basedir}/gwt-user.jar"/>
+        <property name="gwt.basedir" value="C:/gwt-windows-1.1.10/" description="The base directory where you installed GWT."/>
+        <property name="gwt.compiler.style" value="OBF" description="GWTCompiler -style option value, defaults to OBF"/>
 
         <path id="project.class.path">
             <pathelement path="${java.class.path}/"/>
-            <pathelement path="${gwt.user.jar}"/>
+            <fileset dir="${gwt.basedir}">
+                <include name="gwt-user.jar"/>
+            </fileset>
+        </path>
+
+        <path id="gwt.class.path">
+            <fileset dir="${gwt.basedir}">
+                <include name="gwt-dev-*.jar"/>
+            </fileset>
         </path>
     </target>
 
 
-    <target name="compile" depends="init" description="Compile src to bin">
+    <target name="compile-java" depends="init" description="Compile java source to bin">
         <mkdir dir="bin"/>
         <javac srcdir="src:test" destdir="bin" includes="**" debug="on" optimize="off" source="1.4">
             <classpath refid="project.class.path"/>
         </javac>
     </target>
 
-    <target name="package" depends="compile" description="Package up the whole project as a jar">
+    <target name="compile-LoginTest" depends="init,compile-java">
+        <mkdir dir="www"/>
+        <java classname="com.google.gwt.dev.GWTCompiler" failonerror="true" fork="true">
+            <arg value="-out"/>
+            <arg value="${basedir}/www"/>
+            <arg value="org.mcarthur.sandy.gwt.login.LoginTest"/>
+            <classpath path="src"/>
+            <classpath path="bin"/>
+            <classpath refid="project.class.path"/>
+            <classpath refid="gwt.class.path"/>
+        </java>
+    </target>
+
+    <target name="package" depends="compile-java" description="Package up the whole project as a jar">
         <jar destfile="GWT-Stuff.jar">
             <fileset dir="bin">
                 <include name="**/*.class"/>
@@ -40,7 +61,7 @@
         <copy file="doc/GWT-Stuff.txt" todir="."/>
     </target>
 
-    <target name="package-login" depends="compile" description="Package up the Login module as a jar">
+    <target name="package-login" depends="compile-java" description="Package up the Login module as a jar">
         <jar destfile="GWT-Stuff-Login.jar">
             <fileset dir="bin">
                 <include name="org/mcarthur/sandy/gwt/login/**/*.class"/>
@@ -68,9 +89,10 @@
         </javadoc>
     </target>
 
-    <target name="clean">
+    <target name="clean" depends="init" description="Remove generated files.">
         <!-- Delete the bin directory tree -->
         <delete dir="bin"/>
+        <delete dir="www"/>
         <delete file="GWT-Stuff.jar"/>
         <delete file="GWT-Stuff.txt"/>
         <delete file="GWT-Stuff-Login.jar"/>
