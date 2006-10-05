@@ -13,11 +13,10 @@ import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.KeyboardListenerAdapter;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.PasswordTextBox;
+import com.google.gwt.user.client.ui.SimplePanel;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
-import com.google.gwt.user.client.ui.SimplePanel;
-import com.google.gwt.core.client.GWT;
 
 import java.util.EventListener;
 
@@ -35,22 +34,22 @@ public class LoginPanel extends Composite {
 
     private final VerticalPanel vp = new VerticalPanel();
 
-    private LoginMessages messages = (LoginMessages)GWT.create(LoginMessages.class);
+    //private LoginMessages messages = (LoginMessages)GWT.create(LoginMessages.class);
 
     private final Label message = new Label();
     private final Label errorMessage = new Label();
     private final Grid grid = new Grid(3, 2);
 
     private final TextBox username = new TextBox();
-    private final Label usernameLabel = new Label(messages.usernamePrompt());
+    private final Label usernameLabel = new Label("Name");
 
     private final PasswordTextBox password = new PasswordTextBox();
-    private final Label passwordLabel = new Label(messages.passwordPrompt());
+    private final Label passwordLabel = new Label("Password");
 
     private final Image wait = new Image("images/login/wait-24x24.gif");
     private final SimplePanel waitPanel = new SimplePanel();
     private final HorizontalPanel loginPanel = new HorizontalPanel();
-    private final Button login = new Button(messages.loginButton());
+    private final Button login = new Button("Login");
 
     private final LoginListener loginListener;
 
@@ -260,9 +259,9 @@ public class LoginPanel extends Composite {
      *
      * @param messages custom localized messages.
      */
-    public void setMessages(final LoginMessages messages) {
-        this.messages = messages;
-    }
+    //public void setMessages(final LoginMessages messages) {
+    //    this.messages = messages;
+    //}
 
     /**
      * Set the callback to validate the username and password fields. If these fields fail

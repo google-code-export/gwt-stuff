@@ -1,23 +1,27 @@
 <module>
     <inherits name="com.google.gwt.user.User"/>
-    <inherits name="com.google.gwt.i18n.I18N"/>
+    <!--<inherits name="com.google.gwt.i18n.I18N"/>-->
 
+    <!--
+     I18N Disabled until GWT Issue 195 is fixed:
+     http://code.google.com/p/google-web-toolkit/issues/detail?id=195
+    -->
     <!-- Base languages, independent of country -->
-    <extend-property name="locale" values="de"/>
-    <extend-property name="locale" values="en"/>
-    <extend-property name="locale" values="es"/>
-    <extend-property name="locale" values="fr"/>
-    <extend-property name="locale" values="it"/>
-    <extend-property name="locale" values="ja"/>
-    <extend-property name="locale" values="ko"/>
-    <extend-property name="locale" values="pt"/>
-    <extend-property name="locale" values="zh_CN"/>
+    <!--<extend-property name="locale" values="de"/>-->
+    <!--<extend-property name="locale" values="en"/>-->
+    <!--<extend-property name="locale" values="es"/>-->
+    <!--<extend-property name="locale" values="fr"/>-->
+    <!--<extend-property name="locale" values="it"/>-->
+    <!--<extend-property name="locale" values="ja"/>-->
+    <!--<extend-property name="locale" values="ko"/>-->
+    <!--<extend-property name="locale" values="pt"/>-->
+    <!--<extend-property name="locale" values="zh_CN"/>-->
 
     <!-- 'Fun' locals -->
-    <extend-property name="locale" values="xx_BORK"/>
-    <extend-property name="locale" values="xx_ELMER"/>
-    <extend-property name="locale" values="xx_HACKER"/>
-    <extend-property name="locale" values="xx_PIGLATIN"/>
+    <!--<extend-property name="locale" values="xx_BORK"/>-->
+    <!--<extend-property name="locale" values="xx_ELMER"/>-->
+    <!--<extend-property name="locale" values="xx_HACKER"/>-->
+    <!--<extend-property name="locale" values="xx_PIGLATIN"/>-->
 
     <!--<entry-point class='org.mcarthur.sandy.gwt.login.client.Login'/>-->
 </module>
