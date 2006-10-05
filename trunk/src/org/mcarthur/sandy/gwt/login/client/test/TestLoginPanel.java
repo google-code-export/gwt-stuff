@@ -1,20 +1,21 @@
-package org.mcarthur.sandy.gwt.login.client;
+package org.mcarthur.sandy.gwt.login.client.test;
 
 import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.RootPanel;
+import org.mcarthur.sandy.gwt.login.client.LoginPanel;
 
 /**
  * EntryPoint for Testing Login Widgets.
  *
  * <p>
- * This is used with <code>org/mcarthur/sandy/gwt/login/public/LoginTest.html</code> during
+ * This is used with <code>org/mcarthur/sandy/gwt/login/public/TestLoginPanel.html</code> during
  * developement.
  *
  * @author Sandy McArthur
  */
-public class LoginTest implements EntryPoint {
+public class TestLoginPanel implements EntryPoint {
 
     private final LoginPanel.LoginListener loginListener = new LoginPanel.LoginListener() {
         public void onSubmit(final LoginPanel loginPanel) {

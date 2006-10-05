@@ -1,0 +1,42 @@
+<html>
+<body>
+<p>
+    Login widgets. This package is a collection of widgets to help with logins.
+</p>
+
+<h2>Including in your project</h2>
+<p>
+    To add this to your project add the jar file to your classpath and add the following to your GWT module file:
+</p>
+<blockquote>
+    <code>&lt;inherits name="org.mcarthur.sandy.gwt.login.Login"/&gt;</code>
+</blockquote>
+
+<h2>Example Usage</h2>
+
+<p>
+    The login widgets requires a {@link org.mcarthur.sandy.gwt.login.client.LoginPanel.LoginListener}
+    callback to function.
+</p>
+<blockquote>
+    <code>
+        <pre>
+RootPanel rootPanel = RootPanel.get("foo");
+
+LoginPanel.LoginListener loginListener = new LoginPanel.LoginListener() {
+  public void onSubmit(LoginPanel loginPanel) {
+    // check username and password
+    loginPanel.setErrorMessage("Login failed!"); // report an error
+    loginPanel.reenable(); // allow another attempt
+  }
+};
+
+LoginPanel loginPanel = new LoginPanel(loginListener);
+            
+rootPanel.add(loginPanel);            
+        </pre>
+    </code>
+</blockquote>
+
+</body>
+</html>

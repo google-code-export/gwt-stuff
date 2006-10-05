@@ -24,7 +24,6 @@
         </path>
     </target>
 
-
     <target name="compile-java" depends="init" description="Compile java source to bin">
         <mkdir dir="bin"/>
         <javac srcdir="src:test" destdir="bin" includes="**" debug="on" optimize="off" source="1.4">
@@ -32,9 +31,11 @@
         </javac>
     </target>
 
-    <target name="compile-LoginTest" depends="init,compile-java">
+    <target name="gwtcompile-TestLoginPanel" depends="init,compile-java">
         <mkdir dir="www"/>
         <java classname="com.google.gwt.dev.GWTCompiler" failonerror="true" fork="true">
+            <arg value="-style"/>
+            <arg value="${gwt.compiler.style}"/>
             <arg value="-out"/>
             <arg value="${basedir}/www"/>
             <arg value="org.mcarthur.sandy.gwt.login.LoginTest"/>
@@ -83,6 +84,7 @@
         <javadoc destdir="${javadoc.dir}" use="true" author="true" version="true">
             <packageset dir="src">
                 <include name="**"/>
+                <exclude name="**/test/**"/>
             </packageset>
             <group title="Login Panel" packages="org.mcarthur.sandy.gwt.login:org.mcarthur.sandy.gwt.login.*"/>
             <link href="http://java.sun.com/j2se/1.5.0/docs/api/"/>
