@@ -25,7 +25,6 @@ import java.util.EventListener;
  *
  * @author Sandy McArthur
  * @version 0.6
- * @see Login
  */
 public class LoginPanel extends Composite {
     private final DockPanel dock = new DockPanel();

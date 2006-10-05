@@ -7,8 +7,6 @@ import com.google.gwt.user.client.ui.RootPanel;
 
 /**
  * EntryPoint for Testing Login Widgets.
- * This entry point does more work than the {@link Login} entry point and should not be used in
- * production.
  *
  * <p>
  * This is used with <code>org/mcarthur/sandy/gwt/login/public/LoginTest.html</code> during
