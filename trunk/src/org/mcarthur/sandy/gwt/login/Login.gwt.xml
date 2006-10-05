@@ -22,6 +22,4 @@
     <!--<extend-property name="locale" values="xx_ELMER"/>-->
     <!--<extend-property name="locale" values="xx_HACKER"/>-->
     <!--<extend-property name="locale" values="xx_PIGLATIN"/>-->
-
-    <!--<entry-point class='org.mcarthur.sandy.gwt.login.client.Login'/>-->
 </module>
