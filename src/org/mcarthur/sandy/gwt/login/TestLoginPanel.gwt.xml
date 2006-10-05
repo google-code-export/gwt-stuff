@@ -2,5 +2,5 @@
     <inherits name='com.google.gwt.user.User'/>
     <inherits name="org.mcarthur.sandy.gwt.login.Login"/>
     
-    <entry-point class='org.mcarthur.sandy.gwt.login.client.LoginTest'/>
+    <entry-point class='org.mcarthur.sandy.gwt.login.client.test.TestLoginPanel'/>
 </module>
