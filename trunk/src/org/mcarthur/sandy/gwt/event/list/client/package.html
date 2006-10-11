@@ -1,0 +1,36 @@
+<html>
+<body>
+<p>
+    An observable {@link java.util.List} implementation.
+</p>
+
+<h2>Including in your project</h2>
+<p>
+    To add this to your project add the jar file to your classpath and add the following to your GWT module file:
+</p>
+<blockquote>
+    <code>&lt;inherits name="org.mcarthur.sandy.gwt.event.list.EventList"/&gt;</code>
+</blockquote>
+
+<h2>Example Usage</h2>
+<p>
+    The most basic usage is to take an existing list and wrap it in an EventList wrapper and only
+    access the list via that wrapper.
+</p>
+<blockquote>
+    <code>
+        <pre>
+List list = new ArrayList();
+EventList eventList = EventLists.wrap(list);
+ListEventListener listEventListener = new ListEventListener() {
+    public void listChanged(ListEvent listEvent) {
+        GWT.log(listEvent.toString(), null);
+    }
+};
+eventList.addListEventListener(listEventListener);
+        </pre>
+    </code>
+</blockquote>
+
+</body>
+</html>

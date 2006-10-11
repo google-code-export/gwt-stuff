@@ -1,0 +1,161 @@
+package org.mcarthur.sandy.gwt.event.list.client;
+
+import java.util.EventObject;
+
+/**
+ * Event encapsulates changes to an EventList.
+ *
+ * @author Sandy McArthur
+ */
+public class ListEvent extends EventObject {
+
+    /**
+     * Identifies one or more elements were added.
+     * @see #isAdded()
+     */
+    public static final ListEventType ADDED = new ListEventType("ADDED");
+
+    /**
+     * Identifies one or more elements were changed.
+     * @see #isChanged()
+     */
+    public static final ListEventType CHANGED = new ListEventType("CHANGED");
+
+    /**
+     * Identifies one or more elements were removed.
+     * @see #isRemoved()
+     */
+    public static final ListEventType REMOVED = new ListEventType("REMOVED");
+
+    private final ListEventType type;
+
+    private final int indexStart;
+    private final int indexEnd;
+
+    /**
+     * Constructs a ListEvent for one element.
+     * This is the same as calling
+     * {@link #ListEvent(EventList, org.mcarthur.sandy.gwt.event.list.client.ListEvent.ListEventType, int, int)}
+     *  with sequential indexes.
+     *
+     * @param source The EventList on which the ListEvent initially occurred.
+     * @param type one of {@link #ADDED}, {@link #CHANGED}, or {@link #REMOVED}.
+     * @param index affected element.
+     * @throws IllegalArgumentException if source is <code>null</code>.
+     */
+    public ListEvent(final EventList source, final ListEventType type, final int index) throws IllegalArgumentException {
+        this(source, type, index, index+1);
+    }
+
+    /**
+     * Constructs a ListEvent for a range of elements.
+     * If needed <code>indexStart</code> and <code>indexEnd</code> will be transposed to keep them
+     * in numerical order.
+     *
+     * @param source The EventList on which the ListEvent initially occurred.
+     * @param type one of {@link #ADDED}, {@link #CHANGED}, or {@link #REMOVED}.
+     * @param indexStart one end of the interval.
+     * @param indexEnd one end of the interval.
+     * @throws IllegalArgumentException if source is <code>null</code>.
+     */
+    public ListEvent(final EventList source, final ListEventType type, final int indexStart, final int indexEnd) throws IllegalArgumentException {
+        super(source);
+        assert indexStart != indexEnd : "indexStart and indexEnd must not be the same value.";
+        assert type != null : "type must not be null";
+        this.type = type;
+        if (indexStart < indexEnd) {
+            this.indexStart = indexStart;
+            this.indexEnd = indexEnd;
+        } else {
+            this.indexStart = indexEnd;
+            this.indexEnd = indexStart;
+        }
+    }
+
+    /**
+     * First index in the range, inclusive.
+     *
+     * @return first index in the range, inclusive.
+     */
+    public int getIndexStart() {
+        return indexStart;
+    }
+
+    /**
+     * Last index in the range, exclusive.
+     *
+     * @return last index in the range, exclusive.
+     */
+    public int getIndexEnd() {
+        return indexEnd;
+    }
+
+    /**
+     * The type of event.
+     *
+     * @return one of {@link #ADDED}, {@link #CHANGED}, {@link #REMOVED}.
+     */
+    public ListEventType getType() {
+        return type;
+    }
+
+    /**
+     * True when this event's type is {@link #ADDED}.
+     * @return true when this event's type is {@link #ADDED}.
+     */
+    public final boolean isAdded() {
+        return ADDED.equals(getType());
+    }
+
+    /**
+     * True when this event's type is {@link #CHANGED}.
+     * @return true when this event's type is {@link #CHANGED}.
+     */
+    public final boolean isChanged() {
+        return CHANGED.equals(getType());
+    }
+
+    /**
+     * True when this event's type is {@link #REMOVED}.
+     * @return true when this event's type is {@link #REMOVED}.
+     */
+    public final boolean isRemoved() {
+        return REMOVED.equals(getType());
+    }
+
+    /**
+     * Convience for {@link #getSource()} that casts to {@link EventList}.
+     *
+     * @return same as {@link #getSource()}.
+     */
+    public EventList getSourceList() {
+        return (EventList)getSource();
+    }
+
+    public String toString() {
+        return "ListEvent[" + type + " (" + getIndexStart() + "," + getIndexEnd() + ")]";
+    }
+
+    private static final class ListEventType {
+        private final String name;
+
+        public ListEventType(final String name) {
+            this.name = name;
+        }
+
+        public boolean equals(final Object o) {
+            if (this == o) return true;
+            if (!(o instanceof ListEventType)) return false;
+            final ListEventType that = (ListEventType)o;
+            return name.equals(that.name);
+        }
+
+        public int hashCode() {
+            return name.hashCode();
+        }
+
+        public String toString() {
+            return name;
+        }
+    }
+}
