@@ -1,9 +1,8 @@
 package org.mcarthur.sandy.gwt.event.list.client;
 
-import java.util.List;
 import java.util.Collection;
 import java.util.Iterator;
-import java.util.Arrays;
+import java.util.List;
 
 /**
  * Wrapper of a {@link List} that fires events when changes are made.

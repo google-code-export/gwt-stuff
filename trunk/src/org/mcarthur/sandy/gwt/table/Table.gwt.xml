@@ -1,0 +1,8 @@
+<module>
+
+    <inherits name="com.google.gwt.user.User"/>
+    <inherits name="org.mcarthur.sandy.gwt.event.list.EventList"/>
+
+    <entry-point class="org.mcarthur.sandy.gwt.table.client.Table"/>
+
+</module>

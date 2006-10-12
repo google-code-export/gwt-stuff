@@ -31,14 +31,44 @@
         </javac>
     </target>
 
-    <target name="gwtcompile-TestLoginPanel" depends="init,compile-java">
+    <target name="gwtcompile-TestLoginPanel" depends="init">
         <mkdir dir="www"/>
         <java classname="com.google.gwt.dev.GWTCompiler" failonerror="true" fork="true">
             <arg value="-style"/>
             <arg value="${gwt.compiler.style}"/>
             <arg value="-out"/>
             <arg value="${basedir}/www"/>
-            <arg value="org.mcarthur.sandy.gwt.login.LoginTest"/>
+            <arg value="org.mcarthur.sandy.gwt.login.TestLoginPanel"/>
+            <classpath path="src"/>
+            <classpath path="bin"/>
+            <classpath refid="project.class.path"/>
+            <classpath refid="gwt.class.path"/>
+        </java>
+    </target>
+
+    <target name="gwtcompile-TestEventList" depends="init">
+        <mkdir dir="www"/>
+        <java classname="com.google.gwt.dev.GWTCompiler" failonerror="true" fork="true">
+            <arg value="-style"/>
+            <arg value="${gwt.compiler.style}"/>
+            <arg value="-out"/>
+            <arg value="${basedir}/www"/>
+            <arg value="org.mcarthur.sandy.gwt.event.list.TestEventList"/>
+            <classpath path="src"/>
+            <classpath path="bin"/>
+            <classpath refid="project.class.path"/>
+            <classpath refid="gwt.class.path"/>
+        </java>
+    </target>
+
+    <target name="gwtcompile-TestTable" depends="init">
+        <mkdir dir="www"/>
+        <java classname="com.google.gwt.dev.GWTCompiler" failonerror="true" fork="true">
+            <arg value="-style"/>
+            <arg value="${gwt.compiler.style}"/>
+            <arg value="-out"/>
+            <arg value="${basedir}/www"/>
+            <arg value="org.mcarthur.sandy.gwt.table.Table"/>
             <classpath path="src"/>
             <classpath path="bin"/>
             <classpath refid="project.class.path"/>
