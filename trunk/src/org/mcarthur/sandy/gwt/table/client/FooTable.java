@@ -1,18 +1,16 @@
 package org.mcarthur.sandy.gwt.table.client;
 
-import com.google.gwt.user.client.ui.Panel;
-import com.google.gwt.user.client.ui.Widget;
-import com.google.gwt.user.client.ui.UIObject;
-import com.google.gwt.user.client.ui.HasWidgets;
-import com.google.gwt.user.client.ui.SimplePanel;
-import com.google.gwt.user.client.ui.Label;
-import com.google.gwt.user.client.DOM;
-import com.google.gwt.user.client.Element;
-import com.google.gwt.user.client.Event;
+import com.google.gwt.user.client.ui.*;
+import com.google.gwt.user.client.*;
 
 import java.util.Iterator;
 import java.util.List;
 import java.util.ArrayList;
+
+import org.mcarthur.sandy.gwt.event.list.client.EventList;
+import org.mcarthur.sandy.gwt.event.list.client.EventLists;
+import org.mcarthur.sandy.gwt.event.list.client.ListEventListener;
+import org.mcarthur.sandy.gwt.event.list.client.ListEvent;
 
 /**
  * TODO: Write JavaDoc
@@ -25,22 +23,35 @@ public class FooTable extends Panel {
      * Table element.
      */
     private final Element tableElem;
+    private final WidgetCollection widgets = new WidgetCollection(this);
 
-    //private final Element tableHead;
+    private TableHeaderGroup thead;
+    private TableFooterGroup tfoot;
+    private List tbodies = new ArrayList();
 
-    private final TableBody tb = new TableBody();
-    private final TableRow tr = new TableRow();
-    private final TableCell tc1 = new TD();
-    private final TableCell tc2 = new TH();
-    private final TableCell tc3 = new TD();
+    private final EventList columns = EventLists.wrap(new ArrayList());
+    private final EventList objects = EventLists.wrap(new ArrayList());
+    private Renderer renderer;
+
+    private final TableBodyGroup tb = new TableBodyGroup();
+    private final TableRow tr = new MyTableRow();
+    private final TableCell tc1 = new TableDataCell();
+    private final TableCell tc2 = new TableHeaderCell();
+    private final TableCell tc3 = new TableDataCell();
+
     public FooTable() {
         tableElem = DOM.createTable();
-        //tableHead = DOM.createElement("thead");
         setElement(tableElem);
 
-        DOM.setAttribute(tableElem, "border", "1");
-        DOM.setAttribute(tableElem, "cellSpacing", "2");
-        DOM.setAttribute(tableElem, "cellPadding", "3");
+        MenuBar menu = Table.makeMenuBar();
+
+        TableCell th = new TableHeaderCell();
+        th.setWidget(menu);
+
+        columns.add("Foo");
+        columns.add("Bar");
+        final TableHeaderGroup thead = new HeaderRowGroup(columns);
+        setTHead(thead);
 
         DOM.appendChild(tableElem, tb.getElement());
 
@@ -51,97 +62,79 @@ public class FooTable extends Panel {
         tr.add(tc3);
     }
 
-    private static class TableBody extends UIObject {
-        private final Element tbody = DOM.createTBody();
-        private final List rows = new ArrayList();
+    private class HeaderRowGroup extends TableHeaderGroup implements ListEventListener {
+        private final EventList columns;
+        private TableRow row = new HeaderTableRow();
 
-        public TableBody() {
-            setElement(tbody);
-            sinkEvents(Event.ONCLICK | Event.ONMOUSEOVER | Event.ONMOUSEOUT);
-            DOM.setStyleAttribute(getElement(), "border", "solid red thin");
-            DOM.setStyleAttribute(getElement(), "padding", "3px");
-            DOM.setStyleAttribute(getElement(), "margin", "3px");
+        public HeaderRowGroup(final EventList columns) {
+            this.columns = columns;
+            add(row);
+            columns.addListEventListener(this);
+            init();
         }
 
-        public void add(final TableRow row) {
-            rows.add(row);
-            DOM.appendChild(tbody, row.getElement());
+        private void init() {
+            final Iterator iter = columns.iterator();
+            while (iter.hasNext()) {
+                final String col = (String)iter.next();
+                final TableHeaderCell th = new TableHeaderCell();
+                th.setWidget(createMenu(col));
+                row.add(th);
+            }
         }
 
-        public List getRows() {
-            return rows;
+        private MenuBar createMenu(final String name) {
+            final MenuBar submenu = new MenuBar(true);
+            submenu.addItem("Sort Up", new Command() {
+                public void execute() {
+                    Window.alert("Sort Up");
+                }
+            });
+
+            submenu.addItem("Sort Down", new Command() {
+                public void execute() {
+                    Window.alert("Sort Down");
+                }
+            });
+            
+            final MenuItem item = new MenuItem(name, submenu);
+            final MenuBar bar = new MenuBar();
+            bar.addItem(item);
+            return bar;
         }
 
-        public String toString() {
-            return "TableBody";
+        public void listChanged(final ListEvent listEvent) {
+            // TODO Handle events
         }
+
+        private class HeaderTableRow extends TableRow {
+            protected void adopt(final Widget w, final Element container) {
+                FooTable.this.adopt(w, container);
+            }
+        }
+
     }
 
-    private class TableRow extends UIObject {
-        private final Element tr = DOM.createTR();
-        private final List cells = new ArrayList();
-
-        public TableRow() {
-            setElement(tr);
-            sinkEvents(Event.ONCLICK | Event.ONMOUSEOVER | Event.ONMOUSEOUT);
-            DOM.setStyleAttribute(getElement(), "border", "solid green thin");
-            DOM.setStyleAttribute(getElement(), "padding", "3px");
-            DOM.setStyleAttribute(getElement(), "margin", "3px");
-        }
-
-        public void add(final TableCell cell) {
-            cells.add(cell);
-            //DOM.appendChild(tr, cell.getElement());
-            adopt(cell, tr);
-        }
-
-        public List getCells() {
-            return cells;
-        }
-
-        public String toString() {
-            return "TableRow";
-        }
+    public interface Renderer {
+        public Widget render(Object obj, String property);
     }
 
-    private static class TableCell extends SimplePanel {
-        private final Element cell;
-
-        protected TableCell(final Element cell) {
-            super(cell);
-            this.cell = cell;
-            sinkEvents(Event.ONCLICK | Event.ONMOUSEOVER | Event.ONMOUSEOUT);
-            DOM.setStyleAttribute(getElement(), "border", "solid blue thin");
-            DOM.setStyleAttribute(getElement(), "padding", "3px");
-            DOM.setStyleAttribute(getElement(), "margin", "3px");
+    private void setTHead(final TableHeaderGroup thead) {
+        if (this.thead != null) {
+            throw new IllegalStateException("Tables can only have one Header at a time.");
         }
-        public String toString() {
-            return "TableCell";
-        }
-    }
-
-    private static class TD extends TableCell {
-        private static int i = 0;
-        public TD() {
-            super(DOM.createTD());
-            setWidget(new Label("TD " + (i++)));
-        }
-        public String toString() {
-            return "TD";
+        this.thead = thead;
+        DOM.appendChild(getElement(), thead.getElement());
+        Iterator rowIter = thead.getRows().iterator();
+        while (rowIter.hasNext()) {
+            TableRow row = (TableRow)rowIter.next();
+            Iterator cellIter = row.iterator();
+            while (cellIter.hasNext()) {
+                TableCell cell = (TableCell)cellIter.next();
+                widgets.add(cell);
+            }
         }
     }
-
-    private static class TH extends TableCell {
-        private static int i = 0;
-        public TH() {
-            super(DOM.createTH());
-            setWidget(new Label("TH " + (i++)));
-        }
-        public String toString() {
-            return "TH";
-        }
-    }
-
 
     public void onBrowserEvent(final Event event) {
         super.onBrowserEvent(event);
@@ -153,9 +146,9 @@ public class FooTable extends Panel {
             return null;
         }
         UIObject ui = null;
-        if (obj instanceof TableBody) {
-            TableBody tableBody = (TableBody)obj;
-            List rows = tableBody.getRows();
+        if (obj instanceof TableBodyGroup) {
+            TableBodyGroup tableBodyGroup = (TableBodyGroup)obj;
+            List rows = tableBodyGroup.getRows();
             Iterator iter = rows.iterator();
             UIObject ui2 = null;
             while (iter.hasNext()) {
@@ -169,8 +162,7 @@ public class FooTable extends Panel {
 
         } else if (obj instanceof TableRow) {
             TableRow tableRow = (TableRow)obj;
-            List cells = tableRow.getCells();
-            Iterator iter = cells.iterator();
+            Iterator iter = tableRow.iterator();
             UIObject ui2 = null;
             while (iter.hasNext()) {
                 TableCell cell = (TableCell)iter.next();
@@ -239,7 +231,7 @@ public class FooTable extends Panel {
      * implement {@link java.util.Iterator#remove()}.
      */
     public Iterator iterator() {
-        return null;
+        return widgets.iterator();
     }
     
     /**
@@ -249,6 +241,16 @@ public class FooTable extends Panel {
      * @return <code>true</code> if the widget was present
      */
     public boolean remove(Widget w) {
-        return false;
+        List widgets = new ArrayList();
+        widgets.add(tc1.getWidget());
+        widgets.add(tc2.getWidget());
+        widgets.add(tc3.getWidget());
+        return widgets.remove(w);
+    }
+
+    private class MyTableRow extends TableRow {
+        protected void adopt(final Widget w, final Element container) {
+            FooTable.this.adopt(w, container);
+        }
     }
 }
