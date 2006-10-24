@@ -4,17 +4,17 @@
 <HEAD>
 <!---->
 <TITLE>
-PropertyChangeListener (GWT-Stuff)
+PropertyChangeSource (GWT-Stuff)
 </TITLE>
 
-<META NAME="keywords" CONTENT="org.mcarthur.sandy.gwt.event.property.client.PropertyChangeListener interface">
+<META NAME="keywords" CONTENT="org.mcarthur.sandy.gwt.event.property.client.PropertyChangeSource interface">
 
 <LINK REL ="stylesheet" TYPE="text/css" HREF="../../../../../../../stylesheet.css" TITLE="Style">
 
 <SCRIPT type="text/javascript">
 function windowTitle()
 {
-    parent.document.title="PropertyChangeListener (GWT-Stuff)";
+    parent.document.title="PropertyChangeSource (GWT-Stuff)";
 }
 </SCRIPT>
 <NOSCRIPT>
@@ -37,7 +37,7 @@ function windowTitle()
   <TD BGCOLOR="#EEEEFF" CLASS="NavBarCell1">    <A HREF="../../../../../../../overview-summary.html"><FONT CLASS="NavBarFont1"><B>Overview</B></FONT></A>&nbsp;</TD>
   <TD BGCOLOR="#EEEEFF" CLASS="NavBarCell1">    <A HREF="package-summary.html"><FONT CLASS="NavBarFont1"><B>Package</B></FONT></A>&nbsp;</TD>
   <TD BGCOLOR="#FFFFFF" CLASS="NavBarCell1Rev"> &nbsp;<FONT CLASS="NavBarFont1Rev"><B>Class</B></FONT>&nbsp;</TD>
-  <TD BGCOLOR="#EEEEFF" CLASS="NavBarCell1">    <A HREF="class-use/PropertyChangeListener.html"><FONT CLASS="NavBarFont1"><B>Use</B></FONT></A>&nbsp;</TD>
+  <TD BGCOLOR="#EEEEFF" CLASS="NavBarCell1">    <A HREF="class-use/PropertyChangeSource.html"><FONT CLASS="NavBarFont1"><B>Use</B></FONT></A>&nbsp;</TD>
   <TD BGCOLOR="#EEEEFF" CLASS="NavBarCell1">    <A HREF="package-tree.html"><FONT CLASS="NavBarFont1"><B>Tree</B></FONT></A>&nbsp;</TD>
   <TD BGCOLOR="#EEEEFF" CLASS="NavBarCell1">    <A HREF="../../../../../../../deprecated-list.html"><FONT CLASS="NavBarFont1"><B>Deprecated</B></FONT></A>&nbsp;</TD>
   <TD BGCOLOR="#EEEEFF" CLASS="NavBarCell1">    <A HREF="../../../../../../../index-all.html"><FONT CLASS="NavBarFont1"><B>Index</B></FONT></A>&nbsp;</TD>
@@ -52,11 +52,11 @@ function windowTitle()
 
 <TR>
 <TD BGCOLOR="white" CLASS="NavBarCell2"><FONT SIZE="-2">
-&nbsp;<A HREF="../../../../../../../org/mcarthur/sandy/gwt/event/property/client/PropertyChangeEvent.html" title="class in org.mcarthur.sandy.gwt.event.property.client"><B>PREV CLASS</B></A>&nbsp;
-&nbsp;<A HREF="../../../../../../../org/mcarthur/sandy/gwt/event/property/client/PropertyChangeSource.html" title="interface in org.mcarthur.sandy.gwt.event.property.client"><B>NEXT CLASS</B></A></FONT></TD>
+&nbsp;<A HREF="../../../../../../../org/mcarthur/sandy/gwt/event/property/client/PropertyChangeListener.html" title="interface in org.mcarthur.sandy.gwt.event.property.client"><B>PREV CLASS</B></A>&nbsp;
+&nbsp;<A HREF="../../../../../../../org/mcarthur/sandy/gwt/event/property/client/PropertyChangeSupport.html" title="class in org.mcarthur.sandy.gwt.event.property.client"><B>NEXT CLASS</B></A></FONT></TD>
 <TD BGCOLOR="white" CLASS="NavBarCell2"><FONT SIZE="-2">
-  <A HREF="../../../../../../../index.html?org/mcarthur/sandy/gwt/event/property/client/PropertyChangeListener.html" target="_top"><B>FRAMES</B></A>  &nbsp;
-&nbsp;<A HREF="PropertyChangeListener.html" target="_top"><B>NO FRAMES</B></A>  &nbsp;
+  <A HREF="../../../../../../../index.html?org/mcarthur/sandy/gwt/event/property/client/PropertyChangeSource.html" target="_top"><B>FRAMES</B></A>  &nbsp;
+&nbsp;<A HREF="PropertyChangeSource.html" target="_top"><B>NO FRAMES</B></A>  &nbsp;
 &nbsp;<SCRIPT type="text/javascript">
   <!---->
 </SCRIPT>
@@ -83,21 +83,25 @@ DETAIL:&nbsp;FIELD&nbsp;|&nbsp;CONSTR&nbsp;|&nbsp;<A HREF="#method_detail">METHO
 <FONT SIZE="-1">
 org.mcarthur.sandy.gwt.event.property.client</FONT>
 <BR>
-Interface PropertyChangeListener</H2>
+Interface PropertyChangeSource</H2>
+<DL>
+<DT><B>All Known Subinterfaces:</B> <DD><A HREF="../../../../../../../org/mcarthur/sandy/gwt/event/property/client/NamedPropertyChangeSource.html" title="interface in org.mcarthur.sandy.gwt.event.property.client">NamedPropertyChangeSource</A></DD>
+</DL>
 <HR>
 <DL>
-<DT><PRE>public interface <B>PropertyChangeListener</B></DL>
+<DT><PRE>public interface <B>PropertyChangeSource</B></DL>
 </PRE>
 
 <P>
-A "PropertyChange" event gets fired whenever a bean changes a "bound" property.
- You can register a PropertyChangeListener with a source bean so as to be notified
- of any bound property updates.
+A source for <A HREF="../../../../../../../org/mcarthur/sandy/gwt/event/property/client/PropertyChangeEvent.html" title="class in org.mcarthur.sandy.gwt.event.property.client"><CODE>PropertyChangeEvent</CODE></A>s.
+ There isn't a parallel in the java.beans package.
 <P>
 
 <P>
 <DL>
-<DT><B>See Also:</B><DD><A HREF="http://java.sun.com/j2se/1.5.0/docs/api/java/beans/PropertyChangeListener.html" title="class or interface in java.beans"><CODE>PropertyChangeListener</CODE></A></DL>
+<DT><B>Author:</B></DT>
+  <DD>Sandy McArthur</DD>
+</DL>
 <HR>
 
 <P>
@@ -113,7 +117,15 @@ A "PropertyChange" event gets fired whenever a bean changes a "bound" property.
 <TR BGCOLOR="white" CLASS="TableRowColor">
 <TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
 <CODE>&nbsp;void</CODE></FONT></TD>
-<TD><CODE><B><A HREF="../../../../../../../org/mcarthur/sandy/gwt/event/property/client/PropertyChangeListener.html#propertyChange(org.mcarthur.sandy.gwt.event.property.client.PropertyChangeEvent)">propertyChange</A></B>(<A HREF="../../../../../../../org/mcarthur/sandy/gwt/event/property/client/PropertyChangeEvent.html" title="class in org.mcarthur.sandy.gwt.event.property.client">PropertyChangeEvent</A>&nbsp;event)</CODE>
+<TD><CODE><B><A HREF="../../../../../../../org/mcarthur/sandy/gwt/event/property/client/PropertyChangeSource.html#addPropertyChangeListener(org.mcarthur.sandy.gwt.event.property.client.PropertyChangeListener)">addPropertyChangeListener</A></B>(<A HREF="../../../../../../../org/mcarthur/sandy/gwt/event/property/client/PropertyChangeListener.html" title="interface in org.mcarthur.sandy.gwt.event.property.client">PropertyChangeListener</A>&nbsp;listener)</CODE>
+
+<BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</TD>
+</TR>
+<TR BGCOLOR="white" CLASS="TableRowColor">
+<TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
+<CODE>&nbsp;void</CODE></FONT></TD>
+<TD><CODE><B><A HREF="../../../../../../../org/mcarthur/sandy/gwt/event/property/client/PropertyChangeSource.html#removePropertyChangeListener(org.mcarthur.sandy.gwt.event.property.client.PropertyChangeListener)">removePropertyChangeListener</A></B>(<A HREF="../../../../../../../org/mcarthur/sandy/gwt/event/property/client/PropertyChangeListener.html" title="interface in org.mcarthur.sandy.gwt.event.property.client">PropertyChangeListener</A>&nbsp;listener)</CODE>
 
 <BR>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</TD>
@@ -132,13 +144,24 @@ A "PropertyChange" event gets fired whenever a bean changes a "bound" property.
 </TR>
 </TABLE>
 
-<A NAME="propertyChange(org.mcarthur.sandy.gwt.event.property.client.PropertyChangeEvent)"><!----></A><H3>
-propertyChange</H3>
+<A NAME="addPropertyChangeListener(org.mcarthur.sandy.gwt.event.property.client.PropertyChangeListener)"><!----></A><H3>
+addPropertyChangeListener</H3>
 <PRE>
-void <B>propertyChange</B>(<A HREF="../../../../../../../org/mcarthur/sandy/gwt/event/property/client/PropertyChangeEvent.html" title="class in org.mcarthur.sandy.gwt.event.property.client">PropertyChangeEvent</A>&nbsp;event)</PRE>
+void <B>addPropertyChangeListener</B>(<A HREF="../../../../../../../org/mcarthur/sandy/gwt/event/property/client/PropertyChangeListener.html" title="interface in org.mcarthur.sandy.gwt.event.property.client">PropertyChangeListener</A>&nbsp;listener)</PRE>
 <DL>
 <DD><DL>
+<DT><B>See Also:</B><DD><A HREF="../../../../../../../org/mcarthur/sandy/gwt/event/property/client/PropertyChangeSupport.html#addPropertyChangeListener(org.mcarthur.sandy.gwt.event.property.client.PropertyChangeListener)"><CODE>PropertyChangeSupport.addPropertyChangeListener(PropertyChangeListener)</CODE></A></DL>
+</DD>
 </DL>
+<HR>
+
+<A NAME="removePropertyChangeListener(org.mcarthur.sandy.gwt.event.property.client.PropertyChangeListener)"><!----></A><H3>
+removePropertyChangeListener</H3>
+<PRE>
+void <B>removePropertyChangeListener</B>(<A HREF="../../../../../../../org/mcarthur/sandy/gwt/event/property/client/PropertyChangeListener.html" title="interface in org.mcarthur.sandy.gwt.event.property.client">PropertyChangeListener</A>&nbsp;listener)</PRE>
+<DL>
+<DD><DL>
+<DT><B>See Also:</B><DD><A HREF="../../../../../../../org/mcarthur/sandy/gwt/event/property/client/PropertyChangeSupport.html#removePropertyChangeListener(org.mcarthur.sandy.gwt.event.property.client.PropertyChangeListener)"><CODE>PropertyChangeSupport.removePropertyChangeListener(PropertyChangeListener)</CODE></A></DL>
 </DD>
 </DL>
 <!---->
@@ -157,7 +180,7 @@ void <B>propertyChange</B>(<A HREF="../../../../../../../org/mcarthur/sandy/gwt/
   <TD BGCOLOR="#EEEEFF" CLASS="NavBarCell1">    <A HREF="../../../../../../../overview-summary.html"><FONT CLASS="NavBarFont1"><B>Overview</B></FONT></A>&nbsp;</TD>
   <TD BGCOLOR="#EEEEFF" CLASS="NavBarCell1">    <A HREF="package-summary.html"><FONT CLASS="NavBarFont1"><B>Package</B></FONT></A>&nbsp;</TD>
   <TD BGCOLOR="#FFFFFF" CLASS="NavBarCell1Rev"> &nbsp;<FONT CLASS="NavBarFont1Rev"><B>Class</B></FONT>&nbsp;</TD>
-  <TD BGCOLOR="#EEEEFF" CLASS="NavBarCell1">    <A HREF="class-use/PropertyChangeListener.html"><FONT CLASS="NavBarFont1"><B>Use</B></FONT></A>&nbsp;</TD>
+  <TD BGCOLOR="#EEEEFF" CLASS="NavBarCell1">    <A HREF="class-use/PropertyChangeSource.html"><FONT CLASS="NavBarFont1"><B>Use</B></FONT></A>&nbsp;</TD>
   <TD BGCOLOR="#EEEEFF" CLASS="NavBarCell1">    <A HREF="package-tree.html"><FONT CLASS="NavBarFont1"><B>Tree</B></FONT></A>&nbsp;</TD>
   <TD BGCOLOR="#EEEEFF" CLASS="NavBarCell1">    <A HREF="../../../../../../../deprecated-list.html"><FONT CLASS="NavBarFont1"><B>Deprecated</B></FONT></A>&nbsp;</TD>
   <TD BGCOLOR="#EEEEFF" CLASS="NavBarCell1">    <A HREF="../../../../../../../index-all.html"><FONT CLASS="NavBarFont1"><B>Index</B></FONT></A>&nbsp;</TD>
@@ -172,11 +195,11 @@ void <B>propertyChange</B>(<A HREF="../../../../../../../org/mcarthur/sandy/gwt/
 
 <TR>
 <TD BGCOLOR="white" CLASS="NavBarCell2"><FONT SIZE="-2">
-&nbsp;<A HREF="../../../../../../../org/mcarthur/sandy/gwt/event/property/client/PropertyChangeEvent.html" title="class in org.mcarthur.sandy.gwt.event.property.client"><B>PREV CLASS</B></A>&nbsp;
-&nbsp;<A HREF="../../../../../../../org/mcarthur/sandy/gwt/event/property/client/PropertyChangeSource.html" title="interface in org.mcarthur.sandy.gwt.event.property.client"><B>NEXT CLASS</B></A></FONT></TD>
+&nbsp;<A HREF="../../../../../../../org/mcarthur/sandy/gwt/event/property/client/PropertyChangeListener.html" title="interface in org.mcarthur.sandy.gwt.event.property.client"><B>PREV CLASS</B></A>&nbsp;
+&nbsp;<A HREF="../../../../../../../org/mcarthur/sandy/gwt/event/property/client/PropertyChangeSupport.html" title="class in org.mcarthur.sandy.gwt.event.property.client"><B>NEXT CLASS</B></A></FONT></TD>
 <TD BGCOLOR="white" CLASS="NavBarCell2"><FONT SIZE="-2">
-  <A HREF="../../../../../../../index.html?org/mcarthur/sandy/gwt/event/property/client/PropertyChangeListener.html" target="_top"><B>FRAMES</B></A>  &nbsp;
-&nbsp;<A HREF="PropertyChangeListener.html" target="_top"><B>NO FRAMES</B></A>  &nbsp;
+  <A HREF="../../../../../../../index.html?org/mcarthur/sandy/gwt/event/property/client/PropertyChangeSource.html" target="_top"><B>FRAMES</B></A>  &nbsp;
+&nbsp;<A HREF="PropertyChangeSource.html" target="_top"><B>NO FRAMES</B></A>  &nbsp;
 &nbsp;<SCRIPT type="text/javascript">
   <!---->
 </SCRIPT>
