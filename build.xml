@@ -124,6 +124,22 @@
         <copy file="doc/GWT-Stuff-EventList.txt" todir="."/>
     </target>
 
+    <target name="package-propertychange" depends="compile-java" description="Package up the Property Change module as a jar">
+        <jar destfile="GWT-Stuff-PropertyChange.jar">
+            <fileset dir="bin">
+                <include name="org/mcarthur/sandy/gwt/event/property/**/*.class"/>
+            </fileset>
+            <!-- Get everything; source, modules, html files -->
+            <fileset dir="src">
+                <include name="org/mcarthur/sandy/gwt/event/property/**"/>
+            </fileset>
+            <fileset dir="test">
+                <include name="org/mcarthur/sandy/gwt/event/property/**"/>
+            </fileset>
+        </jar>
+        <copy file="doc/GWT-Stuff-PropertyChange.txt" todir="."/>
+    </target>
+
     <target name="javadoc" depends="init" description="Generate Javadocs">
         <property name="javadoc.dir" value="doc/javadoc"/>
         <mkdir dir="${javadoc.dir}"/>
@@ -158,6 +174,6 @@
         <delete dir="doc/javadoc"/>
     </target>
 
-    <target name="all" depends="package,package-login"/>
+    <target name="all" depends="package,package-login,package-eventlist,package-propertychange"/>
 
 </project>
