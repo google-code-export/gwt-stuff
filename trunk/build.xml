@@ -132,8 +132,13 @@
                 <include name="**"/>
                 <exclude name="**/test/**"/>
             </packageset>
+            <doctitle><![CDATA[${ant.project.name}]]></doctitle>
+            <header><![CDATA[<a href="http://code.google.com/p/gwt-stuff/">${ant.project.name}</a>]]></header>
+            <footer><![CDATA[${TODAY}]]></footer>
+
             <group title="Events" packages="org.mcarthur.sandy.gwt.event:org.mcarthur.sandy.gwt.event.*"/>
             <group title="Event Lists" packages="org.mcarthur.sandy.gwt.event.list:org.mcarthur.sandy.gwt.event.list.*"/>
+            <group title="Property Change Events" packages="org.mcarthur.sandy.gwt.event.property:org.mcarthur.sandy.gwt.event.property.*"/>
             <group title="Login Panel" packages="org.mcarthur.sandy.gwt.login:org.mcarthur.sandy.gwt.login.*"/>
             <group title="Tables" packages="org.mcarthur.sandy.gwt.table:org.mcarthur.sandy.gwt.table.*"/>
             <classpath refid="project.class.path"/>
