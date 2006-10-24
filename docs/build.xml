@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8" ?>
-<project name="GWT-Stuff Javadoc" default="regen" basedir=".">
+<project name="GWT-Stuff Docs" default="regen" basedir=".">
 
     <description>
-        Build file for GWT-Stuff Javadocs.
+        Build file for GWT-Stuff public project Documentation.
     </description>
 
     <target name="init">
