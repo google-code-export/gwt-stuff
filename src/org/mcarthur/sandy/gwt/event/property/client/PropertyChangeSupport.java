@@ -95,7 +95,7 @@ public class PropertyChangeSupport {
     }
     
     public void firePropertyChange(final String propertyName, final Object oldValue, final Object newValue) {
-        if (oldValue == newValue && oldValue != null && oldValue.equals(newValue)) {
+        if (oldValue != null && newValue != null && oldValue.equals(newValue)) {
             // don't fire if nothing really changed
             return;
         }
@@ -117,7 +117,7 @@ public class PropertyChangeSupport {
     public void firePropertyChange(final PropertyChangeEvent event) {
         final Object oldValue = event.getOldValue();
         final Object newValue = event.getNewValue();
-        if (oldValue == newValue && oldValue != null && oldValue.equals(newValue)) {
+        if (oldValue != null && newValue != null && oldValue.equals(newValue)) {
             // don't fire if nothing really changed
             return;
         }
@@ -142,7 +142,7 @@ public class PropertyChangeSupport {
     }
 
     public void fireIndexedPropertyChange(final String propertyName, final int index, final Object oldValue, final Object newValue) {
-        if (oldValue == newValue && oldValue != null && oldValue.equals(newValue)) {
+        if (oldValue != null && newValue != null && oldValue.equals(newValue)) {
             // don't fire if nothing really changed
             return;
         }
