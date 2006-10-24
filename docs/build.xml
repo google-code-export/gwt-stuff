@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<project name="GWT-Stuff Javadoc" default="regen" basedir=".">
+
+    <description>
+        Build file for GWT-Stuff Javadocs.
+    </description>
+
+    <target name="init">
+        <tstamp/>
+
+        <property name="gwt.basedir" value="C:/gwt-windows-1.1.10/" description="The base directory where you installed GWT."/>
+        <property name="exec.svn" value="svn" description="The svn command on your machine."/>
+
+    </target>
+
+    <target name="svn-export" depends="init">
+        <delete dir="trunk"/>
+        <exec executable="${exec.svn}">
+            <arg value="export"/>
+            <arg value="http://gwt-stuff.googlecode.com/svn/trunk"/>
+            <arg value="trunk"/>
+            <arg value="--quiet"/>
+        </exec>
+    </target>
+
+    <target name="javadoc" depends="init,svn-export">
+        <mkdir dir="javadoc"/>
+        <dirname property="fullpath.dirname" file="."/>
+        <basename property="fullpath.basename" file="."/>
+        <property name="fullpath" value="${fullpath.dirname}/${fullpath.basename}/javadoc"/>
+        <ant dir="trunk" antfile="build.xml" target="javadoc">
+            <property name="javadoc.dir" value="${fullpath}"/>
+            <property name="gwt.basedir" value="${gwt.basedir}"/>
+        </ant>
+    </target>
+
+    <target name="svn-add-javadoc" depends="init">
+        <exec executable="${exec.svn}">
+            <arg value="add"/>
+            <arg value="javadoc"/>
+            <arg value="--force"/>
+        </exec>
+
+        <apply executable="${exec.svn}" dir="javadoc" relative="true" parallel="true" skipemptyfilesets="true">
+            <arg value="propset"/>
+            <arg value="svn:mime-type"/>
+            <arg value="text/html"/>
+            <arg value="--non-interactive"/>
+            <srcfile />
+            <fileset dir="javadoc" includes="**/*.html"/>
+        </apply>
+        <apply executable="${exec.svn}" dir="javadoc" relative="true" parallel="true" skipemptyfilesets="true">
+            <arg value="propset"/>
+            <arg value="svn:mime-type"/>
+            <arg value="text/css"/>
+            <arg value="--non-interactive"/>
+            <srcfile />
+            <fileset dir="javadoc" includes="**/*.css"/>
+        </apply>
+        <apply executable="${exec.svn}" dir="javadoc" relative="true" parallel="true" skipemptyfilesets="true">
+            <arg value="propset"/>
+            <arg value="svn:mime-type"/>
+            <arg value="image/gif"/>
+            <arg value="--non-interactive"/>
+            <srcfile />
+            <fileset dir="javadoc" includes="**/*.gif"/>
+        </apply>
+        <apply executable="${exec.svn}" dir="javadoc" relative="true" parallel="true" skipemptyfilesets="true">
+            <arg value="propset"/>
+            <arg value="svn:mime-type"/>
+            <arg value="image/jpg"/>
+            <arg value="--non-interactive"/>
+            <srcfile />
+            <fileset dir="javadoc" includes="**/*.jpg"/>
+        </apply>
+        <apply executable="${exec.svn}" dir="javadoc" relative="true" parallel="true" skipemptyfilesets="true">
+            <arg value="propset"/>
+            <arg value="svn:mime-type"/>
+            <arg value="image/png"/>
+            <arg value="--non-interactive"/>
+            <srcfile />
+            <fileset dir="javadoc" includes="**/*.png"/>
+        </apply>
+    </target>
+
+
+    <target name="svn-commit" depends="init">
+        <delete dir="trunk"/>
+        <exec executable="${exec.svn}">
+            <arg value="commit"/>
+            <arg value="--non-interactive"/>
+            <arg value="-m"/>
+            <arg value="Regenerated docs."/>
+        </exec>
+    </target>
+
+    <target name="regen-javadoc" depends="init,javadoc,svn-add-javadoc" description="Regenerate Javadocs and examples."/>
+
+    <target name="regen" depends="regen-javadoc,svn-commit" description="Regenerate Javadocs and examples."/>
+
+</project>
