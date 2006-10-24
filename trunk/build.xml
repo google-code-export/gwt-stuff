@@ -108,6 +108,22 @@
         <copy file="doc/GWT-Stuff-Login.txt" todir="."/>
     </target>
 
+    <target name="package-eventlist" depends="compile-java" description="Package up the Event List module as a jar">
+        <jar destfile="GWT-Stuff-EventList.jar">
+            <fileset dir="bin">
+                <include name="org/mcarthur/sandy/gwt/event/list/**/*.class"/>
+            </fileset>
+            <!-- Get everything; source, modules, html files -->
+            <fileset dir="src">
+                <include name="org/mcarthur/sandy/gwt/event/list/**"/>
+            </fileset>
+            <fileset dir="test">
+                <include name="org/mcarthur/sandy/gwt/event/list/**"/>
+            </fileset>
+        </jar>
+        <copy file="doc/GWT-Stuff-EventList.txt" todir="."/>
+    </target>
+
     <target name="javadoc" depends="init" description="Generate Javadocs">
         <property name="javadoc.dir" value="doc/javadoc"/>
         <mkdir dir="${javadoc.dir}"/>
