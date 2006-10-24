@@ -1,0 +1,39 @@
+<html>
+<body>
+<p>
+    An JavaBean-style PropertyChange implementation.
+</p>
+
+<h2>Including in your project</h2>
+<p>
+    To add this to your project add the jar file to your classpath and add the following to your GWT module file:
+</p>
+<blockquote>
+    <code>&lt;inherits name="org.mcarthur.sandy.gwt.event.property.PropertyChange"/&gt;</code>
+</blockquote>
+
+<h2>Example Usage</h2>
+<p>
+    The most basic usage is to create a private PropertyChangeSupport field and delegate to it.
+</p>
+<blockquote>
+    <code>
+        <pre>
+class Foo {
+    private Object bar;
+    private PropertyChangeSupport pce = new PropertyChangeSupport(this);
+    public void setBar(Object bar) {
+        Object old = this.bar;
+        this.bar = bar;
+        pce.firePropertyChange("bar", old, bar);
+    }
+    public void addPropertyChangeListener(PropertyChangeListener pcl) {
+        pce.addPropertyChangeListener(pcl);
+    }
+}
+        </pre>
+    </code>
+</blockquote>
+
+</body>
+</html>
