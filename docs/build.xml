@@ -19,19 +19,35 @@
             <arg value="export"/>
             <arg value="http://gwt-stuff.googlecode.com/svn/trunk"/>
             <arg value="trunk"/>
+            <arg value="--non-interactive"/>
             <arg value="--quiet"/>
         </exec>
     </target>
 
-    <target name="javadoc" depends="init,svn-export">
-        <mkdir dir="javadoc"/>
+    <target name="compile-striphtmlcomments" depends="init">
+        <javac srcdir="lib/striphtmlcomments" destdir="lib/striphtmlcomments" debug="true"/>
+    </target>
+
+    <target name="javadoc" depends="init,svn-export,compile-striphtmlcomments">
         <dirname property="fullpath.dirname" file="."/>
         <basename property="fullpath.basename" file="."/>
-        <property name="fullpath" value="${fullpath.dirname}/${fullpath.basename}/javadoc"/>
+        <property name="temppath" value="${fullpath.dirname}/${fullpath.basename}/temp"/>
+        <mkdir dir="${temppath}"/>
+
         <ant dir="trunk" antfile="build.xml" target="javadoc">
-            <property name="javadoc.dir" value="${fullpath}"/>
+            <property name="javadoc.dir" value="${temppath}"/>
+            <property name="javadoc.footer" value=" "/> <!-- note: an empty string, "", causes an error -->
             <property name="gwt.basedir" value="${gwt.basedir}"/>
         </ant>
+
+        <property name="javadocpath" value="${fullpath.dirname}/${fullpath.basename}/javadoc"/>
+        <mkdir dir="${javadocpath}"/>
+        <copy todir="${javadocpath}">
+            <fileset dir="${temppath}"/>
+            <filterchain>
+                <filterreader classpath="lib/striphtmlcomments" classname="StripHtmlComments"/>
+            </filterchain>
+        </copy>
     </target>
 
     <target name="svn-add-javadoc" depends="init">
@@ -41,46 +57,26 @@
             <arg value="--force"/>
         </exec>
 
-        <apply executable="${exec.svn}" dir="javadoc" relative="true" parallel="true" skipemptyfilesets="true">
-            <arg value="propset"/>
-            <arg value="svn:mime-type"/>
-            <arg value="text/html"/>
-            <arg value="--non-interactive"/>
-            <srcfile />
-            <fileset dir="javadoc" includes="**/*.html"/>
-        </apply>
-        <apply executable="${exec.svn}" dir="javadoc" relative="true" parallel="true" skipemptyfilesets="true">
-            <arg value="propset"/>
-            <arg value="svn:mime-type"/>
-            <arg value="text/css"/>
-            <arg value="--non-interactive"/>
-            <srcfile />
-            <fileset dir="javadoc" includes="**/*.css"/>
-        </apply>
-        <apply executable="${exec.svn}" dir="javadoc" relative="true" parallel="true" skipemptyfilesets="true">
-            <arg value="propset"/>
-            <arg value="svn:mime-type"/>
-            <arg value="image/gif"/>
-            <arg value="--non-interactive"/>
-            <srcfile />
-            <fileset dir="javadoc" includes="**/*.gif"/>
-        </apply>
-        <apply executable="${exec.svn}" dir="javadoc" relative="true" parallel="true" skipemptyfilesets="true">
-            <arg value="propset"/>
-            <arg value="svn:mime-type"/>
-            <arg value="image/jpg"/>
-            <arg value="--non-interactive"/>
-            <srcfile />
-            <fileset dir="javadoc" includes="**/*.jpg"/>
-        </apply>
-        <apply executable="${exec.svn}" dir="javadoc" relative="true" parallel="true" skipemptyfilesets="true">
-            <arg value="propset"/>
-            <arg value="svn:mime-type"/>
-            <arg value="image/png"/>
-            <arg value="--non-interactive"/>
-            <srcfile />
-            <fileset dir="javadoc" includes="**/*.png"/>
-        </apply>
+        <macrodef name="svn-set-mimetype">
+            <attribute name="mimetype"/>
+            <attribute name="includes"/>
+            <sequential>
+                <apply executable="${exec.svn}" dir="javadoc" relative="true" parallel="true" skipemptyfilesets="true">
+                    <arg value="propset"/>
+                    <arg value="svn:mime-type"/>
+                    <arg value="@{mimetype}"/>
+                    <arg value="--non-interactive"/>
+                    <srcfile />
+                    <fileset dir="javadoc" includes="@{includes}"/>
+                </apply>
+            </sequential>
+        </macrodef>
+
+        <svn-set-mimetype mimetype="text/html" includes="**/*.html"/>
+        <svn-set-mimetype mimetype="text/css" includes="**/*.css"/>
+        <svn-set-mimetype mimetype="image/gif" includes="**/*.gif"/>
+        <svn-set-mimetype mimetype="image/jpeg" includes="**/*.jpg"/>
+        <svn-set-mimetype mimetype="image/png" includes="**/*.png"/>
     </target>
 
 
@@ -97,5 +93,10 @@
     <target name="regen-javadoc" depends="init,javadoc,svn-add-javadoc" description="Regenerate Javadocs and examples."/>
 
     <target name="regen" depends="regen-javadoc,svn-commit" description="Regenerate Javadocs and examples."/>
+
+    <target name="clean" depends="init">
+        <delete dir="temp"/>
+        <delete dir="trunk"/>
+    </target>
 
 </project>
