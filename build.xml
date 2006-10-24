@@ -142,15 +142,16 @@
 
     <target name="javadoc" depends="init" description="Generate Javadocs">
         <property name="javadoc.dir" value="doc/javadoc"/>
+        <property name="javadoc.footer" value="${TODAY}"/>
         <mkdir dir="${javadoc.dir}"/>
-        <javadoc destdir="${javadoc.dir}" use="true" author="true" version="true">
+        <javadoc destdir="${javadoc.dir}" use="true" author="true" version="true" windowtitle="${ant.project.name}">
             <packageset dir="src">
                 <include name="**"/>
                 <exclude name="**/test/**"/>
             </packageset>
             <doctitle><![CDATA[${ant.project.name}]]></doctitle>
             <header><![CDATA[<a href="http://code.google.com/p/gwt-stuff/">${ant.project.name}</a>]]></header>
-            <footer><![CDATA[${TODAY}]]></footer>
+            <footer><![CDATA[${javadoc.footer}]]></footer>
 
             <group title="Events" packages="org.mcarthur.sandy.gwt.event:org.mcarthur.sandy.gwt.event.*"/>
             <group title="Event Lists" packages="org.mcarthur.sandy.gwt.event.list:org.mcarthur.sandy.gwt.event.list.*"/>
@@ -167,10 +168,12 @@
         <!-- Delete the bin directory tree -->
         <delete dir="bin"/>
         <delete dir="www"/>
-        <delete file="GWT-Stuff.jar"/>
-        <delete file="GWT-Stuff.txt"/>
-        <delete file="GWT-Stuff-Login.jar"/>
-        <delete file="GWT-Stuff-Login.txt"/>
+        <delete>
+            <fileset dir="." includes="GWT-Stuff.jar"/>
+            <fileset dir="." includes="GWT-Stuff.txt"/>
+            <fileset dir="." includes="GWT-Stuff-*.jar"/>
+            <fileset dir="." includes="GWT-Stuff-*.txt"/>
+        </delete>
         <delete dir="doc/javadoc"/>
     </target>
 
