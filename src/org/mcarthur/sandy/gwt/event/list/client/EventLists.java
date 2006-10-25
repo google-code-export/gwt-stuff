@@ -24,6 +24,9 @@ import java.util.List;
  * @author Sandy McArthur
  */
 public class EventLists {
+    private EventLists() {
+    }
+    
     /**
      * Wrap a <code>List</code> so it can be monitored for changes. The list to be wrapped must not
      * be modified except by methods of the returned EventList else events will be missed.
