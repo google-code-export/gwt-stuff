@@ -46,7 +46,7 @@ function windowTitle()
 </TABLE>
 </TD>
 <TD ALIGN="right" VALIGN="top" ROWSPAN=3><EM>
-<a href=http://code.google.com/p/gwt-stuff/>GWT-Stuff</a></EM>
+<a href="http://code.google.com/p/gwt-stuff/">GWT-Stuff</a></EM>
 </TD>
 </TR>
 
@@ -102,6 +102,18 @@ Class PropertyChangeEvent</H2>
 
 <P>
 A "PropertyChange" event gets delivered whenever a "bound" or "constrained" property changes.
+
+ <p>
+ Normally PropertyChangeEvents are accompanied by the name and the old and new value of the changed property.
+ If the new value is a primitive type (such as int or boolean) it must be wrapped as the corresponding java.lang.* Object type (such as Integer or Boolean).
+ </p>
+ <p>
+ <code>Null</code> values may be provided for the old and the new values if their true values are not known.
+ </p>
+ <p>
+ An event source may send a <code>null</code> object as the name to indicate that an arbitrary set of if its properties have changed.
+ In this case the old and new values should also be <code>null</code>.
+ </p>
 <P>
 
 <P>
@@ -145,7 +157,7 @@ A "PropertyChange" event gets delivered whenever a "bound" or "constrained" prop
                     <A HREF="http://java.sun.com/j2se/1.5.0/docs/api/java/lang/Object.html" title="class or interface in java.lang">Object</A>&nbsp;newValue)</CODE>
 
 <BR>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Constructs a prototypical Event.</TD>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Constructs a new PropertyChangeEvent.</TD>
 </TR>
 </TABLE>
 &nbsp;
@@ -163,7 +175,7 @@ A "PropertyChange" event gets delivered whenever a "bound" or "constrained" prop
 <TD><CODE><B><A HREF="../../../../../../../org/mcarthur/sandy/gwt/event/property/client/PropertyChangeEvent.html#getNewValue()">getNewValue</A></B>()</CODE>
 
 <BR>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</TD>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;The new value for the property, expressed as an Object.</TD>
 </TR>
 <TR BGCOLOR="white" CLASS="TableRowColor">
 <TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
@@ -171,7 +183,7 @@ A "PropertyChange" event gets delivered whenever a "bound" or "constrained" prop
 <TD><CODE><B><A HREF="../../../../../../../org/mcarthur/sandy/gwt/event/property/client/PropertyChangeEvent.html#getOldValue()">getOldValue</A></B>()</CODE>
 
 <BR>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</TD>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;The old value for the property, expressed as an Object.</TD>
 </TR>
 <TR BGCOLOR="white" CLASS="TableRowColor">
 <TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
@@ -179,7 +191,7 @@ A "PropertyChange" event gets delivered whenever a "bound" or "constrained" prop
 <TD><CODE><B><A HREF="../../../../../../../org/mcarthur/sandy/gwt/event/property/client/PropertyChangeEvent.html#getPropertyName()">getPropertyName</A></B>()</CODE>
 
 <BR>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</TD>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;The programmatic name of the property that was changed.</TD>
 </TR>
 </TABLE>
 &nbsp;<A NAME="methods_inherited_from_class_java.util.EventObject"><!----></A>
@@ -221,12 +233,12 @@ public <B>PropertyChangeEvent</B>(<A HREF="http://java.sun.com/j2se/1.5.0/docs/a
                            <A HREF="http://java.sun.com/j2se/1.5.0/docs/api/java/lang/Object.html" title="class or interface in java.lang">Object</A>&nbsp;oldValue,
                            <A HREF="http://java.sun.com/j2se/1.5.0/docs/api/java/lang/Object.html" title="class or interface in java.lang">Object</A>&nbsp;newValue)</PRE>
 <DL>
-<DD>Constructs a prototypical Event.
+<DD>Constructs a new PropertyChangeEvent.
 <P>
 <DL>
-<DT><B>Parameters:</B><DD><CODE>source</CODE> - The object on which fired the event.<DD><CODE>propertyName</CODE> - The programmatic name of the property that was changed, or null of the whole object changed.<DD><CODE>oldValue</CODE> - The old value of the property.<DD><CODE>newValue</CODE> - The new value of the property.
+<DT><B>Parameters:</B><DD><CODE>source</CODE> - The object on which fired the event.<DD><CODE>propertyName</CODE> - The programmatic name of the property that was changed, or <code>null</code> of the whole object changed.<DD><CODE>oldValue</CODE> - The old value of the property if known.<DD><CODE>newValue</CODE> - The new value of the property.
 <DT><B>Throws:</B>
-<DD><CODE><A HREF="http://java.sun.com/j2se/1.5.0/docs/api/java/lang/IllegalArgumentException.html" title="class or interface in java.lang">IllegalArgumentException</A></CODE> - if source is null.</DL>
+<DD><CODE><A HREF="http://java.sun.com/j2se/1.5.0/docs/api/java/lang/IllegalArgumentException.html" title="class or interface in java.lang">IllegalArgumentException</A></CODE> - if source is <code>null</code>.</DL>
 </DL>
 
 <!---->
@@ -244,8 +256,11 @@ getPropertyName</H3>
 <PRE>
 public <A HREF="http://java.sun.com/j2se/1.5.0/docs/api/java/lang/String.html" title="class or interface in java.lang">String</A> <B>getPropertyName</B>()</PRE>
 <DL>
+<DD>The programmatic name of the property that was changed.
+<P>
 <DD><DL>
-</DL>
+
+<DT><B>Returns:</B><DD>the programmatic name of the property that was changed or <code>null</code> if the whole object changed  .</DL>
 </DD>
 </DL>
 <HR>
@@ -255,8 +270,11 @@ getOldValue</H3>
 <PRE>
 public <A HREF="http://java.sun.com/j2se/1.5.0/docs/api/java/lang/Object.html" title="class or interface in java.lang">Object</A> <B>getOldValue</B>()</PRE>
 <DL>
+<DD>The old value for the property, expressed as an Object.
+<P>
 <DD><DL>
-</DL>
+
+<DT><B>Returns:</B><DD>the old value for the property, expressed as an Object, if known.</DL>
 </DD>
 </DL>
 <HR>
@@ -266,8 +284,11 @@ getNewValue</H3>
 <PRE>
 public <A HREF="http://java.sun.com/j2se/1.5.0/docs/api/java/lang/Object.html" title="class or interface in java.lang">Object</A> <B>getNewValue</B>()</PRE>
 <DL>
+<DD>The new value for the property, expressed as an Object.
+<P>
 <DD><DL>
-</DL>
+
+<DT><B>Returns:</B><DD>the new value for the property, expressed as an Object.</DL>
 </DD>
 </DL>
 <!---->

@@ -46,7 +46,7 @@ function windowTitle()
 </TABLE>
 </TD>
 <TD ALIGN="right" VALIGN="top" ROWSPAN=3><EM>
-<a href=http://code.google.com/p/gwt-stuff/>GWT-Stuff</a></EM>
+<a href="http://code.google.com/p/gwt-stuff/">GWT-Stuff</a></EM>
 </TD>
 </TR>
 
@@ -120,7 +120,7 @@ A source for <A HREF="../../../../../../../org/mcarthur/sandy/gwt/event/property
 <TD><CODE><B><A HREF="../../../../../../../org/mcarthur/sandy/gwt/event/property/client/PropertyChangeSource.html#addPropertyChangeListener(org.mcarthur.sandy.gwt.event.property.client.PropertyChangeListener)">addPropertyChangeListener</A></B>(<A HREF="../../../../../../../org/mcarthur/sandy/gwt/event/property/client/PropertyChangeListener.html" title="interface in org.mcarthur.sandy.gwt.event.property.client">PropertyChangeListener</A>&nbsp;listener)</CODE>
 
 <BR>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</TD>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Add a PropertyChangeListener for all properties.</TD>
 </TR>
 <TR BGCOLOR="white" CLASS="TableRowColor">
 <TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
@@ -128,7 +128,7 @@ A source for <A HREF="../../../../../../../org/mcarthur/sandy/gwt/event/property
 <TD><CODE><B><A HREF="../../../../../../../org/mcarthur/sandy/gwt/event/property/client/PropertyChangeSource.html#removePropertyChangeListener(org.mcarthur.sandy.gwt.event.property.client.PropertyChangeListener)">removePropertyChangeListener</A></B>(<A HREF="../../../../../../../org/mcarthur/sandy/gwt/event/property/client/PropertyChangeListener.html" title="interface in org.mcarthur.sandy.gwt.event.property.client">PropertyChangeListener</A>&nbsp;listener)</CODE>
 
 <BR>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</TD>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Remove a PropertyChangeListener for all properties.</TD>
 </TR>
 </TABLE>
 &nbsp;
@@ -149,8 +149,10 @@ addPropertyChangeListener</H3>
 <PRE>
 void <B>addPropertyChangeListener</B>(<A HREF="../../../../../../../org/mcarthur/sandy/gwt/event/property/client/PropertyChangeListener.html" title="interface in org.mcarthur.sandy.gwt.event.property.client">PropertyChangeListener</A>&nbsp;listener)</PRE>
 <DL>
+<DD>Add a PropertyChangeListener for all properties.
+<P>
 <DD><DL>
-<DT><B>See Also:</B><DD><A HREF="../../../../../../../org/mcarthur/sandy/gwt/event/property/client/PropertyChangeSupport.html#addPropertyChangeListener(org.mcarthur.sandy.gwt.event.property.client.PropertyChangeListener)"><CODE>PropertyChangeSupport.addPropertyChangeListener(PropertyChangeListener)</CODE></A></DL>
+<DT><B>Parameters:</B><DD><CODE>listener</CODE> - the PropertyChangeListener to be added.<DT><B>See Also:</B><DD><A HREF="../../../../../../../org/mcarthur/sandy/gwt/event/property/client/PropertyChangeSupport.html#addPropertyChangeListener(org.mcarthur.sandy.gwt.event.property.client.PropertyChangeListener)"><CODE>PropertyChangeSupport.addPropertyChangeListener(PropertyChangeListener)</CODE></A></DL>
 </DD>
 </DL>
 <HR>
@@ -160,8 +162,11 @@ removePropertyChangeListener</H3>
 <PRE>
 void <B>removePropertyChangeListener</B>(<A HREF="../../../../../../../org/mcarthur/sandy/gwt/event/property/client/PropertyChangeListener.html" title="interface in org.mcarthur.sandy.gwt.event.property.client">PropertyChangeListener</A>&nbsp;listener)</PRE>
 <DL>
+<DD>Remove a PropertyChangeListener for all properties.
+ This removes a listener that was registered with <A HREF="../../../../../../../org/mcarthur/sandy/gwt/event/property/client/PropertyChangeSource.html#addPropertyChangeListener(org.mcarthur.sandy.gwt.event.property.client.PropertyChangeListener)"><CODE>addPropertyChangeListener(PropertyChangeListener)</CODE></A>.
+<P>
 <DD><DL>
-<DT><B>See Also:</B><DD><A HREF="../../../../../../../org/mcarthur/sandy/gwt/event/property/client/PropertyChangeSupport.html#removePropertyChangeListener(org.mcarthur.sandy.gwt.event.property.client.PropertyChangeListener)"><CODE>PropertyChangeSupport.removePropertyChangeListener(PropertyChangeListener)</CODE></A></DL>
+<DT><B>Parameters:</B><DD><CODE>listener</CODE> - the PropertyChangeListener to be removed.<DT><B>See Also:</B><DD><A HREF="../../../../../../../org/mcarthur/sandy/gwt/event/property/client/PropertyChangeSupport.html#removePropertyChangeListener(org.mcarthur.sandy.gwt.event.property.client.PropertyChangeListener)"><CODE>PropertyChangeSupport.removePropertyChangeListener(PropertyChangeListener)</CODE></A></DL>
 </DD>
 </DL>
 <!---->

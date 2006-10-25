@@ -46,7 +46,7 @@ function windowTitle()
 </TABLE>
 </TD>
 <TD ALIGN="right" VALIGN="top" ROWSPAN=3><EM>
-<a href=http://code.google.com/p/gwt-stuff/>GWT-Stuff</a></EM>
+<a href="http://code.google.com/p/gwt-stuff/">GWT-Stuff</a></EM>
 </TD>
 </TR>
 
@@ -144,7 +144,7 @@ An "IndexedPropertyChange" event gets delivered whenever a bound indexed propert
                            int&nbsp;index)</CODE>
 
 <BR>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Constructs a prototypical Event.</TD>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Constructs a IndexedPropertyChangeEvent.</TD>
 </TR>
 </TABLE>
 &nbsp;
@@ -162,7 +162,7 @@ An "IndexedPropertyChange" event gets delivered whenever a bound indexed propert
 <TD><CODE><B><A HREF="../../../../../../../org/mcarthur/sandy/gwt/event/property/client/IndexedPropertyChangeEvent.html#getIndex()">getIndex</A></B>()</CODE>
 
 <BR>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</TD>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;The index of the property that was changed.</TD>
 </TR>
 </TABLE>
 &nbsp;<A NAME="methods_inherited_from_class_org.mcarthur.sandy.gwt.event.property.client.PropertyChangeEvent"><!----></A>
@@ -214,7 +214,7 @@ public <B>IndexedPropertyChangeEvent</B>(<A HREF="http://java.sun.com/j2se/1.5.0
                                   <A HREF="http://java.sun.com/j2se/1.5.0/docs/api/java/lang/Object.html" title="class or interface in java.lang">Object</A>&nbsp;newValue,
                                   int&nbsp;index)</PRE>
 <DL>
-<DD>Constructs a prototypical Event.
+<DD>Constructs a IndexedPropertyChangeEvent.
 <P>
 <DL>
 <DT><B>Parameters:</B><DD><CODE>source</CODE> - The object on which fired the event.<DD><CODE>propertyName</CODE> - The programmatic name of the property that was changed, or null of the whole object changed.<DD><CODE>oldValue</CODE> - The old value of the property.<DD><CODE>newValue</CODE> - The new value of the property.<DD><CODE>index</CODE> - The index of the property element that was changed.
@@ -237,8 +237,11 @@ getIndex</H3>
 <PRE>
 public int <B>getIndex</B>()</PRE>
 <DL>
+<DD>The index of the property that was changed.
+<P>
 <DD><DL>
-</DL>
+
+<DT><B>Returns:</B><DD>The index specifying the property element that was changed.</DL>
 </DD>
 </DL>
 <!---->

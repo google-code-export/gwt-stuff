@@ -46,7 +46,7 @@ function windowTitle()
 </TABLE>
 </TD>
 <TD ALIGN="right" VALIGN="top" ROWSPAN=3><EM>
-<a href=http://code.google.com/p/gwt-stuff/>GWT-Stuff</a></EM>
+<a href="http://code.google.com/p/gwt-stuff/">GWT-Stuff</a></EM>
 </TD>
 </TR>
 
@@ -146,16 +146,15 @@ Package org.mcarthur.sandy.gwt.event.list.client Description
 </p>
 <blockquote>
     <code>
-        <pre>
-List list = new ArrayList();
-EventList eventList = EventLists.wrap(list);
-ListEventListener listEventListener = new ListEventListener() {
-    public void listChanged(ListEvent listEvent) {
-        GWT.log(listEvent.toString(), null);
-    }
-};
-eventList.addListEventListener(listEventListener);
-        </pre>
+<pre style='color:#000020;'><span style='color:#6679aa; font-weight:bold; '>List</span> list <span style='color:#308080; '>=</span> <span style='color:#200080; font-weight:bold; '>new</span> ArrayList<span style='color:#308080; '>(</span><span style='color:#308080; '>)</span><span style='color:#406080; '>;</span>
+EventList eventList <span style='color:#308080; '>=</span> EventLists<span style='color:#308080; '>.</span>wrap<span style='color:#308080; '>(</span>list<span style='color:#308080; '>)</span><span style='color:#406080; '>;</span>
+ListEventListener listEventListener <span style='color:#308080; '>=</span> <span style='color:#200080; font-weight:bold; '>new</span> ListEventListener<span style='color:#308080; '>(</span><span style='color:#308080; '>)</span> <span style='color:#406080; '>{</span>
+    <span style='color:#200080; font-weight:bold; '>public</span> <span style='color:#7779bb; '>void</span> listChanged<span style='color:#308080; '>(</span>ListEvent listEvent<span style='color:#308080; '>)</span> <span style='color:#406080; '>{</span>
+        GWT<span style='color:#308080; '>.</span>log<span style='color:#308080; '>(</span>listEvent<span style='color:#308080; '>.</span>toString<span style='color:#308080; '>(</span><span style='color:#308080; '>)</span><span style='color:#308080; '>,</span> <span style='color:#200080; font-weight:bold; '>null</span><span style='color:#308080; '>)</span><span style='color:#406080; '>;</span>
+    <span style='color:#406080; '>}</span>
+<span style='color:#406080; '>}</span><span style='color:#406080; '>;</span>
+eventList<span style='color:#308080; '>.</span>addListEventListener<span style='color:#308080; '>(</span>listEventListener<span style='color:#308080; '>)</span><span style='color:#406080; '>;</span>
+</pre>
     </code>
 </blockquote>
 <P>

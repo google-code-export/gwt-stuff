@@ -46,7 +46,7 @@ function windowTitle()
 </TABLE>
 </TD>
 <TD ALIGN="right" VALIGN="top" ROWSPAN=3><EM>
-<a href=http://code.google.com/p/gwt-stuff/>GWT-Stuff</a></EM>
+<a href="http://code.google.com/p/gwt-stuff/">GWT-Stuff</a></EM>
 </TD>
 </TR>
 
@@ -95,7 +95,7 @@ Interface NamedPropertyChangeSource</H2>
 <P>
 A source for <A HREF="../../../../../../../org/mcarthur/sandy/gwt/event/property/client/PropertyChangeEvent.html" title="class in org.mcarthur.sandy.gwt.event.property.client"><CODE>PropertyChangeEvent</CODE></A>s
  that supports listeners only interested in specific properties.
- There isn't a parallel in the java.beans package.
+ There isn't a parallel interface in the java.beans package.
 <P>
 
 <P>
@@ -122,7 +122,7 @@ A source for <A HREF="../../../../../../../org/mcarthur/sandy/gwt/event/property
                           <A HREF="../../../../../../../org/mcarthur/sandy/gwt/event/property/client/PropertyChangeListener.html" title="interface in org.mcarthur.sandy.gwt.event.property.client">PropertyChangeListener</A>&nbsp;listener)</CODE>
 
 <BR>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</TD>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Add a PropertyChangeListener for a specific property.</TD>
 </TR>
 <TR BGCOLOR="white" CLASS="TableRowColor">
 <TD ALIGN="right" VALIGN="top" WIDTH="1%"><FONT SIZE="-1">
@@ -131,7 +131,7 @@ A source for <A HREF="../../../../../../../org/mcarthur/sandy/gwt/event/property
                              <A HREF="../../../../../../../org/mcarthur/sandy/gwt/event/property/client/PropertyChangeListener.html" title="interface in org.mcarthur.sandy.gwt.event.property.client">PropertyChangeListener</A>&nbsp;listener)</CODE>
 
 <BR>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</TD>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Remove a PropertyChangeListener for a specific property.</TD>
 </TR>
 </TABLE>
 &nbsp;<A NAME="methods_inherited_from_class_org.mcarthur.sandy.gwt.event.property.client.PropertyChangeSource"><!----></A>
@@ -162,11 +162,14 @@ addPropertyChangeListener</H3>
 void <B>addPropertyChangeListener</B>(<A HREF="http://java.sun.com/j2se/1.5.0/docs/api/java/lang/String.html" title="class or interface in java.lang">String</A>&nbsp;propertyName,
                                <A HREF="../../../../../../../org/mcarthur/sandy/gwt/event/property/client/PropertyChangeListener.html" title="interface in org.mcarthur.sandy.gwt.event.property.client">PropertyChangeListener</A>&nbsp;listener)</PRE>
 <DL>
+<DD>Add a PropertyChangeListener for a specific property.
+ The listener will be invoked only when a property change names that specific property.
+<P>
 <DD><DL>
 </DL>
 </DD>
 <DD><DL>
-<DT><B>See Also:</B><DD><A HREF="../../../../../../../org/mcarthur/sandy/gwt/event/property/client/PropertyChangeSupport.html#addPropertyChangeListener(java.lang.String, org.mcarthur.sandy.gwt.event.property.client.PropertyChangeListener)"><CODE>PropertyChangeSupport.addPropertyChangeListener(String,PropertyChangeListener)</CODE></A></DL>
+<DT><B>Parameters:</B><DD><CODE>propertyName</CODE> - The name of the property to listen on.<DD><CODE>listener</CODE> - The PropertyChangeListener to be added.<DT><B>See Also:</B><DD><A HREF="../../../../../../../org/mcarthur/sandy/gwt/event/property/client/PropertyChangeSupport.html#addPropertyChangeListener(java.lang.String, org.mcarthur.sandy.gwt.event.property.client.PropertyChangeListener)"><CODE>PropertyChangeSupport.addPropertyChangeListener(String,PropertyChangeListener)</CODE></A></DL>
 </DD>
 </DL>
 <HR>
@@ -177,11 +180,13 @@ removePropertyChangeListener</H3>
 void <B>removePropertyChangeListener</B>(<A HREF="http://java.sun.com/j2se/1.5.0/docs/api/java/lang/String.html" title="class or interface in java.lang">String</A>&nbsp;propertyName,
                                   <A HREF="../../../../../../../org/mcarthur/sandy/gwt/event/property/client/PropertyChangeListener.html" title="interface in org.mcarthur.sandy.gwt.event.property.client">PropertyChangeListener</A>&nbsp;listener)</PRE>
 <DL>
+<DD>Remove a PropertyChangeListener for a specific property.
+<P>
 <DD><DL>
 </DL>
 </DD>
 <DD><DL>
-<DT><B>See Also:</B><DD><A HREF="../../../../../../../org/mcarthur/sandy/gwt/event/property/client/PropertyChangeSupport.html#removePropertyChangeListener(java.lang.String, org.mcarthur.sandy.gwt.event.property.client.PropertyChangeListener)"><CODE>PropertyChangeSupport.removePropertyChangeListener(String,PropertyChangeListener)</CODE></A></DL>
+<DT><B>Parameters:</B><DD><CODE>propertyName</CODE> - The name of the property that was listened on.<DD><CODE>listener</CODE> - The PropertyChangeListener to be removed.<DT><B>See Also:</B><DD><A HREF="../../../../../../../org/mcarthur/sandy/gwt/event/property/client/PropertyChangeSupport.html#removePropertyChangeListener(java.lang.String, org.mcarthur.sandy.gwt.event.property.client.PropertyChangeListener)"><CODE>PropertyChangeSupport.removePropertyChangeListener(String,PropertyChangeListener)</CODE></A></DL>
 </DD>
 </DL>
 <!---->
