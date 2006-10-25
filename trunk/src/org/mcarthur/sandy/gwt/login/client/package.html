@@ -20,21 +20,20 @@
 </p>
 <blockquote>
     <code>
-        <pre>
-RootPanel rootPanel = RootPanel.get("foo");
+<pre style='color:#000020;'>RootPanel rootPanel <span style='color:#308080; '>=</span> RootPanel<span style='color:#308080; '>.</span>get<span style='color:#308080; '>(</span><span style='color:#1060b6; '>"foo"</span><span style='color:#308080; '>)</span><span style='color:#406080; '>;</span>
 
-LoginPanel.LoginListener loginListener = new LoginPanel.LoginListener() {
-  public void onSubmit(LoginPanel loginPanel) {
-    // check username and password
-    loginPanel.setErrorMessage("Login failed!"); // report an error
-    loginPanel.reenable(); // allow another attempt
-  }
-};
+LoginPanel<span style='color:#308080; '>.</span>LoginListener loginListener <span style='color:#308080; '>=</span> <span style='color:#200080; font-weight:bold; '>new</span> LoginPanel<span style='color:#308080; '>.</span>LoginListener<span style='color:#308080; '>(</span><span style='color:#308080; '>)</span> <span style='color:#406080; '>{</span>
+  <span style='color:#200080; font-weight:bold; '>public</span> <span style='color:#7779bb; '>void</span> onSubmit<span style='color:#308080; '>(</span>LoginPanel loginPanel<span style='color:#308080; '>)</span> <span style='color:#406080; '>{</span>
+    <span style='color:#595979; '>// check username and password</span>
+    loginPanel<span style='color:#308080; '>.</span>setErrorMessage<span style='color:#308080; '>(</span><span style='color:#1060b6; '>"Login failed!"</span><span style='color:#308080; '>)</span><span style='color:#406080; '>;</span> <span style='color:#595979; '>// report an error</span>
+    loginPanel<span style='color:#308080; '>.</span>reenable<span style='color:#308080; '>(</span><span style='color:#308080; '>)</span><span style='color:#406080; '>;</span> <span style='color:#595979; '>// allow another attempt</span>
+  <span style='color:#406080; '>}</span>
+<span style='color:#406080; '>}</span><span style='color:#406080; '>;</span>
 
-LoginPanel loginPanel = new LoginPanel(loginListener);
-            
-rootPanel.add(loginPanel);            
-        </pre>
+LoginPanel loginPanel <span style='color:#308080; '>=</span> <span style='color:#200080; font-weight:bold; '>new</span> LoginPanel<span style='color:#308080; '>(</span>loginListener<span style='color:#308080; '>)</span><span style='color:#406080; '>;</span>
+
+rootPanel<span style='color:#308080; '>.</span>add<span style='color:#308080; '>(</span>loginPanel<span style='color:#308080; '>)</span><span style='color:#406080; '>;</span>
+</pre>
     </code>
 </blockquote>
 
