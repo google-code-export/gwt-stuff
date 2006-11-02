@@ -10,6 +10,11 @@
         <property name="gwt.basedir" value="C:/gwt-windows-1.1.10/" description="The base directory where you installed GWT."/>
         <property name="gwt.compiler.style" value="OBF" description="GWTCompiler -style option value, defaults to OBF"/>
 
+
+        <condition property="gwt.jvmarg" value="-XstartOnFirstThread" else="-Xmixed">
+            <os family="mac"/>
+        </condition>
+
         <path id="project.class.path">
             <pathelement path="${java.class.path}/"/>
             <fileset dir="${gwt.basedir}">
@@ -22,6 +27,44 @@
                 <include name="gwt-dev-*.jar"/>
             </fileset>
         </path>
+
+        <macrodef name="gwtshell">
+            <attribute name="module"/>
+            <attribute name="page"/>
+            <sequential>
+                <java classname="com.google.gwt.dev.GWTShell" failonerror="true" fork="true">
+                    <jvmarg value="${gwt.jvmarg}"/>
+                    <arg value="-style"/>
+                    <arg value="${gwt.compiler.style}"/>
+                    <arg value="-out"/>
+                    <arg value="${basedir}/www"/>
+                    <arg value="@{module}/@{page}"/>
+                    <classpath path="src"/>
+                    <classpath path="bin"/>
+                    <classpath refid="project.class.path"/>
+                    <classpath refid="gwt.class.path"/>
+                </java>
+            </sequential>
+        </macrodef>
+
+        <macrodef name="gwtcompile">
+            <attribute name="module"/>
+            <sequential>
+                <java classname="com.google.gwt.dev.GWTCompiler" failonerror="true" fork="true">
+                    <arg value="-style"/>
+                    <arg value="${gwt.compiler.style}"/>
+                    <arg value="-out"/>
+                    <arg value="${basedir}/www"/>
+                    <arg value="@{module}"/>
+                    <classpath path="src"/>
+                    <classpath path="bin"/>
+                    <classpath refid="project.class.path"/>
+                    <classpath refid="gwt.class.path"/>
+                </java>
+            </sequential>
+        </macrodef>
+
+
     </target>
 
     <target name="compile-java" depends="init" description="Compile java source to bin">
@@ -33,47 +76,32 @@
 
     <target name="gwtcompile-TestLoginPanel" depends="init">
         <mkdir dir="www"/>
-        <java classname="com.google.gwt.dev.GWTCompiler" failonerror="true" fork="true">
-            <arg value="-style"/>
-            <arg value="${gwt.compiler.style}"/>
-            <arg value="-out"/>
-            <arg value="${basedir}/www"/>
-            <arg value="org.mcarthur.sandy.gwt.login.TestLoginPanel"/>
-            <classpath path="src"/>
-            <classpath path="bin"/>
-            <classpath refid="project.class.path"/>
-            <classpath refid="gwt.class.path"/>
-        </java>
+        <gwtcompile module="org.mcarthur.sandy.gwt.login.TestLoginPanel"/>
+    </target>
+
+    <target name="gwtshell-TestLoginPanel" depends="init">
+        <mkdir dir="www"/>
+        <gwtshell module="org.mcarthur.sandy.gwt.login.TestLoginPanel" page="TestLoginPanel.html"/>
     </target>
 
     <target name="gwtcompile-TestEventList" depends="init">
         <mkdir dir="www"/>
-        <java classname="com.google.gwt.dev.GWTCompiler" failonerror="true" fork="true">
-            <arg value="-style"/>
-            <arg value="${gwt.compiler.style}"/>
-            <arg value="-out"/>
-            <arg value="${basedir}/www"/>
-            <arg value="org.mcarthur.sandy.gwt.event.list.TestEventList"/>
-            <classpath path="src"/>
-            <classpath path="bin"/>
-            <classpath refid="project.class.path"/>
-            <classpath refid="gwt.class.path"/>
-        </java>
+        <gwtcompile module="org.mcarthur.sandy.gwt.event.list.TestEventList"/>
+    </target>
+
+    <target name="gwtshell-TestEventList" depends="init">
+        <mkdir dir="www"/>
+        <gwtshell module="org.mcarthur.sandy.gwt.event.list.TestEventList" page="TestEventList.html"/>
     </target>
 
     <target name="gwtcompile-TestTable" depends="init">
         <mkdir dir="www"/>
-        <java classname="com.google.gwt.dev.GWTCompiler" failonerror="true" fork="true">
-            <arg value="-style"/>
-            <arg value="${gwt.compiler.style}"/>
-            <arg value="-out"/>
-            <arg value="${basedir}/www"/>
-            <arg value="org.mcarthur.sandy.gwt.table.Table"/>
-            <classpath path="src"/>
-            <classpath path="bin"/>
-            <classpath refid="project.class.path"/>
-            <classpath refid="gwt.class.path"/>
-        </java>
+        <gwtcompile module="org.mcarthur.sandy.gwt.table.Table"/>
+    </target>
+
+    <target name="gwtshell-TestTable" depends="init">
+        <mkdir dir="www"/>
+        <gwtshell module="org.mcarthur.sandy.gwt.table.Table" page="Table.html"/>
     </target>
 
     <target name="package" depends="compile-java" description="Package up the whole project as a jar">
@@ -175,6 +203,8 @@
             <fileset dir="." includes="GWT-Stuff-*.txt"/>
         </delete>
         <delete dir="doc/javadoc"/>
+        <delete dir=".gwt-cache"/>
+        <delete dir="tomcat"/>
     </target>
 
     <target name="all" depends="package,package-login,package-eventlist,package-propertychange"/>
