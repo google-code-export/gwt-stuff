@@ -1,3 +1,19 @@
+/*
+ * Copyright 2006 Sandy McArthur, Jr.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not
+ * use this file except in compliance with the License. You may obtain a copy of
+ * the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations under
+ * the License.
+ */
+
 package org.mcarthur.sandy.gwt.table.client;
 
 import com.google.gwt.user.client.DOM;
@@ -18,22 +34,24 @@ import java.util.Iterator;
  * @see <a href="http://www.w3.org/TR/html4/struct/tables.html#h-11.2.5">HTML Table Row</a>
 */
 abstract class TableRow extends UIObject implements HasWidgets {
-    private final Element tr = DOM.createTR();
-    //private final List cells = new ArrayList();
     private final WidgetCollection cells = new WidgetCollection(this);
 
     public TableRow() {
-        setElement(tr);
+        setElement(DOM.createTR());
         sinkEvents(Event.ONCLICK | Event.ONMOUSEOVER | Event.ONMOUSEOUT);
-        DOM.setStyleAttribute(getElement(), "border", "solid green thin");
-        DOM.setStyleAttribute(getElement(), "padding", "3px");
-        DOM.setStyleAttribute(getElement(), "margin", "3px");
     }
 
     public void add(final TableCell cell) {
         cells.add(cell);
-        //DOM.appendChild(tr, cell.getElement());
-        adopt(cell, tr);
+        adopt(cell, getElement());
+    }
+
+    public void add(final Widget w) {
+        if (w instanceof TableCell) {
+            add((TableCell)w);
+        } else {
+            throw new IllegalArgumentException("Only TableCell widgets allowed.");
+        }
     }
 
     /**
@@ -42,14 +60,9 @@ abstract class TableRow extends UIObject implements HasWidgets {
      */
     protected abstract void adopt(Widget w, Element container);
 
+    public abstract TableDataCell newTableDataCell();
 
-    public void add(Widget w) {
-        if (w instanceof TableCell) {
-            add((TableCell)w);
-        } else {
-            throw new IllegalArgumentException("Only TableCell widgets allowed.");
-        }
-    }
+    public abstract TableHeaderCell newTableHeaderCell();
 
     public void clear() {
         final Iterator iter = cells.iterator();
@@ -63,13 +76,13 @@ abstract class TableRow extends UIObject implements HasWidgets {
         return cells.iterator();
     }
 
-    public boolean remove(Widget w) {
-        return false;  //To change body of implemented methods use File | Settings | File Templates.
+    public boolean remove(final Widget w) {
+        final boolean removed = cells.contains(w);
+        if (removed) {
+            cells.remove(w);
+        }
+        return removed;
     }
-
-    //public List getCells() {
-    //    return cells;
-    //}
 
     public String toString() {
         return "TableRow";
