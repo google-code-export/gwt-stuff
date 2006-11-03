@@ -1,3 +1,19 @@
+/*
+ * Copyright 2006 Sandy McArthur, Jr.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not
+ * use this file except in compliance with the License. You may obtain a copy of
+ * the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations under
+ * the License.
+ */
+
 package org.mcarthur.sandy.gwt.table.client;
 
 import com.google.gwt.user.client.ui.*;
@@ -33,7 +49,11 @@ public class FooTable extends Panel {
     private final EventList objects = EventLists.wrap(new ArrayList());
     private Renderer renderer;
 
-    private final TableBodyGroup tb = new TableBodyGroup();
+    private final TableBodyGroup tb = new TableBodyGroup() {
+        public TableRow newTableRow() {
+            return null;  //To change body of implemented methods use File | Settings | File Templates.
+        }
+    };
     private final TableRow tr = new MyTableRow();
     private final TableCell tc1 = new TableDataCell();
     private final TableCell tc2 = new TableHeaderCell();
@@ -107,9 +127,21 @@ public class FooTable extends Panel {
             // TODO Handle events
         }
 
+        public TableRow newTableRow() {
+            return null;  //To change body of implemented methods use File | Settings | File Templates.
+        }
+
         private class HeaderTableRow extends TableRow {
             protected void adopt(final Widget w, final Element container) {
                 FooTable.this.adopt(w, container);
+            }
+
+            public TableDataCell newTableDataCell() {
+                return null;  //To change body of implemented methods use File | Settings | File Templates.
+            }
+
+            public TableHeaderCell newTableHeaderCell() {
+                return null;  //To change body of implemented methods use File | Settings | File Templates.
             }
         }
 
@@ -251,6 +283,14 @@ public class FooTable extends Panel {
     private class MyTableRow extends TableRow {
         protected void adopt(final Widget w, final Element container) {
             FooTable.this.adopt(w, container);
+        }
+
+        public TableDataCell newTableDataCell() {
+            return null;  //To change body of implemented methods use File | Settings | File Templates.
+        }
+
+        public TableHeaderCell newTableHeaderCell() {
+            return null;  //To change body of implemented methods use File | Settings | File Templates.
         }
     }
 }
