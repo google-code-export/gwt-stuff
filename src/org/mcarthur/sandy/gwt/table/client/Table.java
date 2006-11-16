@@ -144,6 +144,14 @@ public class Table implements EntryPoint {
             rowGroup.addMouseListener(rgml);
         }
 
+        public TableHeaderGroup renderHeader(final TableHeaderGroup headerGroup) {
+            return null;
+        }
+
+        public TableFooterGroup renderFooter(final TableFooterGroup footerGroup) {
+            return null;
+        }
+
         private static RowGroupMouseListener rgml = new RowGroupMouseListener();
 
         private static class RowGroupMouseListener implements TableRowGroup.MouseListener {
