@@ -71,6 +71,10 @@ public class ObjectTable extends Panel implements SourcesMouseEvents {
 
     public interface TableModel {
         public void render(Object obj, TableRowGroup rowGroup);
+
+        public TableHeaderGroup renderHeader(TableHeaderGroup headerGroup);
+
+        public TableFooterGroup renderFooter(TableFooterGroup footerGroup);
     }
 
     /**
