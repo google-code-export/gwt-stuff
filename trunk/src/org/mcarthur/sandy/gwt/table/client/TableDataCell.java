@@ -17,19 +17,14 @@
 package org.mcarthur.sandy.gwt.table.client;
 
 import com.google.gwt.user.client.DOM;
-import com.google.gwt.user.client.ui.Label;
 
 /**
  * TODO: Write Class JavaDoc
-*
-* @author Sandy McArthur
-*/
+ *
+ * @author Sandy McArthur
+ */
 class TableDataCell extends TableCell {
-    private static int i = 0;
     public TableDataCell() {
         super(DOM.createTD());
-    }
-    public String toString() {
-        return "TableDataCell";
     }
 }

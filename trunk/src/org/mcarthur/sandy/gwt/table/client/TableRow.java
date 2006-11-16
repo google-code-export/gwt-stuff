@@ -19,26 +19,31 @@ package org.mcarthur.sandy.gwt.table.client;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.Event;
+import com.google.gwt.user.client.EventListener;
+import com.google.gwt.user.client.ui.HasHorizontalAlignment;
+import com.google.gwt.user.client.ui.HasVerticalAlignment;
 import com.google.gwt.user.client.ui.HasWidgets;
 import com.google.gwt.user.client.ui.Panel;
 import com.google.gwt.user.client.ui.UIObject;
 import com.google.gwt.user.client.ui.Widget;
 import com.google.gwt.user.client.ui.WidgetCollection;
 
+import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 
 /**
  * Base class for an HTML Table Row.
  *
  * @author Sandy McArthur
  * @see <a href="http://www.w3.org/TR/html4/struct/tables.html#h-11.2.5">HTML Table Row</a>
-*/
-abstract class TableRow extends UIObject implements HasWidgets {
+ */
+abstract class TableRow extends UIObject implements HasWidgets, EventListener {
     private final WidgetCollection cells = new WidgetCollection(this);
+    private List mouseListeners = null;
 
     public TableRow() {
         setElement(DOM.createTR());
-        sinkEvents(Event.ONCLICK | Event.ONMOUSEOVER | Event.ONMOUSEOUT);
     }
 
     public void add(final TableCell cell) {
@@ -55,8 +60,9 @@ abstract class TableRow extends UIObject implements HasWidgets {
     }
 
     /**
-     * Delegate this to {@link Panel#adopt(Widget, Element)}.
-     * @see com.google.gwt.user.client.ui.Panel#adopt(Widget, Element)
+     * Delegate this to {@link Panel#adopt(Widget,Element)}.
+     *
+     * @see com.google.gwt.user.client.ui.Panel#adopt(Widget,Element)
      */
     protected abstract void adopt(Widget w, Element container);
 
@@ -84,7 +90,92 @@ abstract class TableRow extends UIObject implements HasWidgets {
         return removed;
     }
 
-    public String toString() {
-        return "TableRow";
+    public void setAlignment(final HasHorizontalAlignment.HorizontalAlignmentConstant hAlign, final HasVerticalAlignment.VerticalAlignmentConstant vAlign) {
+        setHorizontalAlignment(hAlign);
+        setVerticalAlignment(vAlign);
+    }
+
+    public void setHorizontalAlignment(final HasHorizontalAlignment.HorizontalAlignmentConstant align) {
+        DOM.setAttribute(getElement(), "align", align.getTextAlignString());
+    }
+
+    public void setVerticalAlignment(final HasVerticalAlignment.VerticalAlignmentConstant align) {
+        DOM.setStyleAttribute(getElement(), "verticalAlign", align.getVerticalAlignString());
+    }
+
+    public final void onBrowserEvent(final Event event) {
+        if (mouseListeners != null) {
+            final Iterator mlIter = mouseListeners.iterator();
+            while (mlIter.hasNext()) {
+                final MouseListener listener = (MouseListener)mlIter.next();
+                final int eventType = DOM.eventGetType(event);
+                switch (eventType) {
+                    case Event.ONMOUSEDOWN: {
+                        listener.onMouseDown(this, event);
+                        break;
+                    }
+
+                    case Event.ONMOUSEUP: {
+                        listener.onMouseUp(this, event);
+                        break;
+                    }
+
+                    case Event.ONMOUSEMOVE: {
+                        listener.onMouseMove(this, event);
+                        break;
+                    }
+
+                    case Event.ONMOUSEOVER: {
+                        listener.onMouseOver(this, event);
+                        break;
+                    }
+
+                    case Event.ONMOUSEOUT: {
+                        listener.onMouseOut(this, event);
+                        break;
+                    }
+
+                    case Event.ONCLICK: {
+                        listener.onClick(this, event);
+                        break;
+                    }
+
+                    case Event.ONDBLCLICK: {
+                        listener.onDblClick(this, event);
+                        break;
+                    }
+                }
+            }
+        }
+    }
+
+    public void addMouseListener(final MouseListener listener) {
+        if (mouseListeners == null) {
+            sinkEvents(Event.MOUSEEVENTS | Event.ONCLICK | Event.ONDBLCLICK);
+            mouseListeners = new ArrayList();
+        }
+        mouseListeners.add(listener);
+    }
+
+    public void removeMouseListener(final MouseListener listener) {
+        if (mouseListeners != null) {
+            mouseListeners.remove(listener);
+        }
+    }
+
+    public interface MouseListener extends java.util.EventListener {
+        public void onMouseDown(TableRow row, Event event);
+
+        public void onMouseMove(TableRow row, Event event);
+
+        public void onMouseOver(TableRow row, Event event);
+
+        public void onMouseOut(TableRow row, Event event);
+
+        public void onMouseUp(TableRow row, Event event);
+
+        public void onClick(TableRow row, Event event);
+
+        public void onDblClick(TableRow row, Event event);
     }
 }

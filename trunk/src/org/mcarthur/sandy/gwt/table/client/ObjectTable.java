@@ -16,27 +16,30 @@
 
 package org.mcarthur.sandy.gwt.table.client;
 
-import com.google.gwt.user.client.ui.WidgetCollection;
-import com.google.gwt.user.client.ui.Panel;
-import com.google.gwt.user.client.ui.Widget;
-import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.DOM;
-
-import java.util.Iterator;
-import java.util.List;
-import java.util.ArrayList;
-
+import com.google.gwt.user.client.Element;
+import com.google.gwt.user.client.Event;
+import com.google.gwt.user.client.ui.MouseListener;
+import com.google.gwt.user.client.ui.MouseListenerCollection;
+import com.google.gwt.user.client.ui.Panel;
+import com.google.gwt.user.client.ui.SourcesMouseEvents;
+import com.google.gwt.user.client.ui.Widget;
+import com.google.gwt.user.client.ui.WidgetCollection;
 import org.mcarthur.sandy.gwt.event.list.client.EventList;
 import org.mcarthur.sandy.gwt.event.list.client.EventLists;
-import org.mcarthur.sandy.gwt.event.list.client.ListEventListener;
 import org.mcarthur.sandy.gwt.event.list.client.ListEvent;
+import org.mcarthur.sandy.gwt.event.list.client.ListEventListener;
+
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 
 /**
  * TODO: Write JavaDoc
  *
  * @author Sandy McArthur
  */
-public class ObjectTable extends Panel {
+public class ObjectTable extends Panel implements SourcesMouseEvents {
 
     private TableHeaderGroup thead;
     private TableFooterGroup tfoot;
@@ -44,15 +47,17 @@ public class ObjectTable extends Panel {
 
     private final WidgetCollection widgets = new WidgetCollection(this);
 
-    private final ObjectTableModel model;
+    private final TableModel model;
     private final EventList objects;
     private final ListEventListener objectsListener = new ObjectListEventListener();
 
-    public ObjectTable(final ObjectTableModel model) {
+    private MouseListenerCollection mouseListeners = null;
+
+    public ObjectTable(final TableModel model) {
         this(model, EventLists.wrap(new ArrayList()));
     }
 
-    public ObjectTable(final ObjectTableModel model, final EventList objects) {
+    public ObjectTable(final TableModel model, final EventList objects) {
         this.model = model;
         this.objects = objects;
         setElement(DOM.createTable());
@@ -60,15 +65,13 @@ public class ObjectTable extends Panel {
         objects.addListEventListener(objectsListener);
     }
 
-
     public EventList getObjects() {
         return objects;
     }
 
-    public interface ObjectTableModel {
+    public interface TableModel {
         public void render(Object obj, TableRowGroup rowGroup);
     }
-
 
     /**
      * Gets an iterator for the contained widgets. This iterator is required to
@@ -92,30 +95,67 @@ public class ObjectTable extends Panel {
         return removed;
     }
 
-    private void add(ObjectTableRowGroup rowGroup, int beforeIndex) {
+    private void add(final ObjectTableRowGroup rowGroup, int beforeIndex) {
+        if (beforeIndex < tbodies.size()) {
+            final ObjectTableRowGroup o = (ObjectTableRowGroup)tbodies.get(beforeIndex);
+            if (o != null) {
+                beforeIndex = DOM.getChildIndex(getElement(), o.getElement());
+            }
+        }
         tbodies.add(beforeIndex, rowGroup);
         DOM.insertChild(getElement(), rowGroup.getElement(), beforeIndex);
     }
 
+    private void remove(final ObjectTableRowGroup rowGroup) {
+        DOM.removeChild(getElement(), rowGroup.getElement());
+        tbodies.remove(rowGroup);
+        final Iterator rit = rowGroup.getRows().iterator();
+        while (rit.hasNext()) {
+            final TableRow tr = (TableRow)rit.next();
+            final Iterator trit = tr.iterator();
+            while (trit.hasNext()) {
+                final TableCell tc = (TableCell)trit.next();
+                disown(tc);
+            }
+        }
+    }
+
     private class ObjectListEventListener implements ListEventListener {
-        public void listChanged(ListEvent listEvent) {
+        public void listChanged(final ListEvent listEvent) {
             if (listEvent.isAdded()) {
-                for (int i=listEvent.getIndexStart(); i < listEvent.getIndexEnd(); i++) {
-                    Object obj = objects.get(i);
-                    ObjectTableRowGroup rowGroup = new ObjectTableRowGroup(obj);
+                for (int i = listEvent.getIndexStart(); i < listEvent.getIndexEnd(); i++) {
+                    final Object obj = objects.get(i);
+                    final ObjectTableRowGroup rowGroup = new ObjectTableRowGroup(obj);
                     model.render(obj, rowGroup);
                     add(rowGroup, i);
                 }
+
             } else if (listEvent.isRemoved()) {
-                for (int i=listEvent.getIndexEnd()-1; i >= listEvent.getIndexStart(); i--) {
-                    ObjectTableRowGroup rowGroup = (ObjectTableRowGroup)tbodies.get(i);
-                    // TODO disown
+                for (int i = listEvent.getIndexEnd() - 1; i >= listEvent.getIndexStart(); i--) {
+                    final ObjectTableRowGroup rowGroup = (ObjectTableRowGroup)tbodies.get(i);
+                    remove(rowGroup);
+
                 }
 
             } else if (listEvent.isChanged()) {
-                // TODO test if different
-                // TODO remove old
-                // TODO insert new
+                for (int i = listEvent.getIndexStart(); i < listEvent.getIndexEnd(); i++) {
+                    final Object obj = objects.get(i);
+                    ObjectTableRowGroup rowGroup = (ObjectTableRowGroup)tbodies.get(i);
+
+                    // test if really different
+                    if (obj != rowGroup.getObject()) {
+                        // XXX: reposition rows instead of just remove/add them
+
+                        // remove old
+                        remove(rowGroup);
+
+                        // insert new
+                        rowGroup = new ObjectTableRowGroup(obj);
+                        model.render(obj, rowGroup);
+                        add(rowGroup, i);
+                    }
+
+                }
             }
         }
     }
@@ -139,6 +179,10 @@ public class ObjectTable extends Panel {
                 throw new IllegalArgumentException("TableRow instance must be acquired from newTableRow()");
             }
         }
+
+        public Object getObject() {
+            return obj;
+        }
     }
 
     private class ObjectTableRow extends TableRow {
@@ -160,5 +204,76 @@ public class ObjectTable extends Panel {
     }
 
     private class ObjectTableHeaderCell extends TableHeaderCell {
+    }
+
+    public final void onBrowserEvent(final Event event) {
+        super.onBrowserEvent(event);
+
+        Element target = DOM.eventGetTarget(event);
+        // this will speed up the isOrHasChild below on large tables
+        while (target != null && !DOM.compare(DOM.getParent(target), getElement())) {
+            target = DOM.getParent(target);
+        }
+
+        final Iterator iter = tbodies.iterator();
+        while (iter.hasNext()) {
+            final ObjectTableRowGroup rowGroup = (ObjectTableRowGroup)iter.next();
+            if (DOM.isOrHasChild(rowGroup.getElement(), target)) {
+                rowGroup.onBrowserEvent(event);
+            }
+        }
+
+        if (mouseListeners != null) {
+            final int eventType = DOM.eventGetType(event);
+            switch (eventType) {
+                case Event.ONMOUSEDOWN: {
+                    if (mouseListeners != null) {
+                        mouseListeners.fireMouseEvent(this, event);
+                    }
+                    break;
+                }
+
+                case Event.ONMOUSEUP: {
+                    if (mouseListeners != null) {
+                        mouseListeners.fireMouseEvent(this, event);
+                    }
+                    break;
+                }
+
+                case Event.ONMOUSEMOVE: {
+                    if (mouseListeners != null) {
+                        mouseListeners.fireMouseEvent(this, event);
+                    }
+                    break;
+                }
+
+                case Event.ONMOUSEOVER: {
+                    if (mouseListeners != null) {
+                        mouseListeners.fireMouseEvent(this, event);
+                    }
+                    break;
+                }
+
+                case Event.ONMOUSEOUT: {
+                    if (mouseListeners != null) {
+                        mouseListeners.fireMouseEvent(this, event);
+                    }
+                    break;
+                }
+            }
+        }
+    }
+
+    public void addMouseListener(final MouseListener listener) {
+        if (mouseListeners == null) {
+            mouseListeners = new MouseListenerCollection();
+        }
+        mouseListeners.add(listener);
+    }
+
+    public void removeMouseListener(final MouseListener listener) {
+        if (mouseListeners != null) {
+            mouseListeners.remove(listener);
+        }
     }
 }

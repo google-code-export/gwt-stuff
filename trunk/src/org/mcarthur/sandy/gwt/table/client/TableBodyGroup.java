@@ -17,7 +17,6 @@
 package org.mcarthur.sandy.gwt.table.client;
 
 import com.google.gwt.user.client.DOM;
-import com.google.gwt.user.client.Event;
 
 /**
  * HTML Table Body Group, tbody.
