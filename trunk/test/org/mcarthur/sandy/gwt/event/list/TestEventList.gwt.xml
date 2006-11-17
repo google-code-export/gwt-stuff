@@ -3,5 +3,5 @@
     <inherits name="com.google.gwt.user.User"/>
     <inherits name="org.mcarthur.sandy.gwt.event.list.EventList"/>
 
-    <entry-point class="org.mcarthur.sandy.gwt.event.list.client.test.TestEventList"/>
+    <entry-point class="org.mcarthur.sandy.gwt.event.list.client.TestEventList"/>
 </module>

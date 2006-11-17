@@ -14,7 +14,7 @@
  * the License.
  */
 
-package org.mcarthur.sandy.gwt.event.list.client.test;
+package org.mcarthur.sandy.gwt.event.list.client;
 
 import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.user.client.ui.Label;
