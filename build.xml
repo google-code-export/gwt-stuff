@@ -16,7 +16,8 @@
         </condition>
 
         <path id="project.class.path">
-            <pathelement path="${java.class.path}/"/>
+            <pathelement path="${gwt.basedir}/src"/>
+            <pathelement path="${gwt.basedir}/test"/>
             <fileset dir="${gwt.basedir}">
                 <include name="gwt-user.jar"/>
             </fileset>
@@ -38,6 +39,8 @@
                     <arg value="${gwt.compiler.style}"/>
                     <arg value="-out"/>
                     <arg value="${basedir}/www"/>
+                    <arg value="-gen"/>
+                    <arg value="${basedir}/gen"/>
                     <arg value="@{module}/@{page}"/>
                     <classpath path="src"/>
                     <classpath path="bin"/>
@@ -55,6 +58,8 @@
                     <arg value="${gwt.compiler.style}"/>
                     <arg value="-out"/>
                     <arg value="${basedir}/www"/>
+                    <arg value="-gen"/>
+                    <arg value="${basedir}/gen"/>
                     <arg value="@{module}"/>
                     <classpath path="src"/>
                     <classpath path="bin"/>
