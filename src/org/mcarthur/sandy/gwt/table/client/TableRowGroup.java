@@ -34,16 +34,22 @@ import java.util.List;
 
 /**
  * Base class for a HTML Row Group.
+ * <p/>
+ * <h3>CSS Style Rules</h3>
+ * <ul class="css">
+ * <li>.gwtstuff-TableRowGroup { }</li>
+ * </ul>
  *
  * @author Sandy McArthur
  * @see <a href="http://www.w3.org/TR/html4/struct/tables.html#h-11.2.3">HTML Row Group</a>
  */
-abstract class TableRowGroup extends UIObject implements EventListener {
+public abstract class TableRowGroup extends UIObject implements EventListener {
     private final EventList rows = EventLists.wrap(new ArrayList());
     private List mouseListeners = null;
 
     protected TableRowGroup(final Element element) {
         setElement(element);
+        addStyleName("gwtstuff-TableRowGroup");
         rows.addListEventListener(new TableRowGroupListEventListener());
     }
 
@@ -53,7 +59,7 @@ abstract class TableRowGroup extends UIObject implements EventListener {
      *
      * @param row the table row to be added.
      */
-    public void add(final TableRow row) {
+    public void add(final TableRow row) throws IllegalArgumentException {
         rows.add(row);
     }
 
@@ -182,6 +188,9 @@ abstract class TableRowGroup extends UIObject implements EventListener {
         }
     }
 
+    /**
+     * Event interface for mouse events on a table row group.
+     */
     public interface MouseListener extends java.util.EventListener {
         public void onMouseDown(TableRowGroup rowGroup, Event event);
 

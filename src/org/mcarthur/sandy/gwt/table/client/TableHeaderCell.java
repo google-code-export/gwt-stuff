@@ -17,15 +17,22 @@
 package org.mcarthur.sandy.gwt.table.client;
 
 import com.google.gwt.user.client.DOM;
-import com.google.gwt.user.client.ui.Label;
 
 /**
- * TODO: Write Class JavaDoc
-*
-* @author Sandy McArthur
-*/
-class TableHeaderCell extends TableCell {
-    public TableHeaderCell() {
+ * Base class for an HTML Table Header Cell, th.
+ * <p/>
+ * <h3>CSS Style Rules</h3>
+ * <ul class="css">
+ * <li>inherited css classes</li>
+ * <li>.gwtstuff-TableHeaderCell { }</li>
+ * </ul>
+ *
+ * @author Sandy McArthur
+ * @see <a href="http://www.w3.org/TR/html4/struct/tables.html#h-11.2.6">HTML Table Cell</a>
+ */
+public class TableHeaderCell extends TableCell {
+    protected TableHeaderCell() {
         super(DOM.createTH());
+        addStyleName("gwtstuff-TableHeaderCell");
     }
 }

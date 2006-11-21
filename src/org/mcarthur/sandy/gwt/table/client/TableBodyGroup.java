@@ -20,6 +20,12 @@ import com.google.gwt.user.client.DOM;
 
 /**
  * HTML Table Body Group, tbody.
+ * <p/>
+ * <h3>CSS Style Rules</h3>
+ * <ul class="css">
+ * <li>inherited css classes</li>
+ * <li>.gwtstuff-TableBodyGroup { }</li>
+ * </ul>
  *
  * @author Sandy McArthur
  * @see <a href="http://www.w3.org/TR/html4/struct/tables.html#h-11.2.3">HTML Row Group</a>
@@ -27,5 +33,6 @@ import com.google.gwt.user.client.DOM;
 abstract class TableBodyGroup extends TableRowGroup {
     public TableBodyGroup() {
         super(DOM.createTBody());
+        addStyleName("gwtstuff-TableBodyGroup");
     }
 }

@@ -20,12 +20,19 @@ import com.google.gwt.user.client.DOM;
 
 /**
  * Table Footer Row Group, tfoot.
+ * <p/>
+ * <h3>CSS Style Rules</h3>
+ * <ul class="css">
+ * <li>inherited css classes</li>
+ * <li>.gwtstuff-TableFooterGroup { }</li>
+ * </ul>
  *
  * @author Sandy McArthur
  * @see <a href="http://www.w3.org/TR/html4/struct/tables.html#h-11.2.3">HTML Row Group</a>
-*/
-abstract class TableFooterGroup extends TableRowGroup {
-    public TableFooterGroup() {
+ */
+public abstract class TableFooterGroup extends TableRowGroup {
+    TableFooterGroup() {
         super(DOM.createElement("tfoot"));
+        addStyleName("gwtstuff-TableFooterGroup");
     }
 }
