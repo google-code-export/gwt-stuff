@@ -34,19 +34,25 @@ import java.util.List;
 
 /**
  * Base class for an HTML Table Row.
+ * <p/>
+ * <h3>CSS Style Rules</h3>
+ * <ul class="css">
+ * <li>.gwtstuff-TableRow { }</li>
+ * </ul>
  *
  * @author Sandy McArthur
  * @see <a href="http://www.w3.org/TR/html4/struct/tables.html#h-11.2.5">HTML Table Row</a>
  */
-abstract class TableRow extends UIObject implements HasWidgets, EventListener {
+public abstract class TableRow extends UIObject implements HasWidgets, EventListener {
     private final WidgetCollection cells = new WidgetCollection(this);
     private List mouseListeners = null;
 
-    public TableRow() {
+    protected TableRow() {
         setElement(DOM.createTR());
+        addStyleName("gwtstuff-TableRow");
     }
 
-    public void add(final TableCell cell) {
+    public void add(final TableCell cell) throws IllegalArgumentException {
         cells.add(cell);
         adopt(cell, getElement());
     }
@@ -163,6 +169,9 @@ abstract class TableRow extends UIObject implements HasWidgets, EventListener {
         }
     }
 
+    /**
+     * Event interface for mouse events on a table row.
+     */
     public interface MouseListener extends java.util.EventListener {
         public void onMouseDown(TableRow row, Event event);
 

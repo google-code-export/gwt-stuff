@@ -35,11 +35,12 @@ import java.util.Iterator;
 import java.util.List;
 
 /**
- * TODO: Write JavaDoc
+ * An event driven table that is backed by an {@link EventList}. Each Object in the list reprsents
+ * one {@link TableRowGroup row group}.
  *
  * @author Sandy McArthur
  */
-public class ObjectTable extends Panel implements SourcesMouseEvents {
+public class ObjectListTable extends Panel implements SourcesMouseEvents {
 
     private TableHeaderGroup thead;
     private TableFooterGroup tfoot;
@@ -47,20 +48,21 @@ public class ObjectTable extends Panel implements SourcesMouseEvents {
 
     private final WidgetCollection widgets = new WidgetCollection(this);
 
-    private final TableModel model;
+    private final Renderer model;
     private final EventList objects;
-    private final ListEventListener objectsListener = new ObjectListEventListener();
+    private final ListEventListener objectsListener = new ListTableListEventListener();
 
     private MouseListenerCollection mouseListeners = null;
 
-    public ObjectTable(final TableModel model) {
+    public ObjectListTable(final Renderer model) {
         this(model, EventLists.wrap(new ArrayList()));
     }
 
-    public ObjectTable(final TableModel model, final EventList objects) {
+    public ObjectListTable(final Renderer model, final EventList objects) {
         this.model = model;
         this.objects = objects;
         setElement(DOM.createTable());
+        addStyleName("gwtstuff-ObjectListTable");
 
         objects.addListEventListener(objectsListener);
     }
@@ -69,12 +71,34 @@ public class ObjectTable extends Panel implements SourcesMouseEvents {
         return objects;
     }
 
-    public interface TableModel {
-        public void render(Object obj, TableRowGroup rowGroup);
+    /**
+     * Converts objects into table rows.
+     */
+    public interface Renderer {
 
-        public TableHeaderGroup renderHeader(TableHeaderGroup headerGroup);
+        /**
+         * Create the table rows and cells for an object.
+         *
+         * @param obj      the object these rows as based on.
+         * @param rowGroup the row group to be assoiciated with <code>obj</code>.
+         */
+        public void render(Object obj, TableBodyGroup rowGroup);
 
-        public TableFooterGroup renderFooter(TableFooterGroup footerGroup);
+        /**
+         * Create the table rows and cells for the table's header.
+         * If you do not want to have a table header then simply do nothing to <code>headerGroup</code>.
+         *
+         * @param headerGroup the table header row group.
+         */
+        public void renderHeader(TableHeaderGroup headerGroup);
+
+        /**
+         * Create the table rows and cells for the table's footer.
+         * If you do not want to have a table footer then simply do nothing to the <code>footerGroup</code>.
+         *
+         * @param footerGroup the table footer row group.
+         */
+        public void renderFooter(TableFooterGroup footerGroup);
     }
 
     /**
@@ -99,18 +123,35 @@ public class ObjectTable extends Panel implements SourcesMouseEvents {
         return removed;
     }
 
-    private void add(final ObjectTableRowGroup rowGroup, int beforeIndex) {
+    private void add(final ObjectListTableRowGroup rowGroup, final int beforeIndex) {
+        // While it shouldn't be important to keep the tfoot element after the tbody elements
+        // it seems Opera needs this for generated DOM elements.
+        int domIndex = beforeIndex;
         if (beforeIndex < tbodies.size()) {
-            final ObjectTableRowGroup o = (ObjectTableRowGroup)tbodies.get(beforeIndex);
+            final ObjectListTableRowGroup o = (ObjectListTableRowGroup)tbodies.get(beforeIndex);
             if (o != null) {
-                beforeIndex = DOM.getChildIndex(getElement(), o.getElement());
+                domIndex = DOM.getChildIndex(getElement(), o.getElement());
             }
+        } else if (tfoot != null) {
+            domIndex = DOM.getChildIndex(getElement(), tfoot.getElement());
+        } else {
+            domIndex = DOM.getChildCount(getElement());
         }
         tbodies.add(beforeIndex, rowGroup);
-        DOM.insertChild(getElement(), rowGroup.getElement(), beforeIndex);
+        DOM.insertChild(getElement(), rowGroup.getElement(), domIndex);
     }
 
-    private void remove(final ObjectTableRowGroup rowGroup) {
+    private void attach(final TableHeaderGroup headerGroup) {
+        thead = headerGroup;
+        DOM.insertChild(getElement(), headerGroup.getElement(), 0);
+    }
+
+    private void attach(final TableFooterGroup footerGroup) {
+        tfoot = footerGroup;
+        DOM.insertChild(getElement(), footerGroup.getElement(), Integer.MAX_VALUE);
+    }
+
+    private void remove(final ObjectListTableRowGroup rowGroup) {
         DOM.removeChild(getElement(), rowGroup.getElement());
         tbodies.remove(rowGroup);
         final Iterator rit = rowGroup.getRows().iterator();
@@ -124,19 +165,19 @@ public class ObjectTable extends Panel implements SourcesMouseEvents {
         }
     }
 
-    private class ObjectListEventListener implements ListEventListener {
+    private class ListTableListEventListener implements ListEventListener {
         public void listChanged(final ListEvent listEvent) {
             if (listEvent.isAdded()) {
                 for (int i = listEvent.getIndexStart(); i < listEvent.getIndexEnd(); i++) {
                     final Object obj = objects.get(i);
-                    final ObjectTableRowGroup rowGroup = new ObjectTableRowGroup(obj);
+                    final ObjectListTableRowGroup rowGroup = new ObjectListTableRowGroup(obj);
                     model.render(obj, rowGroup);
                     add(rowGroup, i);
                 }
 
             } else if (listEvent.isRemoved()) {
                 for (int i = listEvent.getIndexEnd() - 1; i >= listEvent.getIndexStart(); i--) {
-                    final ObjectTableRowGroup rowGroup = (ObjectTableRowGroup)tbodies.get(i);
+                    final ObjectListTableRowGroup rowGroup = (ObjectListTableRowGroup)tbodies.get(i);
                     remove(rowGroup);
 
                 }
@@ -144,7 +185,7 @@ public class ObjectTable extends Panel implements SourcesMouseEvents {
             } else if (listEvent.isChanged()) {
                 for (int i = listEvent.getIndexStart(); i < listEvent.getIndexEnd(); i++) {
                     final Object obj = objects.get(i);
-                    ObjectTableRowGroup rowGroup = (ObjectTableRowGroup)tbodies.get(i);
+                    ObjectListTableRowGroup rowGroup = (ObjectListTableRowGroup)tbodies.get(i);
 
                     // test if really different
                     if (obj != rowGroup.getObject()) {
@@ -154,7 +195,7 @@ public class ObjectTable extends Panel implements SourcesMouseEvents {
                         remove(rowGroup);
 
                         // insert new
-                        rowGroup = new ObjectTableRowGroup(obj);
+                        rowGroup = new ObjectListTableRowGroup(obj);
                         model.render(obj, rowGroup);
                         add(rowGroup, i);
                     }
@@ -164,20 +205,20 @@ public class ObjectTable extends Panel implements SourcesMouseEvents {
         }
     }
 
-    private class ObjectTableRowGroup extends TableBodyGroup {
+    private class ObjectListTableRowGroup extends TableBodyGroup {
         private final Object obj;
 
-        public ObjectTableRowGroup(final Object obj) {
+        ObjectListTableRowGroup(final Object obj) {
             this.obj = obj;
+            addStyleName("gwtstuff-ObjectListTable-ObjectListTableRowGroup");
         }
 
         public TableRow newTableRow() {
-            return new ObjectTableRow();
+            return new ObjectListTableRow();
         }
 
-
         public void add(final TableRow row) {
-            if (row instanceof ObjectTableRow) {
+            if (row instanceof ObjectListTableRow) {
                 super.add(row);
             } else {
                 throw new IllegalArgumentException("TableRow instance must be acquired from newTableRow()");
@@ -189,28 +230,98 @@ public class ObjectTable extends Panel implements SourcesMouseEvents {
         }
     }
 
-    private class ObjectTableRow extends TableRow {
+    private class ObjectListTableHeaderGroup extends TableHeaderGroup {
+        ObjectListTableHeaderGroup() {
+            addStyleName("gwtstuff-ObjectListTable-ObjectListTableHeaderGroup");
+        }
+
+        public TableRow newTableRow() {
+            return new ObjectListTableRow();
+        }
+
+        public void add(final TableRow row) {
+            if (row instanceof ObjectListTableRow) {
+                super.add(row);
+            } else {
+                throw new IllegalArgumentException("TableRow instance must be acquired from newTableRow()");
+            }
+        }
+    }
+
+    private class ObjectListTableFooterGroup extends TableFooterGroup {
+        ObjectListTableFooterGroup() {
+            addStyleName("gwtstuff-ObjectListTable-ObjectListTableFooterGroup");
+        }
+
+        public TableRow newTableRow() {
+            return new ObjectListTableRow();
+        }
+
+        public void add(final TableRow row) {
+            if (row instanceof ObjectListTableRow) {
+                super.add(row);
+            } else {
+                throw new IllegalArgumentException("TableRow instance must be acquired from newTableRow()");
+            }
+        }
+    }
+
+    private class ObjectListTableRow extends TableRow {
+
+        public ObjectListTableRow() {
+            addStyleName("gwtstuff-ObjectListTable-ObjectListTableRow");
+        }
+
+        public void add(final TableCell cell) {
+            if (cell instanceof ObjectListTableDataCell || cell instanceof ObjectListTableHeaderCell) {
+                super.add(cell);
+            } else {
+                throw new IllegalArgumentException("TableCell must be provided by newTableDataCell() or newTableHeaderCell()");
+            }
+        }
 
         protected void adopt(final Widget w, final Element container) {
-            ObjectTable.this.adopt(w, container);
+            ObjectListTable.this.adopt(w, container);
         }
 
         public TableDataCell newTableDataCell() {
-            return new ObjectTableDataCell();
+            return new ObjectListTableDataCell();
         }
 
         public TableHeaderCell newTableHeaderCell() {
-            return new ObjectTableHeaderCell();
+            return new ObjectListTableHeaderCell();
         }
     }
 
-    private class ObjectTableDataCell extends TableDataCell {
+    private class ObjectListTableDataCell extends TableDataCell {
+        public ObjectListTableDataCell() {
+            addStyleName("gwtstuff-ObjectListTable-ObjectListTableDataCell");
+        }
     }
 
-    private class ObjectTableHeaderCell extends TableHeaderCell {
+    private class ObjectListTableHeaderCell extends TableHeaderCell {
+        public ObjectListTableHeaderCell() {
+            addStyleName("gwtstuff-ObjectListTable-ObjectListTableHeaderCell");
+
+        }
     }
 
-    public final void onBrowserEvent(final Event event) {
+
+    protected void onAttach() {
+        super.onAttach();
+        if (thead == null) {
+            final ObjectListTableHeaderGroup headerGroup = new ObjectListTableHeaderGroup();
+            model.renderHeader(headerGroup);
+            attach(headerGroup);
+        }
+        if (tfoot == null) {
+            final ObjectListTableFooterGroup footerGroup = new ObjectListTableFooterGroup();
+            model.renderFooter(footerGroup);
+            attach(footerGroup);
+        }
+    }
+
+    public void onBrowserEvent(final Event event) {
         super.onBrowserEvent(event);
 
         Element target = DOM.eventGetTarget(event);
@@ -221,7 +332,7 @@ public class ObjectTable extends Panel implements SourcesMouseEvents {
 
         final Iterator iter = tbodies.iterator();
         while (iter.hasNext()) {
-            final ObjectTableRowGroup rowGroup = (ObjectTableRowGroup)iter.next();
+            final ObjectListTableRowGroup rowGroup = (ObjectListTableRowGroup)iter.next();
             if (DOM.isOrHasChild(rowGroup.getElement(), target)) {
                 rowGroup.onBrowserEvent(event);
             }

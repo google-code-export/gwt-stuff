@@ -17,7 +17,6 @@
 package org.mcarthur.sandy.gwt.table.client;
 
 import com.google.gwt.core.client.EntryPoint;
-import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.Window;
@@ -44,7 +43,7 @@ import java.util.List;
 public class Table implements EntryPoint {
     private static VerticalPanel vp = new VerticalPanel();
 
-    private static ObjectTable ot = new ObjectTable(new OTM());
+    private static ObjectListTable ot = new ObjectListTable(new OTM());
     private static int pCount = 0;
 
     public void onModuleLoad() {
@@ -84,7 +83,10 @@ public class Table implements EntryPoint {
         transpose.addClickListener(new ClickListener() {
             public void onClick(final Widget sender) {
                 final int a = (int)(Math.random() * objects.size());
-                final int b = (int)(Math.random() * objects.size());
+                int b;
+                do {
+                    b = (int)(Math.random() * objects.size());
+                } while (a == b);
                 final Object oa = objects.get(a);
                 final Object ob = objects.get(b);
 
@@ -98,9 +100,9 @@ public class Table implements EntryPoint {
 
     }
 
-    private static class OTM implements ObjectTable.TableModel {
+    private static class OTM implements ObjectListTable.Renderer {
 
-        public void render(final Object obj, final TableRowGroup rowGroup) {
+        public void render(final Object obj, final TableBodyGroup rowGroup) {
             final Person person = (Person)obj;
 
             final TableRow tr = rowGroup.newTableRow();
@@ -136,7 +138,6 @@ public class Table implements EntryPoint {
             tc2.setColSpan(3);
 
             tc2.setAxisSingle("summary");
-            GWT.log(tc2.getAxis().toString(), null);
             tr2.add(tc2);
             tr2.addMouseListener(rml);
             rowGroup.add(tr2);
@@ -144,12 +145,51 @@ public class Table implements EntryPoint {
             rowGroup.addMouseListener(rgml);
         }
 
-        public TableHeaderGroup renderHeader(final TableHeaderGroup headerGroup) {
-            return null;
+        public void renderHeader(final TableHeaderGroup headerGroup) {
+            render(headerGroup);
         }
 
-        public TableFooterGroup renderFooter(final TableFooterGroup footerGroup) {
-            return null;
+        public void renderFooter(final TableFooterGroup footerGroup) {
+            render(footerGroup);
+        }
+
+        private void render(final TableRowGroup rowGroup) {
+            TableRow tr = rowGroup.newTableRow();
+
+            TableHeaderCell th = tr.newTableHeaderCell();
+            final MenuBar menu = new MenuBar();
+
+            final MenuBar subMenu = new MenuBar(true);
+            final MenuItem sortUp = new MenuItem("Sort Up", (Command)null);
+            final MenuItem sortDown = new MenuItem("Sort Down", (Command)null);
+            final MenuItem hide = new MenuItem("Hide Column", (Command)null);
+            subMenu.addItem(sortUp);
+            subMenu.addItem(sortDown);
+            subMenu.addItem(hide);
+
+            final MenuItem name = new MenuItem("Name", subMenu);
+            menu.addItem(name);
+            th.add(menu);
+            tr.add(th);
+
+            th = tr.newTableHeaderCell();
+            th.add(new Label("Age"));
+            tr.add(th);
+
+            th = tr.newTableHeaderCell();
+            th.add(new Label("Remove"));
+            tr.add(th);
+
+            rowGroup.add(tr);
+
+            tr = rowGroup.newTableRow();
+
+            th = tr.newTableHeaderCell();
+            th.setColSpan(3);
+            th.add(new Label("Something"));
+            tr.add(th);
+
+            rowGroup.add(tr);
         }
 
         private static RowGroupMouseListener rgml = new RowGroupMouseListener();

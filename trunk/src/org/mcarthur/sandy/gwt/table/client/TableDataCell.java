@@ -19,12 +19,20 @@ package org.mcarthur.sandy.gwt.table.client;
 import com.google.gwt.user.client.DOM;
 
 /**
- * TODO: Write Class JavaDoc
+ * Base class for an HTML Table Data Cell, th.
+ * <p/>
+ * <h3>CSS Style Rules</h3>
+ * <ul class="css">
+ * <li>inherited css classes</li>
+ * <li>.gwtstuff-TableDataCell { }</li>
+ * </ul>
  *
  * @author Sandy McArthur
+ * @see <a href="http://www.w3.org/TR/html4/struct/tables.html#h-11.2.6">HTML Table Cell</a>
  */
-class TableDataCell extends TableCell {
-    public TableDataCell() {
+public class TableDataCell extends TableCell {
+    protected TableDataCell() {
         super(DOM.createTD());
+        addStyleName("gwtstuff-TableDataCell");
     }
 }
