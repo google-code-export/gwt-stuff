@@ -18,6 +18,9 @@ package org.mcarthur.sandy.gwt.table.client;
 
 import com.google.gwt.user.client.DOM;
 
+import java.util.List;
+import java.util.Arrays;
+
 /**
  * Base class for an HTML Table Data Cell, th.
  * <p/>
@@ -34,5 +37,38 @@ public class TableDataCell extends TableCell {
     protected TableDataCell() {
         super(DOM.createTD());
         addStyleName("gwtstuff-TableDataCell");
+    }
+
+    /**
+     * Get the list of header cells id's that provide header information for the current data cell.
+     *
+     * @return the table cell's header cells id's as a List of Strings.
+     * @see <a href="http://www.w3.org/TR/html4/struct/tables.html#adef-headers">HTML Table Data Cell Headers</a>
+     */
+    public List getHeaders() {
+        final String axis = DOM.getAttribute(getElement(), "headers");
+        return Arrays.asList(axis.split(" "));
+    }
+
+    /**
+     * Set the list of header cells id's that provide header information for the current data cell.
+     *
+     * @param headers the table cell's header cells id's as a List of Strings, null to clear the headers list.
+     * @see <a href="http://www.w3.org/TR/html4/struct/tables.html#adef-headers">HTML Table Data Cell Headers</a>
+     */
+    public void setHeaders(final List headers) {
+        DOM.setAttribute(getElement(), "headers", join(headers, " "));
+    }
+
+    /**
+     * Set the header cell that provides header information for the current data cell.
+     *
+     * @param header the header cell's id, null to clear the headers attribute.
+     * @see #setHeaders(java.util.List)
+     * @see #getHeaders()
+     * @see <a href="http://www.w3.org/TR/html4/struct/tables.html#adef-headers">HTML Table Data Cell Headers</a>
+     */
+    public void setHeader(final String header) {
+        DOM.setAttribute(getElement(), "headers", header != null ? header : "");
     }
 }

@@ -94,6 +94,7 @@ public abstract class TableRowGroup extends UIObject implements EventListener {
             final TableRow row = (TableRow)iter.next();
             if (DOM.isOrHasChild(row.getElement(), target)) {
                 row.onBrowserEvent(event);
+                break;
             }
         }
 

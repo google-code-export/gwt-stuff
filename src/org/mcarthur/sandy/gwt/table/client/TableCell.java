@@ -69,7 +69,7 @@ public abstract class TableCell extends SimplePanel {
      * @return the table cell's axes as a List of Strings.
      * @see <a href="http://www.w3.org/TR/html4/struct/tables.html#adef-axis">HTML Table Cell Axis</a>
      */
-    public List getAxis() {
+    public List getAxes() {
         final String axis = DOM.getAttribute(getElement(), "axis");
         return Arrays.asList(axis.split(","));
     }
@@ -77,67 +77,120 @@ public abstract class TableCell extends SimplePanel {
     /**
      * Sets the table cell's axes as a List of Strings.
      *
-     * @param axis the table cell's axes as a List of Strings, null to clear the axis.
+     * @param axes the table cell's axes as a List of Strings, null to clear the axes.
      * @see <a href="http://www.w3.org/TR/html4/struct/tables.html#adef-axis">HTML Table Cell Axis</a>
      */
-    public void setAxis(final List axis) {
-        if (axis != null && axis.size() > 0) {
-            final Iterator iter = axis.iterator();
-            String ax = null;
-            while (iter.hasNext()) {
-                final String a = (String)iter.next();
-                if (ax == null) {
-                    ax = a;
-                } else {
-                    ax += "," + a;
-                }
-            }
-            DOM.setAttribute(getElement(), "axis", ax);
-        } else {
-            DOM.setAttribute(getElement(), "axis", "");
-        }
+    public void setAxes(final List axes) {
+        DOM.setAttribute(getElement(), "axis", join(axes, ","));
     }
 
     /**
      * Sets the table cell's axes to one value.
-     * This has the same effect as calling {@link #setAxis(java.util.List)} with one String in the List.
+     * This has the same effect as calling {@link #setAxes(java.util.List)} with one String in the List.
      *
      * @param axis the table cell's axes, null to clear the axis.
+     * @see #setAxes(java.util.List)
+     * @see #getAxes()
      * @see <a href="http://www.w3.org/TR/html4/struct/tables.html#adef-axis">HTML Table Cell Axis</a>
      */
-    public void setAxisSingle(String axis) {
-        if (axis == null) {
-            axis = "";
-        }
-        DOM.setAttribute(getElement(), "axis", axis);
+    public void setAxis(final String axis) {
+        DOM.setAttribute(getElement(), "axis", axis != null ? axis : "");
     }
 
+    /**
+     * Get the number of columns spanned by the current cell.
+     *
+     * @return the number of columns spanned by the current cell.
+     * @see <a href="http://www.w3.org/TR/html4/struct/tables.html#adef-colspan">HTMl Table Cell ColSpan</a>
+     */
     public int getColSpan() {
         return DOM.getIntAttribute(getElement(), "colSpan");
     }
 
+    /**
+     * Set the number of columns spanned by the current cell.
+     *
+     * @param colSpan the number of columns spanned by the current cell.
+     * @see <a href="http://www.w3.org/TR/html4/struct/tables.html#adef-colspan">HTMl Table Cell ColSpan</a>
+     */
     public void setColSpan(final int colSpan) {
         DOM.setIntAttribute(getElement(), "colSpan", colSpan);
     }
 
+    /**
+     * Get the number of rows spanned by the current cell.
+     *
+     * @return the number of rows spanned by the current cell.
+     * @see <a href="http://www.w3.org/TR/html4/struct/tables.html#adef-rowspan">HTML Table Cell RowSpan</a>
+     */
     public int getRowSpan() {
         return DOM.getIntAttribute(getElement(), "rowSpan");
     }
 
+    /**
+     * Set the number of rows spanned by the current cell.
+     *
+     * @param rowSpan the number of rows spanned by the current cell.
+     * @see <a href="http://www.w3.org/TR/html4/struct/tables.html#adef-rowspan">HTML Table Cell RowSpan</a>
+     */
     public void setRowSpan(final int rowSpan) {
         DOM.setIntAttribute(getElement(), "rowSpan", rowSpan);
     }
 
+    /**
+     * Set the horizontal and vertical position of data within a cell.
+     *
+     * @param hAlign the horizontal position of data within a cell.
+     * @param vAlign the vertical position of data within a cell.
+     * @see <a href="http://www.w3.org/TR/html4/struct/tables.html#adef-align-TD">HTML Table Cell Align</a>
+     * @see <a href="http://www.w3.org/TR/html4/struct/tables.html#adef-valign">HTML Table Cell Valign</a>
+     */
     public void setAlignment(final HasHorizontalAlignment.HorizontalAlignmentConstant hAlign, final HasVerticalAlignment.VerticalAlignmentConstant vAlign) {
         setHorizontalAlignment(hAlign);
         setVerticalAlignment(vAlign);
     }
 
+    /**
+     * Set the horizontal position of data within a cell.
+     *
+     * @param align the horizontal position of data within a cell.
+     * @see <a href="http://www.w3.org/TR/html4/struct/tables.html#adef-align-TD">HTML Table Cell Align</a>
+     */
     public void setHorizontalAlignment(final HasHorizontalAlignment.HorizontalAlignmentConstant align) {
         DOM.setAttribute(getElement(), "align", align.getTextAlignString());
     }
 
+    /**
+     * Set the vertical position of data within a cell.
+     *
+     * @param align the vertical position of data within a cell.
+     * @see <a href="http://www.w3.org/TR/html4/struct/tables.html#adef-valign">HTML Table Cell Valign</a>
+     */
     public void setVerticalAlignment(final HasVerticalAlignment.VerticalAlignmentConstant align) {
         DOM.setStyleAttribute(getElement(), "verticalAlign", align.getVerticalAlignString());
+    }
+
+    /**
+     * Convert a List into a string.
+     *
+     * @param list a list of items to join.
+     * @param separator characters to go between items.
+     * @return list converted a string.
+     */
+    String join(final List list, final String separator) {
+        final Iterator iter = list.iterator();
+        String strs = null;
+        while (iter.hasNext()) {
+            final Object o = iter.next();
+            if (strs == null) {
+                strs = o.toString();
+            } else {
+                strs += separator + o.toString();
+            }
+        }
+        if (strs == null) {
+            strs = "";
+        }
+        return strs;
     }
 }

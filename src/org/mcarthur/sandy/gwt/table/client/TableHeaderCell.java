@@ -35,4 +35,24 @@ public class TableHeaderCell extends TableCell {
         super(DOM.createTH());
         addStyleName("gwtstuff-TableHeaderCell");
     }
+
+    /**
+     * Get the set of data cells for which the current header cell provides header information.
+     *
+     * @return presumabally one of "row", "col", "rowgroup", or "colgroup".
+     * @see <a href="http://www.w3.org/TR/html4/struct/tables.html#adef-scope">HTML Table Header Cell Scope</a>
+     */
+    public String getScope() {
+        return DOM.getAttribute(getElement(), "scope");
+    }
+
+    /**
+     * Set the set of data cells for which the current header cell provides header information.
+     *
+     * @param scope one of "row", "col", "rowgroup", or "colgroup".
+     * @see <a href="http://www.w3.org/TR/html4/struct/tables.html#adef-scope">HTML Table Header Cell Scope</a>
+     */
+    public void setScope(final String scope) {
+        DOM.setAttribute(getElement(), "scope", scope != null ? scope : "");
+    }
 }
