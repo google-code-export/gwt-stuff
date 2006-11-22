@@ -52,12 +52,27 @@ public abstract class TableRow extends UIObject implements HasWidgets, EventList
         addStyleName("gwtstuff-TableRow");
     }
 
+    /**
+     * Add a cell to this table row.
+     *
+     * @param cell the cell to add.
+     * @throws IllegalArgumentException if the TableRow subclass requires a specific cell type.
+     * @see #newTableDataCell()
+     * @see #newTableHeaderCell()
+     */
     public void add(final TableCell cell) throws IllegalArgumentException {
         cells.add(cell);
         adopt(cell, getElement());
     }
 
-    public void add(final Widget w) {
+    /**
+     * Prefer {@link #add(TableCell)} instead.
+     *
+     * @param w a TableCell to be added.
+     * @throws IllegalArgumentException when <code>w</code> is not an instace of TableCell.
+     * @see #add(TableCell)
+     */
+    public void add(final Widget w) throws IllegalArgumentException {
         if (w instanceof TableCell) {
             add((TableCell)w);
         } else {
@@ -72,8 +87,20 @@ public abstract class TableRow extends UIObject implements HasWidgets, EventList
      */
     protected abstract void adopt(Widget w, Element container);
 
+    /**
+     * Creates a new table data cell that this table row will accept.
+     *
+     * @return a new table data cell that this table row will accept.
+     * @see #add(TableCell)
+     */
     public abstract TableDataCell newTableDataCell();
 
+    /**
+     * Creates a new table header cell that this table row will accept.
+     *
+     * @return a new table header cell that this table row will accept.
+     * @see #add(TableCell)
+     */
     public abstract TableHeaderCell newTableHeaderCell();
 
     public void clear() {

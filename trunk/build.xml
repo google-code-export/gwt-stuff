@@ -7,7 +7,7 @@
     <target name="init">
         <tstamp/>
 
-        <property name="gwt.basedir" value="C:/gwt-windows-1.1.10/" description="The base directory where you installed GWT."/>
+        <property name="gwt.basedir" value="C:/gwt-windows-1.2.22/" description="The base directory where you installed GWT."/>
         <property name="gwt.compiler.style" value="OBF" description="GWTCompiler -style option value, defaults to OBF"/>
 
 
@@ -16,8 +16,8 @@
         </condition>
 
         <path id="project.class.path">
-            <pathelement path="${gwt.basedir}/src"/>
-            <pathelement path="${gwt.basedir}/test"/>
+            <pathelement path="${basedir}/src"/>
+            <pathelement path="${basedir}/test"/>
             <fileset dir="${gwt.basedir}">
                 <include name="gwt-user.jar"/>
             </fileset>

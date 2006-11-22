@@ -20,6 +20,7 @@ import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.DeferredCommand;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.FlowPanel;
@@ -30,6 +31,8 @@ import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
+import com.google.gwt.user.client.ui.HasHorizontalAlignment;
+import com.google.gwt.user.client.ui.HasVerticalAlignment;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -43,7 +46,7 @@ import java.util.List;
 public class Table implements EntryPoint {
     private static VerticalPanel vp = new VerticalPanel();
 
-    private static ObjectListTable ot = new ObjectListTable(new OTM());
+    private static ObjectListTable ot = new ObjectListTable(new OLTR());
     private static int pCount = 0;
 
     public void onModuleLoad() {
@@ -96,16 +99,43 @@ public class Table implements EntryPoint {
         });
         fp.add(transpose);
 
+
+        final Button oneK = new Button("1000");
+        oneK.addClickListener(new ClickListener() {
+            public void onClick(final Widget sender) {
+                final List l = new ArrayList();
+                for (int i=0; i < 1000; i++) {
+                    objects.add(new Person("Person " + (pCount++), (int)(Math.random() * 100)));
+                }
+                final long start = System.currentTimeMillis();
+                DeferredCommand.add(new Command() {
+                    public void execute() {
+                        final long end = System.currentTimeMillis();
+                        vp.add(new Label("addAll took: " + (end - start)));
+                    }
+                });
+                objects.addAll(l);
+            }
+        });
+        fp.add(oneK);
+
         RootPanel.get("buttons").add(fp);
 
     }
 
-    private static class OTM implements ObjectListTable.Renderer {
+    private static class OLTR implements ObjectListTable.Renderer {
 
         public void render(final Object obj, final TableBodyGroup rowGroup) {
             final Person person = (Person)obj;
 
             final TableRow tr = rowGroup.newTableRow();
+
+            final TableCell a = tr.newTableDataCell();
+            a.add(new Label("a"));
+            a.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_CENTER);
+            a.setVerticalAlignment(HasVerticalAlignment.ALIGN_MIDDLE);
+            a.setRowSpan(2);
+            tr.add(a);
 
             final TableCell nameCell = tr.newTableDataCell();
             final TextBox tb = new TextBox();
@@ -137,7 +167,7 @@ public class Table implements EntryPoint {
             //tc2.add(makeMenuBar());
             tc2.setColSpan(3);
 
-            tc2.setAxisSingle("summary");
+            tc2.setAxis("summary");
             tr2.add(tc2);
             tr2.addMouseListener(rml);
             rowGroup.add(tr2);

@@ -54,17 +54,34 @@ public class ObjectListTable extends Panel implements SourcesMouseEvents {
 
     private MouseListenerCollection mouseListeners = null;
 
-    public ObjectListTable(final Renderer model) {
-        this(model, EventLists.wrap(new ArrayList()));
+    /**
+     * Create a new ObjectListTable backed by an empty object list.
+     *
+     * @param renderer builds table rows for each object.
+     * @see #getObjects()
+     */
+    public ObjectListTable(final Renderer renderer) {
+        this(renderer, EventLists.wrap(new ArrayList()));
     }
 
-    public ObjectListTable(final Renderer model, final EventList objects) {
-        this.model = model;
+    /**
+     * Create a new ObjectListTable backed by an EventList.
+     *
+     * @param renderer converts objects into table rows.
+     * @param objects the objects to be displayed by the table.
+     */
+    public ObjectListTable(final Renderer renderer, final EventList objects) {
+        this.model = renderer;
         this.objects = objects;
         setElement(DOM.createTable());
         addStyleName("gwtstuff-ObjectListTable");
 
         objects.addListEventListener(objectsListener);
+
+        if (objects.size() > 0) {
+            // fake a list changed event to initialize the table rows.
+            objectsListener.listChanged(new ListEvent(objects, ListEvent.ADDED, 0, objects.size()));
+        }
     }
 
     public EventList getObjects() {
@@ -168,11 +185,18 @@ public class ObjectListTable extends Panel implements SourcesMouseEvents {
     private class ListTableListEventListener implements ListEventListener {
         public void listChanged(final ListEvent listEvent) {
             if (listEvent.isAdded()) {
+                final List toBeAdded = new ArrayList();
                 for (int i = listEvent.getIndexStart(); i < listEvent.getIndexEnd(); i++) {
                     final Object obj = objects.get(i);
                     final ObjectListTableRowGroup rowGroup = new ObjectListTableRowGroup(obj);
                     model.render(obj, rowGroup);
-                    add(rowGroup, i);
+                    toBeAdded.add(rowGroup); // defer attaching to the DOM
+                    //add(rowGroup, i);
+                }
+                // Batch add to DOM, XXX not sure this is any faster yet
+                final Iterator iter = toBeAdded.iterator();
+                for (int i = listEvent.getIndexStart(); i < listEvent.getIndexEnd(); i++) {
+                    add((ObjectListTableRowGroup)iter.next(), i);
                 }
 
             } else if (listEvent.isRemoved()) {
@@ -307,8 +331,8 @@ public class ObjectListTable extends Panel implements SourcesMouseEvents {
     }
 
 
-    protected void onAttach() {
-        super.onAttach();
+    protected void onLoad() {
+        super.onLoad();
         if (thead == null) {
             final ObjectListTableHeaderGroup headerGroup = new ObjectListTableHeaderGroup();
             model.renderHeader(headerGroup);
@@ -335,6 +359,7 @@ public class ObjectListTable extends Panel implements SourcesMouseEvents {
             final ObjectListTableRowGroup rowGroup = (ObjectListTableRowGroup)iter.next();
             if (DOM.isOrHasChild(rowGroup.getElement(), target)) {
                 rowGroup.onBrowserEvent(event);
+                break;
             }
         }
 
