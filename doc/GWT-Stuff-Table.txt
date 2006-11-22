@@ -1,0 +1,13 @@
+GWT-Stuff-Table.jar - The Table lib from the GWT-Stuff library.
+
+GWT-Stuff-Table.jar contails all Table modules provided by the
+GWT-Stuff project.
+
+Dependencies: GWT-Stuff's EventList module.
+
+Module XML:
+
+<inherits name="org.mcarthur.sandy.gwt.table.Table"/> :
+    This inherits the Table lib for use in your project.
+
+License: Apache License, Version 2.0

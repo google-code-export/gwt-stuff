@@ -34,7 +34,7 @@ import java.util.List;
 
 /**
  * Base class for a HTML Row Group.
- * <p/>
+ *
  * <h3>CSS Style Rules</h3>
  * <ul class="css">
  * <li>.gwtstuff-TableRowGroup { }</li>

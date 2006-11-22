@@ -18,12 +18,12 @@ package org.mcarthur.sandy.gwt.table.client;
 
 import com.google.gwt.user.client.DOM;
 
-import java.util.List;
 import java.util.Arrays;
+import java.util.List;
 
 /**
  * Base class for an HTML Table Data Cell, th.
- * <p/>
+ *
  * <h3>CSS Style Rules</h3>
  * <ul class="css">
  * <li>inherited css classes</li>

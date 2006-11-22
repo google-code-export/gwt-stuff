@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <project name="GWT-Stuff" default="all" basedir=".">
     <description>
-        Build file for GWT-Stuff
+        Build file for GWT-Stuff modules.
     </description>
 
     <target name="init">
@@ -101,12 +101,12 @@
 
     <target name="gwtcompile-TestTable" depends="init">
         <mkdir dir="www"/>
-        <gwtcompile module="org.mcarthur.sandy.gwt.table.Table"/>
+        <gwtcompile module="org.mcarthur.sandy.gwt.table.TestTable"/>
     </target>
 
     <target name="gwtshell-TestTable" depends="init">
         <mkdir dir="www"/>
-        <gwtshell module="org.mcarthur.sandy.gwt.table.Table" page="Table.html"/>
+        <gwtshell module="org.mcarthur.sandy.gwt.table.TestTable" page="TestTable.html"/>
     </target>
 
     <target name="package" depends="compile-java" description="Package up the whole project as a jar">
@@ -173,6 +173,22 @@
         <copy file="doc/GWT-Stuff-PropertyChange.txt" todir="."/>
     </target>
 
+    <target name="package-table" depends="compile-java" description="Package up the Table module as a jar">
+        <jar destfile="GWT-Stuff-Table.jar">
+            <fileset dir="bin">
+                <include name="org/mcarthur/sandy/gwt/table/**/*.class"/>
+            </fileset>
+            <!-- Get everything; source, modules, html files -->
+            <fileset dir="src">
+                <include name="org/mcarthur/sandy/gwt/table/**"/>
+            </fileset>
+            <fileset dir="test">
+                <include name="org/mcarthur/sandy/gwt/table/**"/>
+            </fileset>
+        </jar>
+        <copy file="doc/GWT-Stuff-Table.txt" todir="."/>
+    </target>
+
     <target name="javadoc" depends="init" description="Generate Javadocs">
         <property name="javadoc.dir" value="doc/javadoc"/>
         <property name="javadoc.footer" value="${TODAY}"/>
@@ -212,6 +228,6 @@
         <delete dir="tomcat"/>
     </target>
 
-    <target name="all" depends="package,package-login,package-eventlist,package-propertychange"/>
+    <target name="all" depends="package,package-login,package-eventlist,package-propertychange,package-table" description="Build all packages."/>
 
 </project>

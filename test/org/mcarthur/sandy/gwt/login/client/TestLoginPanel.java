@@ -19,9 +19,11 @@ package org.mcarthur.sandy.gwt.login.client;
 import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.Window;
-import com.google.gwt.user.client.ui.*;
-import org.mcarthur.sandy.gwt.login.client.LoginPanel;
-import org.mcarthur.sandy.gwt.login.client.LoginDialogBox;
+import com.google.gwt.user.client.ui.Button;
+import com.google.gwt.user.client.ui.ClickListener;
+import com.google.gwt.user.client.ui.Image;
+import com.google.gwt.user.client.ui.RootPanel;
+import com.google.gwt.user.client.ui.Widget;
 
 /**
  * EntryPoint for Testing Login Widgets.
@@ -57,7 +59,7 @@ public class TestLoginPanel implements EntryPoint {
 
         final RootPanel defaultLoginDialogBoxRoot = RootPanel.get("defaultLoginDialogBox");
         defaultLoginDialogBox = new LoginDialogBox(loginListener);
-        Button defaultLoginDialogBoxButton = new Button("Show");
+        final Button defaultLoginDialogBoxButton = new Button("Show");
         defaultLoginDialogBoxButton.addClickListener(new ClickListener() {
             public void onClick(final Widget sender) {
                 defaultLoginDialogBox.setPopupPosition(100,100);

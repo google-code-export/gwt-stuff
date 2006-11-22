@@ -38,6 +38,12 @@ import java.util.List;
  * An event driven table that is backed by an {@link EventList}. Each Object in the list reprsents
  * one {@link TableRowGroup row group}.
  *
+ * <h3>CSS Style Rules</h3>
+ * <ul class="css">
+ * <li>.gwtstuff-ObjectListTable { }</li>
+ * <li>plus style classes by TableRowGroup, TableRow, TableCell, etc...</li>
+ * </ul>
+
  * @author Sandy McArthur
  */
 public class ObjectListTable extends Panel implements SourcesMouseEvents {
@@ -90,6 +96,11 @@ public class ObjectListTable extends Panel implements SourcesMouseEvents {
 
     /**
      * Converts objects into table rows.
+     *
+     * <p>
+     * <b>Note:</b> Modifying the EventList backing this table from the render is not allowed and
+     * can lead to undefined behavior.
+     * </p>
      */
     public interface Renderer {
 
