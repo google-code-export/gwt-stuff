@@ -10,6 +10,17 @@ project base directory. This assumes you have GWT installed in the same
 location I do. If you have GWT installed somewhere else then odds are
 the build fails with an error about "package com.google.... does not exists"
 then you'll need to tell ant where to find the GWT base dir. eg:
-$ ant -Dgwt.basedir=c:\gwt-0.0.0\
+
+$ ant -Dgwt.basedir=c:\gwt-0.0.0\ all
+
+You can launch the GWT Shell and run the examples with one of the following commands:
+
+$ ant -Dgwt.basedir=c:\gwt-0.0.0\ gwtshell-TestEventList
+$ ant -Dgwt.basedir=c:\gwt-0.0.0\ gwtshell-TestLoginPanel
+$ ant -Dgwt.basedir=c:\gwt-0.0.0\ gwtshell-TestTable
+
+Javadocs can be produced in ./doc/javadoc with:
+
+$ ant -Dgwt.basedir=c:\gwt-0.0.0\ javadoc
 
 License: Apache License, Version 2.0
