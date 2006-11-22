@@ -28,7 +28,7 @@ import java.util.List;
 
 /**
  * Base class for an HTML Table Cell.
- * <p/>
+ *
  * <h3>CSS Style Rules</h3>
  * <ul class="css">
  * <li>.gwtstuff-TableCell { }</li>

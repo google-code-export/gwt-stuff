@@ -1,0 +1,7 @@
+<module>
+
+    <inherits name="org.mcarthur.sandy.gwt.table.Table"/>
+
+    <entry-point class="org.mcarthur.sandy.gwt.table.client.TestTable"/>
+
+</module>

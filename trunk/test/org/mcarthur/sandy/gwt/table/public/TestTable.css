@@ -22,6 +22,11 @@ body {
     background-color: #E8EEF7;
 }
 
+/* Remove gaps between cells */
+table {
+  border-collapse: collapse;
+}
+
 tbody.mouseOver {
     background-color: yellow;
 }

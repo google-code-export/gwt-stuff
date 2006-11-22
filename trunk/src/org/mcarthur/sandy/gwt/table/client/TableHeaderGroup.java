@@ -20,7 +20,7 @@ import com.google.gwt.user.client.DOM;
 
 /**
  * Table Header Row Group, thead.
- * <p/>
+ *
  * <h3>CSS Style Rules</h3>
  * <ul class="css">
  * <li>inherited css classes</li>

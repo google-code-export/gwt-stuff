@@ -1,7 +1,169 @@
 <html>
 <body>
 <p>
-    Alpha code, not ready for use.
+    Event driven Table(s), beta code, not well tested yet.
+    Beta code may change in incompatible ways as we improve the implementation.
 </p>
+
+<h2>Including in your project</h2>
+<p>
+    To add this to your project add the jar file to your classpath and add the following to your GWT module file:
+</p>
+<blockquote>
+    <code>&lt;inherits name="org.mcarthur.sandy.gwt.table.Table"/&gt;</code>
+</blockquote>
+
+<h3>Dependencies</h3>
+<p>
+    These tables need the {@link org.mcarthur.sandy.gwt.event.list.client.EventList} module to funtion.
+    The Table module inherits statement above will pull the EventList module in too.
+    You will need to make sure the EventList code is available in your classpath.
+</p>
+
+
+<h2>Example Usage</h2>
+<p>
+    Currently only {@link org.mcarthur.sandy.gwt.table.client.ObjectListTable} is provided.
+    It requries that you manipulate your data model via an {@link org.mcarthur.sandy.gwt.event.list.client.EventList}
+    instance. Because of the structure and automatice nature of {@link org.mcarthur.sandy.gwt.table.client.ObjectListTable}
+    it requires a bit more setup code than using one of the
+    <a href="http://code.google.com/webtoolkit/documentation/com.google.gwt.user.client.ui.HTMLTable.html">GWT provided table implementations</a>.
+</p>
+
+<h3>Your Object Model</h3>
+<p>
+    First you need to have your data contained in an {@link org.mcarthur.sandy.gwt.event.list.client.EventList}.
+    (If you're data is in a {@link java.util.List} see the {@link org.mcarthur.sandy.gwt.event.list.client.EventList}
+    package for how to wrapp a {@link java.util.List} in an {@link org.mcarthur.sandy.gwt.event.list.client.EventList}.)
+</p>
+<blockquote>
+    <pre>
+public class Person {
+    private String name;
+    private int age;
+
+    public Person(String name, int age) {
+        this.name = name;
+        this.age = age;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public int getAge() {
+        return age;
+    }
+}
+    </pre>
+</blockquote>
+
+<h3>Table Row Render</h3>
+<p>
+    {@link org.mcarthur.sandy.gwt.table.client.ObjectListTable} needs you to provide a
+    {@link org.mcarthur.sandy.gwt.table.client.ObjectListTable.Renderer} that can assemble the rows
+    needed for an Object in your model, such as the Person object above.
+    The render requires three methods, two of which can be empty if you do not need a
+    header or footer in your table.
+    The following render will create a header but not a footer on the table.
+</p>
+<blockquote>
+    <pre>
+public class PersonRender implements ObjectListTable.Renderer {
+
+    // Called when the table is attached to the page to build the header row(s)
+    public void renderHeader(TableHeaderGroup headerGroup) {
+        // headerGroup maps to the HTML 4 Table Row Group which isn't that commonly used
+
+        // Create a Table Row in that Table Row Group
+        TableRow tr = headerGroup.newTableRow();
+        headerGroup.add(tr);
+
+        // Create a Table Header (TH) in that Table Row
+        TableCell th = tr.newTableHeaderCell();
+        tr.add(th);
+
+        // Add a widget to the cell
+        th.add(new Label("Name");
+
+        // Create another cell
+        th = tr.newTableHeaderCell();
+        th.add(new Label("Age");
+    }
+
+    // This is called once for each object in the List
+    public void render(Object obj, TableBodyGroup rowGroup) {
+        Person person = (Person)obj;
+
+        // Create a Table Row
+        TableRow tr = rowGroup.newTableRow();
+        rowGroup.add(tr);
+
+        // Create a Table Data (TD) for the person's name
+        TableCell td = tr.newTableDataCell();
+        tr.add(td);
+
+        td.add(new Label(person.getName());
+
+        // Create a Table Data (TD) for the person's age
+        td = tr.newTableDataCell();
+        tr.add(td);
+
+        td.add(new Label(Integer.toString(person.getAge()));
+    }
+
+    // Called when the table is attached to the page to build the footer row(s)
+    public void renderFooter(TableFooterGroup footerGroup) {
+        // do nothing if you don't want a Table header or footer.
+    }
+}
+    </pre>
+</blockquote>
+
+<h3>Using ObjectListTable</h3>
+<p>
+    Now that we have a {@link org.mcarthur.sandy.gwt.event.list.client.EventList} of our objects and
+    a render to create table rows for those objects we can create the
+    {@link org.mcarthur.sandy.gwt.table.client.ObjectListTable}.
+    Below we have an {@link org.mcarthur.sandy.gwt.event.list.client.EventList} of People and we create
+    a {@link org.mcarthur.sandy.gwt.table.client.ObjectListTable} and add it to the page.
+    The we add some more people and remove one and the table show have created and remove the correct rows.
+</p>
+<blockquote>
+    <pre>
+public class PeopleApp implements EntryPoint {
+    public void onModuleLoad() {
+
+        // The event list used to manipulate the table
+        // If you don't have a starting list you can use ObjectListTable.getObjects() and populate that.
+        EventList people = ...;
+
+        ObjectListTable table = new ObjectListTable(new PersonRender(), people);
+        RootPanel.get().add(table);
+
+        // Add some people, you could also use people.addAll() if you had a non-EventList from elsewhere such as RPC.
+        people.add(new Person("Bill", 21));
+        people.add(new Person("Ted", 18));
+        people.add(new Person("Rufus", 40));
+
+        // To remove people just modify the list
+        people.remove(1); // remove Ted, if he was 2nd in the list
+    }
+}
+    </pre>
+</blockquote>
+
+<h3>Events</h3>
+<p>
+    GWT only provides an event mechanism for <a href="http://code.google.com/webtoolkit/documentation/com.google.gwt.user.client.ui.Widget.html">Widgets</a>.
+    Since the {@link org.mcarthur.sandy.gwt.table.client.ObjectListTable} and
+    {@link org.mcarthur.sandy.gwt.table.client.TableCell} are subclasses of Widget events on these
+    are provided by GWT.
+    {@link org.mcarthur.sandy.gwt.table.client.TableRowGroup} and {@link org.mcarthur.sandy.gwt.table.client.TableRow}
+    provide an event listerner interfaces you can take advantage of too to make your table more interactive.
+    Do note that events will not be fired on row groups or rows until you add the first listener and
+    huge tables with lots of listeners will slow the browser down.
+</p>
+
 </body>
 </html>
