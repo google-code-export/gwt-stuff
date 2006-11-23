@@ -33,6 +33,7 @@ import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
+import com.google.gwt.user.client.ui.CheckBox;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -64,6 +65,7 @@ public class TestTable implements EntryPoint {
 
         final FlowPanel fp = new FlowPanel();
         final Button remove2 = new Button("Remove 2");
+        remove2.setTitle("Removes the first and last Person from the list.");
         remove2.addClickListener(new ClickListener() {
             public void onClick(final Widget sender) {
                 final List two = new ArrayList();
@@ -75,6 +77,7 @@ public class TestTable implements EntryPoint {
         fp.add(remove2);
 
         final Button addPerson = new Button("Add Person");
+        addPerson.setTitle("Add a Person instance to the List.");
         addPerson.addClickListener(new ClickListener() {
             public void onClick(final Widget sender) {
                 objects.add(new Person("Person " + (pCount++), (int)(Math.random() * 100)));
@@ -83,6 +86,7 @@ public class TestTable implements EntryPoint {
         fp.add(addPerson);
 
         final Button transpose = new Button("Transpose");
+        transpose.setTitle("Switch two Person instances in the List");
         transpose.addClickListener(new ClickListener() {
             public void onClick(final Widget sender) {
                 final int a = (int)(Math.random() * objects.size());
@@ -101,6 +105,7 @@ public class TestTable implements EntryPoint {
 
 
         final Button oneK = new Button("1000");
+        oneK.setTitle("Add 1000 Person instances");
         oneK.addClickListener(new ClickListener() {
             public void onClick(final Widget sender) {
                 final List l = new ArrayList();
@@ -131,7 +136,9 @@ public class TestTable implements EntryPoint {
             final TableRow tr = rowGroup.newTableRow();
 
             final TableCell a = tr.newTableDataCell();
-            a.add(new Label("a"));
+            final CheckBox checkBox = new CheckBox();
+            checkBox.setTitle("Doesn't do anything.");
+            a.add(checkBox);
             a.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_CENTER);
             a.setVerticalAlignment(HasVerticalAlignment.ALIGN_MIDDLE);
             a.setRowSpan(2);
@@ -146,6 +153,8 @@ public class TestTable implements EntryPoint {
             final TableCell ageCell = tr.newTableDataCell();
             //ageCell.add(new Label(Integer.toString(person.getAge())));
             ageCell.add(new AgeLabel(person.getAge()));
+            ageCell.setWidth("5em");
+            ageCell.setAlignment(HasHorizontalAlignment.ALIGN_CENTER, HasVerticalAlignment.ALIGN_MIDDLE);
             tr.add(ageCell);
 
             final TableCell removeCell = tr.newTableDataCell();
@@ -163,7 +172,7 @@ public class TestTable implements EntryPoint {
 
             final TableRow tr2 = rowGroup.newTableRow();
             final TableCell tc2 = tr2.newTableDataCell();
-            tc2.add(new Label("Somthing " + Math.random()));
+            tc2.add(new Label("Something " + Math.random()));
             //tc2.add(makeMenuBar());
             tc2.setColSpan(3);
 
@@ -187,12 +196,17 @@ public class TestTable implements EntryPoint {
             TableRow tr = rowGroup.newTableRow();
 
             TableHeaderCell th = tr.newTableHeaderCell();
+            th.add(new Label("rowSpan=2", true));
+            th.setRowSpan(2);
+            tr.add(th);
+
+            th = tr.newTableHeaderCell();
             final MenuBar menu = new MenuBar();
 
             final MenuBar subMenu = new MenuBar(true);
-            final MenuItem sortUp = new MenuItem("Sort Up", (Command)null);
-            final MenuItem sortDown = new MenuItem("Sort Down", (Command)null);
-            final MenuItem hide = new MenuItem("Hide Column", (Command)null);
+            final MenuItem sortUp = new MenuItem("Test.", (Command)null);
+            final MenuItem sortDown = new MenuItem("Does", (Command)null);
+            final MenuItem hide = new MenuItem("Nothing", (Command)null);
             subMenu.addItem(sortUp);
             subMenu.addItem(sortDown);
             subMenu.addItem(hide);
@@ -216,7 +230,8 @@ public class TestTable implements EntryPoint {
 
             th = tr.newTableHeaderCell();
             th.setColSpan(3);
-            th.add(new Label("Something"));
+            th.add(new Label("Random Number"));
+            th.setTitle("ColSpan=3");
             tr.add(th);
 
             rowGroup.add(tr);

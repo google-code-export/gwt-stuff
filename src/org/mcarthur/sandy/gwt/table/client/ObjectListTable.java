@@ -176,7 +176,7 @@ public class ObjectListTable extends Panel implements SourcesMouseEvents {
 
     private void attach(final TableFooterGroup footerGroup) {
         tfoot = footerGroup;
-        DOM.insertChild(getElement(), footerGroup.getElement(), Integer.MAX_VALUE);
+        DOM.appendChild(getElement(), footerGroup.getElement());
     }
 
     private void remove(final ObjectListTableRowGroup rowGroup) {
