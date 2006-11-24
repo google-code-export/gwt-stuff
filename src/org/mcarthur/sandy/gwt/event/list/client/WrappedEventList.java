@@ -123,7 +123,7 @@ class WrappedEventList extends AbstractEventList implements EventList {
         Iterator iter = delegate.iterator();
         while (iter.hasNext()) {
             final Object o = iter.next();
-            if (c.contains(o)) {
+            if (c.contains(o)) { // elements also in c
                 toBeRemoved.add(o);
             }
         }
@@ -160,17 +160,46 @@ class WrappedEventList extends AbstractEventList implements EventList {
     }
 
     public boolean retainAll(final Collection c) {
-        boolean changed = false;
-        final Iterator iter = iterator();
+        // Figure out which objects will be removed
+        // and their order in delegate
+        final List toBeRemoved = new ArrayList();
+        Iterator iter = delegate.iterator();
         while (iter.hasNext()) {
-            // XXX optimze event firing
-            final Object element = iter.next();
-            if (!c.contains(element)) {
-                iter.remove();
-                changed = true;
+            final Object o = iter.next();
+            if (!c.contains(o)) { // elements not in c
+                toBeRemoved.add(o);
             }
         }
-        return changed;
+
+        iter = toBeRemoved.iterator();
+        int start = -1;
+        int run = 1;
+        while (iter.hasNext() || start != -1) { // loop for each item to be removed and then once more
+            final Object o = iter.hasNext() ? iter.next() : null;
+            if (start == -1) { // first element
+                start = delegate.indexOf(o);
+                run = 1;
+
+            } else if (o != null && delegate.indexOf(o) == start) { // consecutive and not end
+                run++;
+
+            } else { // not consecutive or end
+                fireListEvent(new ListEvent(this, ListEvent.REMOVED, start, start + run));
+                if (o != null) { // not end
+                    start = delegate.indexOf(o);
+                } else { // end
+                    start = -1;
+                }
+                run = 1;
+            }
+
+            if (start != -1) { // not end
+                delegate.remove(start);
+            }
+        }
+
+        // were any removed?
+        return toBeRemoved.size() > 0;
     }
 
     public Object set(final int index, final Object element) {
