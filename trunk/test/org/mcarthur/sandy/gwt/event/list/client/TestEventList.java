@@ -57,6 +57,7 @@ public class TestEventList implements EntryPoint {
         s.add("six");
         s.add("seven");
         s.add("eight");
+        s.add("nine");
         el.addAll(s);
         log(el);
 
@@ -67,8 +68,16 @@ public class TestEventList implements EntryPoint {
 
         s.remove("four");
         s.remove("six");
+        s.remove("nine");
 
         el.removeAll(s);
+        log(el);
+
+        s.clear();
+        //s.add("three");
+        s.add("six");
+        s.add("nine");
+        el.retainAll(s);
         log(el);
 
         RootPanel.get("out").add(new Label(el.toString()));
