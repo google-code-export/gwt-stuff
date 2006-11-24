@@ -22,6 +22,7 @@ import com.google.gwt.user.client.DeferredCommand;
 import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Button;
+import com.google.gwt.user.client.ui.CheckBox;
 import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.HasHorizontalAlignment;
@@ -33,7 +34,6 @@ import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
-import com.google.gwt.user.client.ui.CheckBox;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -68,10 +68,12 @@ public class TestTable implements EntryPoint {
         remove2.setTitle("Removes the first and last Person from the list.");
         remove2.addClickListener(new ClickListener() {
             public void onClick(final Widget sender) {
-                final List two = new ArrayList();
-                two.add(objects.get(objects.size() - 1));
-                two.add(objects.get(0));
-                objects.removeAll(two);
+                if (objects.size() > 0) {
+                    final List two = new ArrayList();
+                    if (objects.size() > 1) two.add(objects.get(objects.size() - 1));
+                    two.add(objects.get(0));
+                    objects.removeAll(two);
+                }
             }
         });
         fp.add(remove2);
@@ -103,13 +105,13 @@ public class TestTable implements EntryPoint {
         });
         fp.add(transpose);
 
-
-        final Button oneK = new Button("1000");
-        oneK.setTitle("Add 1000 Person instances");
+        final int instances = 500;
+        final Button oneK = new Button("" + instances);
+        oneK.setTitle("Add " + instances + " Person instances");
         oneK.addClickListener(new ClickListener() {
             public void onClick(final Widget sender) {
                 final List l = new ArrayList();
-                for (int i=0; i < 1000; i++) {
+                for (int i=0; i < instances; i++) {
                     objects.add(new Person("Person " + (pCount++), (int)(Math.random() * 100)));
                 }
                 final long start = System.currentTimeMillis();
@@ -117,6 +119,7 @@ public class TestTable implements EntryPoint {
                     public void execute() {
                         final long end = System.currentTimeMillis();
                         vp.add(new Label("addAll took: " + (end - start)));
+                        Window.setTitle("addAll took: " + (end - start));
                     }
                 });
                 objects.addAll(l);

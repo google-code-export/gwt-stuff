@@ -31,8 +31,10 @@ import org.mcarthur.sandy.gwt.event.list.client.ListEvent;
 import org.mcarthur.sandy.gwt.event.list.client.ListEventListener;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 /**
  * An event driven table that is backed by an {@link EventList}. Each Object in the list reprsents
@@ -169,6 +171,32 @@ public class ObjectListTable extends Panel implements SourcesMouseEvents {
         DOM.insertChild(getElement(), rowGroup.getElement(), domIndex);
     }
 
+    private void add(final ObjectListTableRowGroup rowGroup, final ObjectListTableRowGroup beforeGroup) {
+        final int beforeIndex;
+        if (beforeGroup != null) {
+            beforeIndex = tbodies.indexOf(beforeGroup);
+        } else {
+            beforeIndex = -1;
+        }
+        add(rowGroup, beforeGroup, beforeIndex);
+    }
+
+    private void add(final ObjectListTableRowGroup rowGroup, final ObjectListTableRowGroup beforeGroup, int beforeIndex) {
+        Element beforeElement = null;
+        if (beforeGroup != null) {
+            beforeElement = beforeGroup.getElement();
+            tbodies.add(beforeIndex, rowGroup);
+        } else if (tfoot != null) {
+            beforeElement = tfoot.getElement();
+            tbodies.add(rowGroup);
+        }
+        insertBefore(getElement(), rowGroup.getElement(), beforeElement);
+    }
+
+    private native void insertBefore(Element parent, Element toAdd, Element before) /*-{
+      parent.insertBefore(toAdd, before);
+    }-*/;
+
     private void attach(final TableHeaderGroup headerGroup) {
         thead = headerGroup;
         DOM.insertChild(getElement(), headerGroup.getElement(), 0);
@@ -179,9 +207,12 @@ public class ObjectListTable extends Panel implements SourcesMouseEvents {
         DOM.appendChild(getElement(), footerGroup.getElement());
     }
 
-    private void remove(final ObjectListTableRowGroup rowGroup) {
+    private void detach(final ObjectListTableRowGroup rowGroup) {
         DOM.removeChild(getElement(), rowGroup.getElement());
         tbodies.remove(rowGroup);
+    }
+
+    private void remove(final ObjectListTableRowGroup rowGroup) {
         final Iterator rit = rowGroup.getRows().iterator();
         while (rit.hasNext()) {
             final TableRow tr = (TableRow)rit.next();
@@ -196,45 +227,74 @@ public class ObjectListTable extends Panel implements SourcesMouseEvents {
     private class ListTableListEventListener implements ListEventListener {
         public void listChanged(final ListEvent listEvent) {
             if (listEvent.isAdded()) {
-                final List toBeAdded = new ArrayList();
                 for (int i = listEvent.getIndexStart(); i < listEvent.getIndexEnd(); i++) {
                     final Object obj = objects.get(i);
                     final ObjectListTableRowGroup rowGroup = new ObjectListTableRowGroup(obj);
                     model.render(obj, rowGroup);
-                    toBeAdded.add(rowGroup); // defer attaching to the DOM
-                    //add(rowGroup, i);
-                }
-                // Batch add to DOM, XXX not sure this is any faster yet
-                final Iterator iter = toBeAdded.iterator();
-                for (int i = listEvent.getIndexStart(); i < listEvent.getIndexEnd(); i++) {
-                    add((ObjectListTableRowGroup)iter.next(), i);
+                    ObjectListTableRowGroup before = null;
+                    if (i < tbodies.size()) {
+                        before = (ObjectListTableRowGroup)tbodies.get(i);
+                    }
+                    add(rowGroup, before, i);
                 }
 
             } else if (listEvent.isRemoved()) {
                 for (int i = listEvent.getIndexEnd() - 1; i >= listEvent.getIndexStart(); i--) {
                     final ObjectListTableRowGroup rowGroup = (ObjectListTableRowGroup)tbodies.get(i);
+                    detach(rowGroup);
                     remove(rowGroup);
-
                 }
 
             } else if (listEvent.isChanged()) {
-                for (int i = listEvent.getIndexStart(); i < listEvent.getIndexEnd(); i++) {
-                    final Object obj = objects.get(i);
-                    ObjectListTableRowGroup rowGroup = (ObjectListTableRowGroup)tbodies.get(i);
+                if (true) { // unoptimized
+                    for (int i = listEvent.getIndexStart(); i < listEvent.getIndexEnd(); i++) {
+                        final Object obj = objects.get(i);
+                        ObjectListTableRowGroup rowGroup = (ObjectListTableRowGroup)tbodies.get(i);
 
-                    // test if really different
-                    if (obj != rowGroup.getObject()) {
-                        // XXX: reposition rows instead of just remove/add them
+                        // test if really different
+                        if (obj != rowGroup.getObject()) {
+                            // XXX: reposition rows instead of just remove/add them
 
-                        // remove old
-                        remove(rowGroup);
+                            // remove old
+                            detach(rowGroup);
+                            remove(rowGroup);
 
-                        // insert new
-                        rowGroup = new ObjectListTableRowGroup(obj);
-                        model.render(obj, rowGroup);
-                        add(rowGroup, i);
+                            // insert new
+                            rowGroup = new ObjectListTableRowGroup(obj);
+                            model.render(obj, rowGroup);
+                            add(rowGroup, i);
+                        }
+
+                    }
+                } else { // untested
+                    final Map rows = new HashMap(listEvent.getIndexEnd() - listEvent.getIndexStart());
+                    int k = listEvent.getIndexStart();
+                    for (int i = listEvent.getIndexStart(); i < listEvent.getIndexEnd(); i++) {
+                        ObjectListTableRowGroup rowGroup = (ObjectListTableRowGroup)tbodies.get(k);
+                        rows.put(rowGroup.getObject(), rowGroup);
+                        detach(rowGroup);
+                    }
+                    for (int i = listEvent.getIndexStart(); i < listEvent.getIndexEnd(); i++) {
+                        final Object obj = objects.get(i);
+                        ObjectListTableRowGroup rowGroup = (ObjectListTableRowGroup)rows.remove(obj);
+                        if (rowGroup == null) {
+                            rowGroup = new ObjectListTableRowGroup(obj);
+                            model.render(obj, rowGroup);
+                        }
+                        ObjectListTableRowGroup before = null;
+                        if (i < tbodies.size()) {
+                            before = (ObjectListTableRowGroup)tbodies.get(i);
+                        }
+                        add(rowGroup, before, i);
                     }
 
+                    Iterator keyIter = rows.keySet().iterator();
+                    while (keyIter.hasNext()) {
+                        Object key = keyIter.next();
+                        ObjectListTableRowGroup rowGroup = (ObjectListTableRowGroup)rows.get(key);
+                        keyIter.remove();
+                        remove(rowGroup);
+                    }
                 }
             }
         }
