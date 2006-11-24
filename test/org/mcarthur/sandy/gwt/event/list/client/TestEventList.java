@@ -20,15 +20,9 @@ import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.user.client.ui.VerticalPanel;
-import org.mcarthur.sandy.gwt.event.list.client.EventList;
-import org.mcarthur.sandy.gwt.event.list.client.EventLists;
-import org.mcarthur.sandy.gwt.event.list.client.ListEvent;
-import org.mcarthur.sandy.gwt.event.list.client.ListEventListener;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 /**
  * TODO: Write Class JavaDoc
@@ -49,29 +43,42 @@ public class TestEventList implements EntryPoint {
             }
         });
 
+        log(el);
         el.add("one");
+        log(el);
         el.add("two");
+        log(el);
         el.add("three");
+        log(el);
 
-        final Set s = new HashSet(4);
+        final List s = new ArrayList();
         s.add("four");
         s.add("five");
         s.add("six");
         s.add("seven");
+        s.add("eight");
         el.addAll(s);
+        log(el);
 
         el.remove("two");
+        log(el);
         el.remove("four");
+        log(el);
 
         s.remove("four");
         s.remove("six");
 
         el.removeAll(s);
+        log(el);
 
         RootPanel.get("out").add(new Label(el.toString()));
     }
 
     public void log(final ListEvent listEvent) {
         vp.add(new Label(listEvent.toString()));
+    }
+
+    public void log(final List list) {
+        vp.add(new Label(list.toString()));
     }
 }
