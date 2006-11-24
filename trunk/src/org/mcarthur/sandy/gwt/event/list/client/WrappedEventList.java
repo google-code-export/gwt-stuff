@@ -16,6 +16,7 @@
 
 package org.mcarthur.sandy.gwt.event.list.client;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
@@ -116,14 +117,46 @@ class WrappedEventList extends AbstractEventList implements EventList {
     }
 
     public boolean removeAll(final Collection c) {
-        boolean changed = false;
-        final Iterator iter = c.iterator();
+        // Figure out which objects will be removed
+        // and their order in delegate
+        final List toBeRemoved = new ArrayList();
+        Iterator iter = delegate.iterator();
         while (iter.hasNext()) {
-
-            // XXX optimze event firing
-            changed = remove(iter.next()) || changed;
+            final Object o = iter.next();
+            if (c.contains(o)) {
+                toBeRemoved.add(o);
+            }
         }
-        return changed;
+
+        iter = toBeRemoved.iterator();
+        int start = -1;
+        int run = 1;
+        while (iter.hasNext() || start != -1) { // loop for each item to be removed and then once more
+            final Object o = iter.hasNext() ? iter.next() : null;
+            if (start == -1) { // first element
+                start = delegate.indexOf(o);
+                run = 1;
+
+            } else if (o != null && delegate.indexOf(o) == start) { // consecutive and not end
+                run++;
+
+            } else { // not consecutive or end
+                fireListEvent(new ListEvent(this, ListEvent.REMOVED, start, start + run));
+                if (o != null) { // not end
+                    start = delegate.indexOf(o);
+                } else { // end
+                    start = -1;
+                }
+                run = 1;
+            }
+
+            if (start != -1) { // not end
+                delegate.remove(start);
+            }
+        }
+
+        // were any removed?
+        return toBeRemoved.size() > 0;
     }
 
     public boolean retainAll(final Collection c) {
