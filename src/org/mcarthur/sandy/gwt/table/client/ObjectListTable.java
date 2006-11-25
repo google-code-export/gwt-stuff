@@ -16,6 +16,7 @@
 
 package org.mcarthur.sandy.gwt.table.client;
 
+import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.Event;
@@ -49,6 +50,12 @@ import java.util.Map;
  * @author Sandy McArthur
  */
 public class ObjectListTable extends Panel implements SourcesMouseEvents {
+
+    private static ObjectListTableImpl impl;
+    static {
+        impl = (ObjectListTableImpl)GWT.create(ObjectListTableImpl.class);
+        impl.init();
+    }
 
     private TableHeaderGroup thead;
     private TableFooterGroup tfoot;
@@ -94,6 +101,18 @@ public class ObjectListTable extends Panel implements SourcesMouseEvents {
 
     public EventList getObjects() {
         return objects;
+    }
+
+    List getTbodies() {
+        return tbodies;
+    }
+
+    TableFooterGroup getTfoot() {
+        return tfoot;
+    }
+
+    TableHeaderGroup getThead() {
+        return thead;
     }
 
     /**
@@ -181,30 +200,18 @@ public class ObjectListTable extends Panel implements SourcesMouseEvents {
         add(rowGroup, beforeGroup, beforeIndex);
     }
 
-    private void add(final ObjectListTableRowGroup rowGroup, final ObjectListTableRowGroup beforeGroup, int beforeIndex) {
-        Element beforeElement = null;
-        if (beforeGroup != null) {
-            beforeElement = beforeGroup.getElement();
-            tbodies.add(beforeIndex, rowGroup);
-        } else if (tfoot != null) {
-            beforeElement = tfoot.getElement();
-            tbodies.add(rowGroup);
-        }
-        insertBefore(getElement(), rowGroup.getElement(), beforeElement);
+    private void add(final ObjectListTableRowGroup rowGroup, final ObjectListTableRowGroup beforeGroup, final int beforeIndex) {
+        impl.add(this, rowGroup, beforeGroup, beforeIndex);
     }
-
-    private native void insertBefore(Element parent, Element toAdd, Element before) /*-{
-      parent.insertBefore(toAdd, before);
-    }-*/;
 
     private void attach(final TableHeaderGroup headerGroup) {
         thead = headerGroup;
-        DOM.insertChild(getElement(), headerGroup.getElement(), 0);
+        impl.attach(this, headerGroup);
     }
 
     private void attach(final TableFooterGroup footerGroup) {
         tfoot = footerGroup;
-        DOM.appendChild(getElement(), footerGroup.getElement());
+        impl.attach(this, footerGroup);
     }
 
     private void detach(final ObjectListTableRowGroup rowGroup) {
@@ -231,6 +238,7 @@ public class ObjectListTable extends Panel implements SourcesMouseEvents {
                     final Object obj = objects.get(i);
                     final ObjectListTableRowGroup rowGroup = new ObjectListTableRowGroup(obj);
                     model.render(obj, rowGroup);
+                    //add(rowGroup, i);
                     ObjectListTableRowGroup before = null;
                     if (i < tbodies.size()) {
                         before = (ObjectListTableRowGroup)tbodies.get(i);
@@ -300,7 +308,7 @@ public class ObjectListTable extends Panel implements SourcesMouseEvents {
         }
     }
 
-    private class ObjectListTableRowGroup extends TableBodyGroup {
+    class ObjectListTableRowGroup extends TableBodyGroup {
         private final Object obj;
 
         ObjectListTableRowGroup(final Object obj) {
@@ -401,6 +409,11 @@ public class ObjectListTable extends Panel implements SourcesMouseEvents {
         }
     }
 
+
+    protected void onAttach() {
+        super.onAttach();
+        // TODO? onAttach rows?
+    }
 
     protected void onLoad() {
         super.onLoad();
