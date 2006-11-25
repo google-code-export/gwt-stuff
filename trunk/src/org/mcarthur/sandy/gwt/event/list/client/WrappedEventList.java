@@ -34,6 +34,9 @@ class WrappedEventList extends AbstractEventList implements EventList {
     }
 
     public boolean add(final Object element) {
+        if (element == null) {
+            throw new NullPointerException("null not allowed");
+        }
         final int index = delegate.size();
         final boolean b = delegate.add(element);
         fireListEvent(new ListEvent(this, ListEvent.ADDED, index));
@@ -41,11 +44,21 @@ class WrappedEventList extends AbstractEventList implements EventList {
     }
 
     public void add(final int index, final Object element) {
+        if (element == null) {
+            throw new NullPointerException("null not allowed");
+        }
         delegate.add(index, element);
         fireListEvent(new ListEvent(this, ListEvent.ADDED, index));
     }
 
     public boolean addAll(final Collection c) {
+        final Iterator iter = c.iterator();
+        while (iter.hasNext()) {
+            if (iter.next() == null) {
+                throw new NullPointerException("null not allowed");
+            }
+        }
+
         final int indexStart = delegate.size();
         final boolean b = delegate.addAll(c);
         fireListEvent(new ListEvent(this, ListEvent.ADDED, indexStart, delegate.size()));
@@ -53,6 +66,13 @@ class WrappedEventList extends AbstractEventList implements EventList {
     }
 
     public boolean addAll(final int index, final Collection c) {
+        final Iterator iter = c.iterator();
+        while (iter.hasNext()) {
+            if (iter.next() == null) {
+                throw new NullPointerException("null not allowed");
+            }
+        }
+
         final boolean b = delegate.addAll(index, c);
         fireListEvent(new ListEvent(this, ListEvent.ADDED, index, c.size()));
         return b;
@@ -214,6 +234,10 @@ class WrappedEventList extends AbstractEventList implements EventList {
 
     public Object[] toArray() {
         return delegate.toArray();
+    }
+
+    List getDelegate() {
+        return delegate;
     }
 
     private class WrappedEventListIterator implements Iterator {
