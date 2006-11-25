@@ -34,8 +34,10 @@ import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
+import org.mcarthur.sandy.gwt.event.list.client.SortedEventList;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 
@@ -47,21 +49,23 @@ import java.util.List;
 public class TestTable implements EntryPoint {
     private static VerticalPanel vp = new VerticalPanel();
 
-    private static ObjectListTable ot = new ObjectListTable(new OLTR());
+    private static ObjectListTable ot;
     private static int pCount = 0;
 
     public void onModuleLoad() {
+        ot = new ObjectListTable(new OLTR(), new SortedEventList(null));
+        //ot = new ObjectListTable(new OLTR(), EventLists.wrap(new ArrayList()));
         RootPanel.get("log").add(vp);
 
 
-        RootPanel.get("tableDiv").add(ot);
         final List objects = ot.getObjects();
 
         objects.add(new Person("Sandy", 28));
-        objects.add(new Person("Keebz", 25));
+        objects.add(0, new Person("Keebz", 25));
         objects.add(new Person("Bill", 33));
         objects.add(new Person("Ted", 55));
 
+        RootPanel.get("tableDiv").add(ot);
 
         final FlowPanel fp = new FlowPanel();
         final Button remove2 = new Button("Remove 2");
@@ -207,12 +211,34 @@ public class TestTable implements EntryPoint {
             final MenuBar menu = new MenuBar();
 
             final MenuBar subMenu = new MenuBar(true);
-            final MenuItem sortUp = new MenuItem("Test.", (Command)null);
-            final MenuItem sortDown = new MenuItem("Does", (Command)null);
-            final MenuItem hide = new MenuItem("Nothing", (Command)null);
+            final MenuItem sortUp = new MenuItem("Sort Up", new Command() {
+                Comparator c = new Comparator() {
+                        public int compare(Object o1, Object o2) {
+                            Person p1 = (Person)o1;
+                            Person p2 = (Person)o2;
+                            return p1.getName().compareTo(p2.getName());
+                        }
+                    };
+                public void execute() {
+                    final SortedEventList sel = (SortedEventList)ot.getObjects();
+                    sel.setComparator(c);
+                }
+            });
+            final MenuItem sortDown = new MenuItem("Sort Down", new Command() {
+                Comparator c = new Comparator() {
+                        public int compare(Object o1, Object o2) {
+                            Person p1 = (Person)o1;
+                            Person p2 = (Person)o2;
+                            return p2.getName().compareTo(p1.getName());
+                        }
+                    };
+                public void execute() {
+                    final SortedEventList sel = (SortedEventList)ot.getObjects();
+                    sel.setComparator(c);
+                }
+            });
             subMenu.addItem(sortUp);
             subMenu.addItem(sortDown);
-            subMenu.addItem(hide);
 
             final MenuItem name = new MenuItem("Name", subMenu);
             menu.addItem(name);
@@ -308,6 +334,10 @@ public class TestTable implements EntryPoint {
     private static class AgeLabel extends Label {
         public AgeLabel(final int age) {
             super(Integer.toString(age));
+        }
+
+        protected void onAttach() {
+            super.onAttach();
         }
 
         protected void onDetach() {
