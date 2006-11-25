@@ -21,6 +21,9 @@ import java.util.List;
 /**
  * An observable {@link List}.
  *
+ * EventList implementations do not handle <code>null</code> values very well.
+ * Don't expect them to work.
+ *
  * @author Sandy McArthur
  */
 public interface EventList extends List {
