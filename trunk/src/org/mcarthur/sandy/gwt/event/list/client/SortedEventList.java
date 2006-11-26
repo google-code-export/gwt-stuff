@@ -101,11 +101,13 @@ public class SortedEventList extends WrappedEventList implements EventList {
     }
 
     /**
-     * Same as {@link #remove(int) remove(index)} and {@link #add(Object) add(Object)}.
+     * Same as remove(index) and add(Object).
      *
      * @param index position of removed element.
      * @param element object to be added.
      * @return the removed element.
+     * @see #remove(int) 
+     * @see #add(Object) 
      */
     public Object set(final int index, final Object element) {
         final Object removed = super.remove(index);
