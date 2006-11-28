@@ -16,8 +16,10 @@
 
 package org.mcarthur.sandy.gwt.event.property.client;
 
+import java.beans.PropertyChangeListener;
+
 /**
- * A source for {@link PropertyChangeEvent}s
+ * A source for {@link java.beans.PropertyChangeEvent}s
  * that supports listeners only interested in specific properties.
  * There isn't a parallel interface in the java.beans package.
  *
@@ -30,7 +32,7 @@ public interface NamedPropertyChangeSource extends PropertyChangeSource {
      * 
      * @param propertyName The name of the property to listen on.
      * @param listener The PropertyChangeListener to be added.
-     * @see PropertyChangeSupport#addPropertyChangeListener(String,PropertyChangeListener)
+     * @see java.beans.PropertyChangeSupport#addPropertyChangeListener(String,PropertyChangeListener)
      */
     public void addPropertyChangeListener(String propertyName, PropertyChangeListener listener);
 
@@ -39,7 +41,7 @@ public interface NamedPropertyChangeSource extends PropertyChangeSource {
      *
      * @param propertyName The name of the property that was listened on.
      * @param listener The PropertyChangeListener to be removed.
-     * @see PropertyChangeSupport#removePropertyChangeListener(String,PropertyChangeListener)
+     * @see java.beans.PropertyChangeSupport#removePropertyChangeListener(String,PropertyChangeListener)
      */
     public void removePropertyChangeListener(String propertyName, PropertyChangeListener listener);
 }
