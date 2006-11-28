@@ -16,8 +16,10 @@
 
 package org.mcarthur.sandy.gwt.event.property.client;
 
+import java.beans.PropertyChangeListener;
+
 /**
- * A source for {@link PropertyChangeEvent}s.
+ * A source for {@link java.beans.PropertyChangeEvent}s.
  * There isn't a parallel in the java.beans package.
  *
  * @author Sandy McArthur
@@ -27,16 +29,16 @@ public interface PropertyChangeSource {
      * Add a PropertyChangeListener for all properties.
      *
      * @param listener the PropertyChangeListener to be added.
-     * @see PropertyChangeSupport#addPropertyChangeListener(PropertyChangeListener)
+     * @see java.beans.PropertyChangeSupport#addPropertyChangeListener(PropertyChangeListener)
      */
     public void addPropertyChangeListener(PropertyChangeListener listener);
 
     /**
      * Remove a PropertyChangeListener for all properties.
-     * This removes a listener that was registered with {@link #addPropertyChangeListener(PropertyChangeListener)}.
+     * This removes a listener that was registered with {@link #addPropertyChangeListener(java.beans.PropertyChangeListener)}.
      *
      * @param listener the PropertyChangeListener to be removed.
-     * @see PropertyChangeSupport#removePropertyChangeListener(PropertyChangeListener)
+     * @see java.beans.PropertyChangeSupport#removePropertyChangeListener(PropertyChangeListener)
      */
     public void removePropertyChangeListener(PropertyChangeListener listener);
 }
