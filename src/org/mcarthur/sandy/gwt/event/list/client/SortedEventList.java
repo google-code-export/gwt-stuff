@@ -41,6 +41,11 @@ public class SortedEventList extends WrappedEventList implements EventList {
         }
     };
 
+
+    public SortedEventList() {
+        this(NATURAL);
+    }
+
     public SortedEventList(final Comparator comparator) {
         super(new ArrayList());
         this.comparator = comparator;
@@ -125,14 +130,38 @@ public class SortedEventList extends WrappedEventList implements EventList {
      * @param comparator sort order for this list, null for natural ordering.
      */
     public void setComparator(final Comparator comparator) {
-        if (comparator != this.comparator) {
-            this.comparator = comparator;
-            // XXX: Optimize me
-            final List all = new ArrayList();
-            all.addAll(this);
-            Collections.sort(all, comparator != null ? comparator : NATURAL);
-            clear();
-            addAll(all);
+        this.comparator = comparator;
+        resort();
+    }
+
+    public void resort() {
+        if (size() == 0) {
+            // nothing to sort
+            return;
         }
+        final List all = new ArrayList();
+        all.addAll(this);
+        Collections.sort(all, comparator != null ? comparator : NATURAL);
+
+        // XXX: Optimize me
+        if (true) {
+            clear();
+
+        } else {
+            // try to keep runs
+            final Iterator thisIter = this.iterator();
+            final Iterator sortIter = all.iterator();
+            while (sortIter.hasNext()) {
+                final Object thisObj = thisIter.next();
+                final Object sortObj = sortIter.next();
+
+                if (thisObj != sortObj) {
+                    thisIter.remove();
+                } else {
+                    sortIter.remove();
+                }
+            }
+        }
+        addAll(all);
     }
 }
