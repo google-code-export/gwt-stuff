@@ -22,6 +22,7 @@ import com.google.gwt.user.client.DeferredCommand;
 import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Button;
+import com.google.gwt.user.client.ui.ChangeListener;
 import com.google.gwt.user.client.ui.CheckBox;
 import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.FlowPanel;
@@ -144,6 +145,7 @@ public class TestTable implements EntryPoint {
 
             final TableCell a = tr.newTableDataCell();
             final CheckBox checkBox = new CheckBox();
+            checkBox.setEnabled(false);
             checkBox.setTitle("Doesn't do anything.");
             a.add(checkBox);
             a.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_CENTER);
@@ -153,6 +155,14 @@ public class TestTable implements EntryPoint {
 
             final TableCell nameCell = tr.newTableDataCell();
             final TextBox tb = new TextBox();
+            tb.addChangeListener(new ChangeListener() {
+                public void onChange(final Widget sender) {
+                    final TextBox tb = (TextBox)sender;
+                    // FIXME: BUG: Rows that are added before the table is attached, don't fire events.
+                    Window.setTitle(tb.getText());
+                    //person.setName(tb.getText());
+                }
+            });
             tb.setText(person.getName());
             nameCell.add(tb);
             tr.add(nameCell);
@@ -192,63 +202,99 @@ public class TestTable implements EntryPoint {
         }
 
         public void renderHeader(final TableHeaderGroup headerGroup) {
-            render(headerGroup);
+            renderHeaderAndFooter(headerGroup);
         }
 
         public void renderFooter(final TableFooterGroup footerGroup) {
-            render(footerGroup);
+            renderHeaderAndFooter(footerGroup);
         }
 
-        private void render(final TableRowGroup rowGroup) {
+        private void renderHeaderAndFooter(final TableRowGroup rowGroup) {
             TableRow tr = rowGroup.newTableRow();
 
             TableHeaderCell th = tr.newTableHeaderCell();
             th.add(new Label("rowSpan=2", true));
             th.setRowSpan(2);
             tr.add(th);
+            {
+                th = tr.newTableHeaderCell();
+                final MenuBar nameMenu = new MenuBar();
 
-            th = tr.newTableHeaderCell();
-            final MenuBar menu = new MenuBar();
-
-            final MenuBar subMenu = new MenuBar(true);
-            final MenuItem sortUp = new MenuItem("Sort Up", new Command() {
-                Comparator c = new Comparator() {
+                final MenuBar nameSubMenu = new MenuBar(true);
+                final MenuItem nameSortUp = new MenuItem("Sort Up", new Command() {
+                    Comparator c = new Comparator() {
                         public int compare(Object o1, Object o2) {
                             Person p1 = (Person)o1;
                             Person p2 = (Person)o2;
                             return p1.getName().compareTo(p2.getName());
                         }
                     };
-                public void execute() {
-                    final SortedEventList sel = (SortedEventList)ot.getObjects();
-                    sel.setComparator(c);
-                }
-            });
-            final MenuItem sortDown = new MenuItem("Sort Down", new Command() {
-                Comparator c = new Comparator() {
+                    public void execute() {
+                        final SortedEventList sel = (SortedEventList)ot.getObjects();
+                        sel.setComparator(c);
+                    }
+                });
+                final MenuItem nameSortDown = new MenuItem("Sort Down", new Command() {
+                    Comparator c = new Comparator() {
                         public int compare(Object o1, Object o2) {
                             Person p1 = (Person)o1;
                             Person p2 = (Person)o2;
                             return p2.getName().compareTo(p1.getName());
                         }
                     };
-                public void execute() {
-                    final SortedEventList sel = (SortedEventList)ot.getObjects();
-                    sel.setComparator(c);
-                }
-            });
-            subMenu.addItem(sortUp);
-            subMenu.addItem(sortDown);
+                    public void execute() {
+                        final SortedEventList sel = (SortedEventList)ot.getObjects();
+                        sel.setComparator(c);
+                    }
+                });
+                nameSubMenu.addItem(nameSortUp);
+                nameSubMenu.addItem(nameSortDown);
 
-            final MenuItem name = new MenuItem("Name", subMenu);
-            menu.addItem(name);
-            th.add(menu);
-            tr.add(th);
+                final MenuItem nameMenuItem = new MenuItem("Name", nameSubMenu);
+                nameMenu.addItem(nameMenuItem);
+                th.add(nameMenu);
+                tr.add(th);
+            }
 
-            th = tr.newTableHeaderCell();
-            th.add(new Label("Age"));
-            tr.add(th);
+            {
+                th = tr.newTableHeaderCell();
+                final MenuBar ageMenu = new MenuBar();
 
+                final MenuBar ageSubMenu = new MenuBar(true);
+                final MenuItem ageSortUp = new MenuItem("Sort Up", new Command() {
+                    Comparator c = new Comparator() {
+                        public int compare(Object o1, Object o2) {
+                            Person p1 = (Person)o1;
+                            Person p2 = (Person)o2;
+                            return p1.getAge() - p2.getAge();
+                        }
+                    };
+                    public void execute() {
+                        final SortedEventList sel = (SortedEventList)ot.getObjects();
+                        sel.setComparator(c);
+                    }
+                });
+                final MenuItem ageSortDown = new MenuItem("Sort Down", new Command() {
+                    Comparator c = new Comparator() {
+                        public int compare(Object o1, Object o2) {
+                            Person p1 = (Person)o1;
+                            Person p2 = (Person)o2;
+                            return p2.getAge() - p1.getAge();
+                        }
+                    };
+                    public void execute() {
+                        final SortedEventList sel = (SortedEventList)ot.getObjects();
+                        sel.setComparator(c);
+                    }
+                });
+                ageSubMenu.addItem(ageSortUp);
+                ageSubMenu.addItem(ageSortDown);
+
+                final MenuItem ageMenuItem = new MenuItem("Age", ageSubMenu);
+                ageMenu.addItem(ageMenuItem);
+                th.add(ageMenu);
+                tr.add(th);
+            }
             th = tr.newTableHeaderCell();
             th.add(new Label("Remove"));
             tr.add(th);
@@ -346,7 +392,7 @@ public class TestTable implements EntryPoint {
     }
 
     private static class Person implements Comparable {
-        private final String name;
+        private String name;
         private final int age;
 
 
@@ -357,6 +403,10 @@ public class TestTable implements EntryPoint {
 
         public String getName() {
             return name;
+        }
+
+        public void setName(final String name) {
+            this.name = name;
         }
 
         public int getAge() {
