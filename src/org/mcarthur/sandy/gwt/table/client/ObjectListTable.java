@@ -188,6 +188,10 @@ public class ObjectListTable extends Panel implements SourcesMouseEvents {
         }
         tbodies.add(beforeIndex, rowGroup);
         DOM.insertChild(getElement(), rowGroup.getElement(), domIndex);
+
+        // TODO? add to widgets before or after impl.add?
+        addWidgets(rowGroup);
+        
     }
 
     private void add(final ObjectListTableRowGroup rowGroup, final ObjectListTableRowGroup beforeGroup) {
@@ -202,16 +206,34 @@ public class ObjectListTable extends Panel implements SourcesMouseEvents {
 
     private void add(final ObjectListTableRowGroup rowGroup, final ObjectListTableRowGroup beforeGroup, final int beforeIndex) {
         impl.add(this, rowGroup, beforeGroup, beforeIndex);
+        // TODO? add to widgets before or after impl.add?
+        addWidgets(rowGroup);
+    }
+
+    private void addWidgets(final TableRowGroup rowGroup) {
+        final Iterator iter = rowGroup.getRows().iterator();
+        while (iter.hasNext()) {
+            final TableRow tr = (TableRow)iter.next();
+            final Iterator cells = tr.iterator();
+            while (cells.hasNext()) {
+                final Widget cell = (Widget)cells.next();
+                if (!widgets.contains(cell)) {
+                    widgets.add(cell);
+                }
+            }
+        }
     }
 
     private void attach(final TableHeaderGroup headerGroup) {
         thead = headerGroup;
         impl.attach(this, headerGroup);
+        addWidgets(headerGroup);
     }
 
     private void attach(final TableFooterGroup footerGroup) {
         tfoot = footerGroup;
         impl.attach(this, footerGroup);
+        addWidgets(footerGroup);
     }
 
     private void detach(final ObjectListTableRowGroup rowGroup) {
@@ -227,6 +249,7 @@ public class ObjectListTable extends Panel implements SourcesMouseEvents {
             while (trit.hasNext()) {
                 final TableCell tc = (TableCell)trit.next();
                 disown(tc);
+                widgets.remove(tc);
             }
         }
     }
@@ -405,14 +428,12 @@ public class ObjectListTable extends Panel implements SourcesMouseEvents {
     private class ObjectListTableHeaderCell extends TableHeaderCell {
         public ObjectListTableHeaderCell() {
             addStyleName("gwtstuff-ObjectListTable-ObjectListTableHeaderCell");
-
         }
     }
 
 
     protected void onAttach() {
         super.onAttach();
-        // TODO? onAttach rows?
     }
 
     protected void onLoad() {

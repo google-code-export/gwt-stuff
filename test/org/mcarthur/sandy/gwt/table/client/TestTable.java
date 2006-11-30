@@ -28,6 +28,8 @@ import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.HasHorizontalAlignment;
 import com.google.gwt.user.client.ui.HasVerticalAlignment;
+import com.google.gwt.user.client.ui.KeyboardListener;
+import com.google.gwt.user.client.ui.KeyboardListenerAdapter;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.MenuBar;
 import com.google.gwt.user.client.ui.MenuItem;
@@ -92,23 +94,25 @@ public class TestTable implements EntryPoint {
         });
         fp.add(addPerson);
 
-        final Button transpose = new Button("Transpose");
-        transpose.setTitle("Switch two Person instances in the List");
-        transpose.addClickListener(new ClickListener() {
-            public void onClick(final Widget sender) {
-                final int a = (int)(Math.random() * objects.size());
-                int b;
-                do {
-                    b = (int)(Math.random() * objects.size());
-                } while (a == b);
-                final Object oa = objects.get(a);
-                final Object ob = objects.get(b);
+        if (!(ot.getObjects() instanceof SortedEventList)) {
+            final Button transpose = new Button("Transpose");
+            transpose.setTitle("Switch two Person instances in the List");
+            transpose.addClickListener(new ClickListener() {
+                public void onClick(final Widget sender) {
+                    final int a = (int)(Math.random() * objects.size());
+                    int b;
+                    do {
+                        b = (int)(Math.random() * objects.size());
+                    } while (a == b);
+                    final Object oa = objects.get(a);
+                    final Object ob = objects.get(b);
 
-                objects.set(b, oa);
-                objects.set(a, ob);
-            }
-        });
-        fp.add(transpose);
+                    objects.set(b, oa);
+                    objects.set(a, ob);
+                }
+            });
+            fp.add(transpose);
+        }
 
         final int instances = 500;
         final Button oneK = new Button("" + instances);
@@ -159,8 +163,19 @@ public class TestTable implements EntryPoint {
                 public void onChange(final Widget sender) {
                     final TextBox tb = (TextBox)sender;
                     // FIXME: BUG: Rows that are added before the table is attached, don't fire events.
-                    Window.setTitle(tb.getText());
-                    //person.setName(tb.getText());
+                    //Window.setTitle(tb.getText());
+                    person.setName(tb.getText());
+                    final SortedEventList sel = (SortedEventList)ot.getObjects();
+                    sel.resort();
+                }
+            });
+            tb.addKeyboardListener(new KeyboardListenerAdapter() {
+                public void onKeyUp(Widget sender, char keyCode, int modifiers) {
+                    super.onKeyUp(sender, keyCode, modifiers);
+                    if (KeyboardListener.KEY_ENTER == keyCode) {
+                        final TextBox tb = (TextBox)sender;
+                        tb.setFocus(false);
+                    }
                 }
             });
             tb.setText(person.getName());
@@ -378,8 +393,10 @@ public class TestTable implements EntryPoint {
     }
 
     private static class AgeLabel extends Label {
+        private final int age;
         public AgeLabel(final int age) {
             super(Integer.toString(age));
+            this.age = age;
         }
 
         protected void onAttach() {
@@ -388,6 +405,10 @@ public class TestTable implements EntryPoint {
 
         protected void onDetach() {
             super.onDetach();
+        }
+
+        public void removeFromParent() {
+            super.removeFromParent();
         }
     }
 
