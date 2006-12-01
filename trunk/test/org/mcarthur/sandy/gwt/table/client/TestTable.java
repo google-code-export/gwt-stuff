@@ -37,6 +37,7 @@ import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
+import org.mcarthur.sandy.gwt.event.list.client.EventLists;
 import org.mcarthur.sandy.gwt.event.list.client.SortedEventList;
 
 import java.util.ArrayList;
@@ -56,7 +57,7 @@ public class TestTable implements EntryPoint {
     private static int pCount = 0;
 
     public void onModuleLoad() {
-        ot = new ObjectListTable(new OLTR(), new SortedEventList(null));
+        ot = new ObjectListTable(new OLTR(), EventLists.sortedEventList());
         //ot = new ObjectListTable(new OLTR(), EventLists.wrap(new ArrayList()));
         RootPanel.get("log").add(vp);
 

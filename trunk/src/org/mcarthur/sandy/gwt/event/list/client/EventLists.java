@@ -16,6 +16,7 @@
 
 package org.mcarthur.sandy.gwt.event.list.client;
 
+import java.util.Comparator;
 import java.util.List;
 
 /**
@@ -26,7 +27,27 @@ import java.util.List;
 public class EventLists {
     private EventLists() {
     }
-    
+
+    /**
+     * Return a <code>SortedEventList</code> that defaults to natural ordering.
+     *
+     * @return a <code>SortedEventList</code>.
+     * @see Comparable
+     */
+    public static SortedEventList sortedEventList() {
+        return sortedEventList(null);
+    }
+
+    /**
+     * Return a <code>SortedEventList</code>.
+     *
+     * @param comparator the Comparator used to sort the list, if <code>null</code> natural ordering is used.
+     * @return a <code>SortedEventList</code>.
+     */
+    public static SortedEventList sortedEventList(final Comparator comparator) {
+        return new SortedEventListImpl(comparator);
+    }
+
     /**
      * Wrap a <code>List</code> so it can be monitored for changes. The list to be wrapped must not
      * be modified except by methods of the returned EventList else events will be missed.
