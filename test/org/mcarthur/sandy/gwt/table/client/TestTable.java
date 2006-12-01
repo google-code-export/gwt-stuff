@@ -167,7 +167,7 @@ public class TestTable implements EntryPoint {
                     //Window.setTitle(tb.getText());
                     person.setName(tb.getText());
                     final SortedEventList sel = (SortedEventList)ot.getObjects();
-                    sel.resort();
+                    sel.sort();
                 }
             });
             tb.addKeyboardListener(new KeyboardListenerAdapter() {

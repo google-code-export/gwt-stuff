@@ -16,6 +16,7 @@
 
 package org.mcarthur.sandy.gwt.event.list.client;
 
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 
@@ -26,6 +27,28 @@ import java.util.List;
  */
 public class EventLists {
     private EventLists() {
+    }
+
+    /**
+     * Return a new, empty EventList.
+     *
+     * @return a new, empty EventList.
+     */
+    public static EventList eventList() {
+        return wrap(new ArrayList());
+    }
+
+    public static FilteredEventList filteredEventList() {
+        return filteredEventList(eventList());
+    }
+
+    /**
+     * ALPHA CODE, do not use.
+     * @param eventList the event list to be wrapped.
+     * @return
+     */
+    public static FilteredEventList filteredEventList(EventList eventList) {
+        return null;
     }
 
     /**
@@ -60,8 +83,10 @@ public class EventLists {
     public static EventList wrap(final List list) {
         if (list instanceof EventList) {
             return (EventList)list;
-        } else {
+        } else if (list != null) {
             return new WrappedEventList(list);
+        } else {
+            throw new IllegalArgumentException("list must not be null.");
         }
     }
 }
