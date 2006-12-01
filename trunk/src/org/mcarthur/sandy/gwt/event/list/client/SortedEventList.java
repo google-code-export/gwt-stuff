@@ -60,9 +60,10 @@ public interface SortedEventList extends EventList {
     public void setComparator(Comparator comparator);
 
     /**
-     * Force the list to be resorted.
+     * Force the list to be (re)sorted.
+     * This should be invoked if the elements in the list are mutable and one or more of them have changed.
      */
-    public void resort();
+    public void sort();
 
     /**
      * The has the same behavior as {@link #add(Object)}.

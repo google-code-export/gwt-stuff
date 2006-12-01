@@ -150,9 +150,6 @@
             <fileset dir="src">
                 <include name="org/mcarthur/sandy/gwt/event/list/**"/>
             </fileset>
-            <fileset dir="test">
-                <include name="org/mcarthur/sandy/gwt/event/list/**"/>
-            </fileset>
         </jar>
         <copy file="doc/GWT-Stuff-EventList.txt" todir="."/>
     </target>
@@ -164,9 +161,6 @@
             </fileset>
             <!-- Get everything; source, modules, html files -->
             <fileset dir="src">
-                <include name="org/mcarthur/sandy/gwt/event/property/**"/>
-            </fileset>
-            <fileset dir="test">
                 <include name="org/mcarthur/sandy/gwt/event/property/**"/>
             </fileset>
         </jar>
@@ -199,9 +193,6 @@
                 <exclude name="**/test/**"/>
                 <exclude name="**/emul/**"/>
             </packageset>
-            <packageset dir="src/org/mcarthur/sandy/gwt/event/property/emul">
-                <include name="**"/>
-            </packageset>
             <doctitle><![CDATA[${ant.project.name}]]></doctitle>
             <header><![CDATA[<a href="http://code.google.com/p/gwt-stuff/">${ant.project.name}</a>]]></header>
             <footer><![CDATA[${javadoc.footer}]]></footer>
@@ -211,7 +202,6 @@
             <group title="Property Change Events" packages="org.mcarthur.sandy.gwt.event.property:org.mcarthur.sandy.gwt.event.property.*"/>
             <group title="Login Panel" packages="org.mcarthur.sandy.gwt.login:org.mcarthur.sandy.gwt.login.*"/>
             <group title="Tables" packages="org.mcarthur.sandy.gwt.table:org.mcarthur.sandy.gwt.table.*"/>
-            <group title="Emulated JRE" packages="java:java.*"/>
             <classpath refid="project.class.path"/>
             <classpath refid="gwt.class.path"/>
             <link href="http://java.sun.com/j2se/1.5.0/docs/api/"/>
