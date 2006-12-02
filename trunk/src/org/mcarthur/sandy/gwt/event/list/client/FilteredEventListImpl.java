@@ -16,9 +16,12 @@
 
 package org.mcarthur.sandy.gwt.event.list.client;
 
+import com.google.gwt.core.client.GWT;
+
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
-import java.util.NoSuchElementException;
+import java.util.List;
 
 /**
  * TODO: Write Javadoc
@@ -30,10 +33,64 @@ class FilteredEventListImpl extends AbstractEventList implements FilteredEventLi
     /**
      * A translation array where translate[unfiltered] is the index of the element in delegate.
      */
-    private int[] translate;
-    private int translateSize = 0;
+    private List translate = new ArrayList();
 
-    private Filter filter = EVERYTHING;
+    private static class Index extends Number {
+        private int index = -1;
+
+        public Index() {
+        }
+
+        public Index(final int index) {
+            this.index = index;
+        }
+
+        public int getIndex() {
+            return index;
+        }
+
+        public void setIndex(final int index) {
+            this.index = index;
+        }
+
+        public void add(final int amt) {
+            setIndex(getIndex() + amt);
+        }
+
+        public void sub(final int amt) {
+            setIndex(getIndex() - amt);
+        }
+
+        public byte byteValue() {
+            return (byte)index;
+        }
+
+        public short shortValue() {
+            return (short)index;
+        }
+
+        public int intValue() {
+            return index;
+        }
+
+        public long longValue() {
+            return index;
+        }
+
+        public float floatValue() {
+            return index;
+        }
+
+        public double doubleValue() {
+            return index;
+        }
+
+        public String toString() {
+            return Integer.toString(index);
+        }
+    }
+
+    private Filter filter = null;
 
     private static final Filter EVERYTHING = new Filter() {
         public boolean accept(final Object element) {
@@ -47,9 +104,7 @@ class FilteredEventListImpl extends AbstractEventList implements FilteredEventLi
 
     public FilteredEventListImpl(final EventList delegate, final Filter filter) {
         this.delegate = delegate;
-        translate = new int[delegate.size()];
         delegate.addListEventListener(new FilteredListEventListener());
-        filter();
         setFilter(filter);
     }
 
@@ -57,41 +112,75 @@ class FilteredEventListImpl extends AbstractEventList implements FilteredEventLi
         public void listChanged(final ListEvent listEvent) {
             final EventList delegate = listEvent.getSourceList();
             if (listEvent.isAdded()) {
-                final int delegateSize = delegate.size();
-                if (delegateSize > translate.length) {
-                    final int[] t = new int[delegateSize];
-                    for (int i = 0; i < translate.length; i++) {
-                        t[i] = translate[i];
-                    }
-                    for (int i = translate.length; i < t.length; i++) {
-                        t[i] = Integer.MIN_VALUE;
-                    }
-                    translate = t;
-                }
-
-                // If not at the end, then shuffle
-                if (listEvent.getIndexEnd() < translate.length) {
-                    final int delta = listEvent.getIndexEnd() - listEvent.getIndexStart();
-                    for (int i = translate.length; i >= listEvent.getIndexEnd(); i--) {
-                        translate[i] = translate[i-delta] + delta;
-                    }
-                    for (int i = listEvent.getIndexStart(); i < listEvent.getIndexEnd(); i++) {
-                        translate[i] = Integer.MIN_VALUE;
+                final int delta = listEvent.getIndexEnd() - listEvent.getIndexStart();
+                final Iterator iter = translate.iterator();
+                int insertAt = 0;
+                while (iter.hasNext()) {
+                    final Index index = (Index)iter.next();
+                    // Assumes Filter maintains order
+                    if (index.intValue() >= listEvent.getIndexStart()) {
+                        index.add(delta);
+                    } else {
+                        insertAt++;
                     }
                 }
 
                 for (int i = listEvent.getIndexStart(); i < listEvent.getIndexEnd(); i++) {
                     final Object o = delegate.get(i);
                     if (filter.accept(o)) {
-                        translate[i] = i;
-                        fireListEvent(new ListEvent(FilteredEventListImpl.this, ListEvent.ADDED, indexOf(o)));
+                        translate.add(insertAt, new Index(i));
+                        // XXX: optimize for consecutive objects
+                        fireListEvent(new ListEvent(FilteredEventListImpl.this, ListEvent.ADDED, insertAt));
+                        insertAt++;
                     }
                 }
 
             } else if (listEvent.isChanged()) {
+                for (int i = listEvent.getIndexStart(); i < listEvent.getIndexEnd(); i++) {
+                    final boolean accepted = filter.accept(delegate.get(i));
+                    for (int k=0; k < translate.size(); k++) {
+                        final Index index = (Index)translate.get(k);
+                        if (index.intValue() == i) {
+                            if (accepted) {
+                                fireListEvent(new ListEvent(FilteredEventListImpl.this, ListEvent.CHANGED, k));
+                            } else {
+                                translate.remove(k);
+                                fireListEvent(new ListEvent(FilteredEventListImpl.this, ListEvent.REMOVED, k));
+                                k--;
+                            }
+                            break;
+                        } else if (i < index.intValue()) {
+                            if (accepted) {
+                                translate.add(k, new Index(i));
+                                fireListEvent(new ListEvent(FilteredEventListImpl.this, ListEvent.ADDED, k));
+                            }
+                            break;
+                        }
+                    }
+                }
 
             } else if (listEvent.isRemoved()) {
-                // TODO: trim translate
+                final int delta = listEvent.getIndexEnd() - listEvent.getIndexStart();
+                final Iterator iter = translate.iterator();
+                int pos = 0;
+                int lower = delegate.size();
+                int upper = -1;
+                while (iter.hasNext()) {
+                    final Index index = (Index)iter.next();
+                    final int i = index.intValue();
+                    // assumes filter maintains order
+                    if (listEvent.getIndexStart() <= i && i < listEvent.getIndexEnd()) {
+                        iter.remove();
+                        lower = Math.min(lower, pos);
+                        upper = Math.max(pos, upper);
+                    } else if (listEvent.getIndexEnd() <= i) {
+                        index.sub(delta);
+                    }
+                    pos++;
+                }
+                if (lower <= upper) {
+                    fireListEvent(new ListEvent(FilteredEventListImpl.this, ListEvent.REMOVED, lower, upper+1));
+                }
             }
         }
     }
@@ -109,18 +198,39 @@ class FilteredEventListImpl extends AbstractEventList implements FilteredEventLi
     }
 
     public void filter() {
-        // nothing to do in this implementation
+        int pos = 0;
+        for (int i=0; i < delegate.size(); i++) {
+            final Object o = delegate.get(i);
+            final boolean accepted = filter.accept(o);
+            if (accepted) {
+                if (pos < translate.size()) {
+                    final Index index = (Index)translate.get(pos);
+                    if (index.intValue() != i) {
+                        translate.add(pos, new Index(i));
+                        fireListEvent(new ListEvent(this, ListEvent.ADDED, pos));
+                    } // else already there, no change
+                } else {
+                    translate.add(new Index(i));
+                    fireListEvent(new ListEvent(this, ListEvent.ADDED, translate.size()-1));
+                }
+                pos++;
+            } else {
+                if (pos < translate.size()) {
+                    final Index index = (Index)translate.get(pos);
+                    if (index.intValue() == i) {
+                        translate.remove(pos);
+                        fireListEvent(new ListEvent(this, ListEvent.REMOVED, pos));
+                    }
+                }
+            }
+        }
+        if (pos != translate.size()) {
+            throw new IllegalStateException("pos: " + pos + " size: " + translate.size());
+        }
     }
 
-
-    // TODO: Everything below here is crap!
-
     public boolean add(final Object o) {
-        if (delegate.add(o)) {
-            return filter.accept(o);
-        } else {
-            return false;
-        }
+        return delegate.add(o) && filter.accept(o);
     }
 
     public void add(final int index, final Object element) {
@@ -130,7 +240,7 @@ class FilteredEventListImpl extends AbstractEventList implements FilteredEventLi
     }
 
     public boolean addAll(final Collection c) {
-        return super.addAll(c);
+        return delegate.addAll(c);
     }
 
     public boolean addAll(final int index, final Collection c) {
@@ -154,29 +264,16 @@ class FilteredEventListImpl extends AbstractEventList implements FilteredEventLi
     }
 
     public Object get(final int index) {
-        final Iterator iter = iterator();
-        int i = -1;
-        while (iter.hasNext()) {
-            final Object o = iter.next();
-            i++;
-            if (index == i) {
-                return o;
-            }
+        if (index < size()) {
+            final Index idx = (Index)translate.get(index);
+            return delegate.get(idx.intValue());
+        } else {
+            throw new IndexOutOfBoundsException("index: " + index + " must be less than size: " + size());
         }
-        return null;
     }
 
     public int indexOf(final Object o) {
-        final Iterator iter = iterator();
-        int i = -1;
-        while (iter.hasNext()) {
-            final Object obj = iter.next();
-            i++;
-            if (o == obj) {
-                return i;
-            }
-        }
-        return -1;
+        return super.indexOf(o);
     }
 
     public boolean isEmpty() {
@@ -184,31 +281,16 @@ class FilteredEventListImpl extends AbstractEventList implements FilteredEventLi
     }
 
     public int lastIndexOf(final Object o) {
-        int found = -1;
-        final Iterator iter = iterator();
-        int i = -1;
-        while (iter.hasNext()) {
-            final Object obj = iter.next();
-            i++;
-            if (o.equals(obj)) {
-                found = i;
-            }
-        }
-        return found;
+        return super.lastIndexOf(o);
     }
 
     public Object remove(final int index) {
-        final Iterator iter = iterator();
-        int i = -1;
-        while (iter.hasNext()) {
-            Object o = iter.next();
-            i++;
-            if (index == i) {
-                iter.remove();
-                return o;
-            }
+        if (index < size()) {
+            final Index idx = (Index)translate.get(index);
+            return delegate.remove(idx.intValue());
+        } else {
+            throw new IndexOutOfBoundsException(index + " out of bounds");
         }
-        throw new IndexOutOfBoundsException(index + " out of bounds");
     }
 
     public boolean remove(final Object o) {
@@ -216,7 +298,30 @@ class FilteredEventListImpl extends AbstractEventList implements FilteredEventLi
     }
 
     public boolean removeAll(final Collection c) {
-        return super.removeAll(c);
+        //return super.removeAll(c);
+        boolean modified = false;
+        boolean again;
+        do {
+            again = false;
+            final Iterator e = iterator();
+            try {
+                while (e.hasNext()) {
+                    if (c.contains(e.next())) {
+                        e.remove();
+                        modified = true;
+                    }
+                }
+            } catch (RuntimeException re) {
+                if (GWT.getTypeName(re).equals("java.util.ConcurrentModificationException")) {
+                    again = true;
+                } else {
+                    throw re;
+                }
+
+            }
+        } while (again);
+        return modified;
+
     }
 
     public boolean retainAll(final Collection c) {
@@ -224,19 +329,16 @@ class FilteredEventListImpl extends AbstractEventList implements FilteredEventLi
     }
 
     public Object set(final int index, final Object element) {
-        final Object o = get(index);
-        final int p = delegate.indexOf(o);
-        return super.set(p, element);
+        if (index < size()) {
+            final Index idx = (Index)translate.get(index);
+            return delegate.set(idx.intValue(), element);
+        } else {
+            throw new IndexOutOfBoundsException(index + " out of bounds");
+        }
     }
 
     public int size() {
-        int i = 0;
-        final Iterator iter = iterator();
-        while (iter.hasNext()) {
-            iter.next();
-            i++;
-        }
-        return i;
+        return translate.size();
     }
 
     public Object[] toArray() {
@@ -245,49 +347,25 @@ class FilteredEventListImpl extends AbstractEventList implements FilteredEventLi
 
     public Iterator iterator() {
         return new Iterator() {
-            int cursor = -1;
-            int lastRet = -1;
+            private Iterator iter = translate.iterator();
+            private Index idx = null;
 
             public boolean hasNext() {
-                for (int i = cursor+1; i < delegate.size(); i++) {
-                    if (filter.accept(delegate.get(i))) {
-                        return true;
-                    }
-                }
-                return false;
+                return iter.hasNext();
             }
 
             public Object next() {
-                if (cursor == -1) {
-                    advance();
-                }
-                if (cursor < delegate.size()) {
-                    final Object next = delegate.get(cursor);
-                    lastRet = cursor;
-                    advance();
-                    return next;
-                } else {
-                    throw new NoSuchElementException();
-                }
-            }
-
-            private void advance() {
-                for (cursor+=1; cursor < delegate.size(); cursor++) {
-                    if (filter.accept(delegate.get(cursor))) {
-                        return;
-                    }
-                }
+                idx = (Index)iter.next();
+                return delegate.get(idx.intValue());
             }
 
             public void remove() {
-                if (lastRet == -1) {
-                    throw new IllegalStateException();
+                if (idx != null) {
+                    delegate.remove(idx.intValue());
+                    idx = null;
+                } else {
+                    throw new IllegalStateException("call next() first");
                 }
-                delegate.remove(lastRet);
-                if (lastRet < cursor) {
-                    cursor--;
-                }
-                lastRet = -1;
             }
         };
     }

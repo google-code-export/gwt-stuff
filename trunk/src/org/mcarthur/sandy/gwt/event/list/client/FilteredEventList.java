@@ -27,15 +27,32 @@ import java.util.Iterator;
  * Elements in this list will be in one of two groups, filtered and unfiltered.
  * Filtered elements are not visable via this list and many methods do not act on them.
  * Unfiltered elements are visable via this list.
+ * </p>
  *
- * If the filter is changed the
+ * <p>
+ * You are encouraged to use immutable objects as elements in a FilteredEventList so that the list
+ * always presents the correct results. If that is not possible you can manually invoke
+ * {@link #filter()} to force the list to be (re)filtered.
  * </p>
  *
  * @author Sandy McArthur
  */
 public interface FilteredEventList extends EventList {
 
+    /**
+     * Get the current filter used to select which elements are presented by this list.
+     * If <code>null</code> is returned then all elements are included.
+     *
+     * @return the current filter used to select which elements are presented by this list or <code>null</code>.
+     */
     public Filter getFilter();
+
+    /**
+     * Set the current filter used to select which elements are presented by this list.
+     * If <code>filter</code> is <code>null</code> then all elements are included.
+     *
+     * @param filter the current filter used to select which elements are presented by this list or <code>null</code> for no filter.
+     */
     public void setFilter(Filter filter);
 
     /**

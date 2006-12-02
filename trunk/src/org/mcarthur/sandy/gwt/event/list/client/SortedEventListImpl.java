@@ -35,6 +35,13 @@ import java.util.List;
 class SortedEventListImpl extends WrappedEventList implements SortedEventList {
     private Comparator comparator;
 
+    private static final Comparator NATURAL = new Comparator() {
+        public int compare(final Object o1, final Object o2) {
+            return ((Comparable)o1).compareTo(o2);
+        }
+    };
+
+
     public SortedEventListImpl() {
         this(null);
     }
