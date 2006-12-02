@@ -7,27 +7,35 @@
     <target name="init">
         <tstamp/>
 
+        <!-- Configure: either edit there here or specify with -Dname=value when invking Ant -->
         <property name="gwt.basedir" value="C:/gwt-windows-1.2.22/" description="The base directory where you installed GWT."/>
         <property name="gwt.compiler.style" value="OBF" description="GWTCompiler -style option value, defaults to OBF"/>
 
-
-        <condition property="gwt.jvmarg" value="-XstartOnFirstThread" else="-Xmixed">
-            <os family="mac"/>
-        </condition>
-
+        <!-- Classpath to compile sources -->
         <path id="project.class.path">
             <pathelement path="${basedir}/src"/>
             <pathelement path="${basedir}/test"/>
+            <!-- If you have any external GWT modules, add their jars here. -->
+            <fileset dir="${basedir}/lib">
+                <include name="*.jar"/>
+            </fileset>
+            <!-- The GWT client libs -->
             <fileset dir="${gwt.basedir}">
                 <include name="gwt-user.jar"/>
             </fileset>
         </path>
 
+        <!-- Classpath to launch GWTShell and GWTCompilter -->
         <path id="gwt.class.path">
             <fileset dir="${gwt.basedir}">
                 <include name="gwt-dev-*.jar"/>
             </fileset>
         </path>
+
+        <!-- Mac OS X needs -XstartOnFirstThread, the -Xmixed is because an empty jvmarg causes java not to start -->
+        <condition property="gwt.jvmarg" value="-XstartOnFirstThread" else="-Xmixed">
+            <os family="mac"/>
+        </condition>
 
         <macrodef name="gwtshell">
             <attribute name="module"/>

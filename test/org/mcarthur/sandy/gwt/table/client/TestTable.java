@@ -28,6 +28,7 @@ import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.HasHorizontalAlignment;
 import com.google.gwt.user.client.ui.HasVerticalAlignment;
+import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.KeyboardListener;
 import com.google.gwt.user.client.ui.KeyboardListenerAdapter;
 import com.google.gwt.user.client.ui.Label;
@@ -38,6 +39,7 @@ import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
 import org.mcarthur.sandy.gwt.event.list.client.EventLists;
+import org.mcarthur.sandy.gwt.event.list.client.FilteredEventList;
 import org.mcarthur.sandy.gwt.event.list.client.SortedEventList;
 
 import java.util.ArrayList;
@@ -54,10 +56,14 @@ public class TestTable implements EntryPoint {
     private static VerticalPanel vp = new VerticalPanel();
 
     private static ObjectListTable ot;
+    private static SortedEventList sel;
+    private static FilteredEventList fel;
     private static int pCount = 0;
 
     public void onModuleLoad() {
-        ot = new ObjectListTable(new OLTR(), EventLists.sortedEventList());
+        sel = EventLists.sortedEventList();
+        fel = EventLists.filteredEventList(sel);
+        ot = new ObjectListTable(new OLTR(), fel);
         //ot = new ObjectListTable(new OLTR(), EventLists.wrap(new ArrayList()));
         RootPanel.get("log").add(vp);
 
@@ -95,7 +101,7 @@ public class TestTable implements EntryPoint {
         });
         fp.add(addPerson);
 
-        if (!(ot.getObjects() instanceof SortedEventList)) {
+        if (sel == null) {
             final Button transpose = new Button("Transpose");
             transpose.setTitle("Switch two Person instances in the List");
             transpose.addClickListener(new ClickListener() {
@@ -137,6 +143,47 @@ public class TestTable implements EntryPoint {
         });
         fp.add(oneK);
 
+        if (fel != null) {
+            final TextBox lower = new TextBox();
+            lower.setWidth("3em");
+            final TextBox upper = new TextBox();
+            upper.setWidth("3em");
+            final Button filterButton = new Button("Filter Ages");
+            filterButton.addClickListener(new ClickListener() {
+                public void onClick(final Widget sender) {
+                    final String lowerText = lower.getText().trim();
+                    final int l;
+                    try {
+                        l = Integer.parseInt(lowerText.length() > 0 ? lowerText : "0");
+                    } catch (NumberFormatException nfe) {
+                        Window.alert("Lower age bound must be empty or a number.");
+                        return;
+                    }
+                    final String upperText = upper.getText().trim();
+                    final int u;
+                    try {
+                        u = Integer.parseInt(upperText.length() > 0 ? upperText : "999999");
+                    } catch (NumberFormatException nfe) {
+                        Window.alert("Upper age bound must be empty or a number.");
+                        return;
+                    }
+                    fel.setFilter(new FilteredEventList.Filter() {
+                        public boolean accept(final Object element) {
+                            final Person person = (Person)element;
+                            return l < person.getAge() && person.getAge() < u;
+                        }
+                    });
+                }
+            });
+            final HorizontalPanel hp = new HorizontalPanel();
+            hp.add(new Label("From:"));
+            hp.add(lower);
+            hp.add(new Label("to:"));
+            hp.add(upper);
+            hp.add(filterButton);
+            fp.add(hp);
+        }
+
         RootPanel.get("buttons").add(fp);
 
     }
@@ -166,12 +213,13 @@ public class TestTable implements EntryPoint {
                     // FIXME: BUG: Rows that are added before the table is attached, don't fire events.
                     //Window.setTitle(tb.getText());
                     person.setName(tb.getText());
-                    final SortedEventList sel = (SortedEventList)ot.getObjects();
-                    sel.sort();
+                    if (sel != null) {
+                        sel.sort();
+                    }
                 }
             });
             tb.addKeyboardListener(new KeyboardListenerAdapter() {
-                public void onKeyUp(Widget sender, char keyCode, int modifiers) {
+                public void onKeyUp(final Widget sender, final char keyCode, final int modifiers) {
                     super.onKeyUp(sender, keyCode, modifiers);
                     if (KeyboardListener.KEY_ENTER == keyCode) {
                         final TextBox tb = (TextBox)sender;
@@ -239,28 +287,30 @@ public class TestTable implements EntryPoint {
                 final MenuBar nameSubMenu = new MenuBar(true);
                 final MenuItem nameSortUp = new MenuItem("Sort Up", new Command() {
                     Comparator c = new Comparator() {
-                        public int compare(Object o1, Object o2) {
-                            Person p1 = (Person)o1;
-                            Person p2 = (Person)o2;
+                        public int compare(final Object o1, final Object o2) {
+                            final Person p1 = (Person)o1;
+                            final Person p2 = (Person)o2;
                             return p1.getName().compareTo(p2.getName());
                         }
                     };
                     public void execute() {
-                        final SortedEventList sel = (SortedEventList)ot.getObjects();
-                        sel.setComparator(c);
+                        if (sel != null) {
+                            sel.setComparator(c);
+                        }
                     }
                 });
                 final MenuItem nameSortDown = new MenuItem("Sort Down", new Command() {
                     Comparator c = new Comparator() {
-                        public int compare(Object o1, Object o2) {
-                            Person p1 = (Person)o1;
-                            Person p2 = (Person)o2;
+                        public int compare(final Object o1, final Object o2) {
+                            final Person p1 = (Person)o1;
+                            final Person p2 = (Person)o2;
                             return p2.getName().compareTo(p1.getName());
                         }
                     };
                     public void execute() {
-                        final SortedEventList sel = (SortedEventList)ot.getObjects();
-                        sel.setComparator(c);
+                        if (sel != null) {
+                            sel.setComparator(c);
+                        }
                     }
                 });
                 nameSubMenu.addItem(nameSortUp);
@@ -279,28 +329,30 @@ public class TestTable implements EntryPoint {
                 final MenuBar ageSubMenu = new MenuBar(true);
                 final MenuItem ageSortUp = new MenuItem("Sort Up", new Command() {
                     Comparator c = new Comparator() {
-                        public int compare(Object o1, Object o2) {
-                            Person p1 = (Person)o1;
-                            Person p2 = (Person)o2;
+                        public int compare(final Object o1, final Object o2) {
+                            final Person p1 = (Person)o1;
+                            final Person p2 = (Person)o2;
                             return p1.getAge() - p2.getAge();
                         }
                     };
                     public void execute() {
-                        final SortedEventList sel = (SortedEventList)ot.getObjects();
-                        sel.setComparator(c);
+                        if (sel != null) {
+                            sel.setComparator(c);
+                        }
                     }
                 });
                 final MenuItem ageSortDown = new MenuItem("Sort Down", new Command() {
                     Comparator c = new Comparator() {
-                        public int compare(Object o1, Object o2) {
-                            Person p1 = (Person)o1;
-                            Person p2 = (Person)o2;
+                        public int compare(final Object o1, final Object o2) {
+                            final Person p1 = (Person)o1;
+                            final Person p2 = (Person)o2;
                             return p2.getAge() - p1.getAge();
                         }
                     };
                     public void execute() {
-                        final SortedEventList sel = (SortedEventList)ot.getObjects();
-                        sel.setComparator(c);
+                        if (sel != null) {
+                            sel.setComparator(c);
+                        }
                     }
                 });
                 ageSubMenu.addItem(ageSortUp);

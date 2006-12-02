@@ -38,17 +38,38 @@ public class EventLists {
         return wrap(new ArrayList());
     }
 
+    /**
+     * Creates a FilteredEventList.
+     *
+     * @return An EventList that can be filtered.
+     */
     public static FilteredEventList filteredEventList() {
         return filteredEventList(eventList());
     }
 
     /**
-     * ALPHA CODE, do not use.
-     * @param eventList the event list to be wrapped.
-     * @return
+     * Creates a filterable view of another EventList.
+     * Changes to <code>eventList</code> will be automatically reflected in the view and
+     * modifications to the FilteredEventList's elements will be propagated to <code>eventList</code>.
+     *
+     * @param eventList the event list to create a filterable view of.
+     * @return A view over eventList that can be filtered.
      */
-    public static FilteredEventList filteredEventList(EventList eventList) {
-        return null;
+    public static FilteredEventList filteredEventList(final EventList eventList) {
+        return filteredEventList(eventList, null);
+    }
+
+    /**
+     * Creates a filterable view of another EventList.
+     * Changes to <code>eventList</code> will be automatically reflected in the view and
+     * modifications to the FilteredEventList's elements will be propagated to <code>eventList</code>.
+     *
+     * @param eventList the event list to create a filterable view of.
+     * @param filter the filter to initially select the elements presented by the view.
+     * @return A view over eventList that is filtered with <code>filter</code>.
+     */
+    public static FilteredEventList filteredEventList(final EventList eventList, final FilteredEventList.Filter filter) {
+        return new FilteredEventListImpl(eventList, filter);
     }
 
     /**
@@ -72,13 +93,24 @@ public class EventLists {
     }
 
     /**
-     * Wrap a <code>List</code> so it can be monitored for changes. The list to be wrapped must not
-     * be modified except by methods of the returned EventList else events will be missed.
+     * Wrap a <code>List</code> so it can be monitored for changes.
+     * <p>
+     * The list to be wrapped <strong>must not</strong> be modified except by the returned EventList
+     * else events will be missed and the internal states will get corrupted.
+     * </p>
+     * <p>
      * If <code>list</code> is already an instace of <code>EventList</code> it will not be wrapped
      * again.
+     * </p>
+     * <p>
+     * If it is possible to use {@link #eventList()} to create a new EventList and populate it with
+     * {@link EventList#addAll(java.util.Collection)} then that is prefered over using the
+     * <code>wrap</code> method to obtain a EventList of existing data. 
+     * </p>
      *
      * @param list the list to wrap in an <code>EventList</code>.
      * @return an EventList wrapping list.
+     * @see #eventList()
      */
     public static EventList wrap(final List list) {
         if (list instanceof EventList) {
