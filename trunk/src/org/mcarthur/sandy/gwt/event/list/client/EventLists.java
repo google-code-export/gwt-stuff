@@ -30,9 +30,9 @@ public class EventLists {
     }
 
     /**
-     * Return a new, empty EventList.
+     * Create a new EventList.
      *
-     * @return a new, empty EventList.
+     * @return a new EventList.
      */
     public static EventList eventList() {
         return wrap(new ArrayList());
@@ -60,7 +60,17 @@ public class EventLists {
     }
 
     /**
-     * Creates a filterable view of another EventList.
+     * Creates a FilteredEventList with an initial filter.
+     *
+     * @param filter the filter to initially select the elements presented by the view.
+     * @return A view over eventList that is filtered with <code>filter</code>.
+     */
+    public static FilteredEventList filteredEventList(final FilteredEventList.Filter filter) {
+        return new FilteredEventListImpl(eventList(), filter);
+    }
+
+    /**
+     * Creates a filterable view of another EventList with an initial filter.
      * Changes to <code>eventList</code> will be automatically reflected in the view and
      * modifications to the FilteredEventList's elements will be propagated to <code>eventList</code>.
      *
@@ -73,7 +83,7 @@ public class EventLists {
     }
 
     /**
-     * Return a <code>SortedEventList</code> that defaults to natural ordering.
+     * Create a <code>SortedEventList</code> that defaults to natural ordering.
      *
      * @return a <code>SortedEventList</code>.
      * @see Comparable
@@ -83,13 +93,13 @@ public class EventLists {
     }
 
     /**
-     * Return a <code>SortedEventList</code>.
+     * Create a <code>SortedEventList</code> with the initial sort order.
      *
      * @param comparator the Comparator used to sort the list, if <code>null</code> natural ordering is used.
      * @return a <code>SortedEventList</code>.
      */
     public static SortedEventList sortedEventList(final Comparator comparator) {
-        return new SortedEventListImpl(comparator);
+        return new SortedEventListImplOld(comparator);
     }
 
     /**

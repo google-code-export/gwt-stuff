@@ -17,22 +17,17 @@
 package org.mcarthur.sandy.gwt.event.list.client;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
 
 /**
- * ALPHA, do not use yet.
- * An EventList that maintains a sorted order of objects add to the list.
- * This List implementation doesn't maintain all of the List contracts.
- * Mainly, any method that adds or sets to a specific index ignores the index parameter so as to
- * maintain sorted order.
+ * A SortedEventList that presents a sorted view of another EventList.
  *
  * @author Sandy McArthur
  */
-class SortedEventListImpl extends WrappedEventList implements SortedEventList {
+abstract class SortedEventListImpl extends TransformedEventList implements SortedEventList {    
     private Comparator comparator;
 
     private static final Comparator NATURAL = new Comparator() {
@@ -41,92 +36,83 @@ class SortedEventListImpl extends WrappedEventList implements SortedEventList {
         }
     };
 
+    private final List sorted = new ArrayList();
 
-    public SortedEventListImpl() {
-        this(null);
-    }
-
-    public SortedEventListImpl(final Comparator comparator) {
-        super(new ArrayList());
+    protected SortedEventListImpl(final EventList delegate, final Comparator comparator) {
+        super(delegate);
+        final int size = delegate.size();
+        for (int i=0; i < size; i++) {
+            getTranslations().add(new Index(i));
+        }
+        sorted.addAll(delegate);
+        Collections.sort(sorted, comparator != null ? comparator : NATURAL);
+        delegate.addListEventListener(new SortedListEventListener());
         setComparator(comparator);
     }
 
-    public boolean add(final Object element) {
-        int lower = 0;
-        int upper = super.size() - 1;
+    private class SortedListEventListener implements ListEventListener {
+        public void listChanged(final ListEvent listEvent) {
+            final List delegate = getDelegate();
+            final List translations = getTranslations();
 
-        while (lower <= upper) {
-            final int middle = (lower + upper) >> 1;
-            final Object o = super.get(middle);
+            if (listEvent.isAdded()) {
+                for (int i = listEvent.getIndexStart(); i < listEvent.getIndexEnd(); i++) {
+                    final Object o = delegate.get(i);
+                    int pos;
+                    for (pos = 0; pos < translations.size(); pos++) {
+                        final Object posO = delegate.get(((Index)translations.get(pos)).getIndex());
+                        if (getComparator().compare(o, posO) > 0) {
+                            break;
+                        }
+                    }
 
-            final int c = comparator.compare(o, element);
+                    final Index newIdx = new Index(i);
+                    if (pos == translations.size()) {
+                        // append
+                        translations.add(newIdx);
+                        sorted.add(o);
+                        fireListEvent(new ListEvent(SortedEventListImpl.this, ListEvent.ADDED, i));
 
-            if (c < 0) {
-                lower = middle + 1;
-            } else if (c > 0) {
-                upper = middle - 1;
-            } else {
-                super.add(middle, element);
-                return true;
+                    } else {
+                        // insert
+                        final Iterator iter = translations.iterator();
+                        while (iter.hasNext()) {
+                            final Index idx = (Index)iter.next();
+                            if (idx.getIndex() >= i) {
+                                idx.add(1);
+                            }
+                        }
+                        translations.add(pos, newIdx);
+                        sorted.add(pos, o);
+                    }
+                }
+            } else if (listEvent.isChanged()) {
+                for (int i = listEvent.getIndexStart(); i < listEvent.getIndexEnd(); i++) {
+                    final Object o = delegate.get(i);
+                    // TODO: need to implement a list that tracks the order of elements before the event.
+                }
+
+            } else if (listEvent.isRemoved()) {
+                for (int i = listEvent.getIndexEnd() - 1; i >= listEvent.getIndexStart(); i--) {
+                    for (int pos = 0; pos < translations.size(); pos++) {
+                        final Index idx = (Index)translations.get(pos);
+                        if (idx.getIndex() == i) {
+                            translations.remove(pos);
+                            sorted.remove(pos);
+                            pos--;
+                        } else if (idx.getIndex() >= i) {
+                            idx.sub(1);
+                        }
+                    }
+                }
             }
-
         }
-        super.add(lower, element);
-        return true;
-    }
-
-    /**
-     * Same as {@link #add(Object)}.
-     *
-     * @param index <em>ignored</em>
-     * @see #add(Object)
-     */
-    public void add(final int index, final Object element) {
-        add(element);
-    }
-
-    public boolean addAll(final Collection c) {
-        final Iterator iter = c.iterator();
-        while (iter.hasNext()) {
-            add(iter.next()); // XXX Optimze
-        }
-        return c.size() > 0;
-    }
-
-    /**
-     * Same as {@link #addAll(java.util.Collection)}.
-     *
-     * @param index <em>ignored</em>
-     * @see #addAll(java.util.Collection)
-     */
-    public boolean addAll(final int index, final Collection c) {
-        return addAll(c);
-    }
-
-    /**
-     * Same as remove(index) and add(Object).
-     *
-     * @param index position of removed element.
-     * @param element object to be added.
-     * @return the removed element.
-     * @see #remove(int) 
-     * @see #add(Object) 
-     */
-    public Object set(final int index, final Object element) {
-        final Object removed = super.remove(index);
-        add(element);
-        return removed;
     }
 
     public Comparator getComparator() {
         return comparator != NATURAL ? comparator : null;
     }
 
-    /**
-     * Set the sort order for this list.
-     *
-     * @param comparator sort order for this list, null for natural ordering.
-     */
     public void setComparator(Comparator comparator) {
         comparator = comparator != null ? comparator : NATURAL;
         if (this.comparator != comparator) {
@@ -136,33 +122,13 @@ class SortedEventListImpl extends WrappedEventList implements SortedEventList {
     }
 
     public void sort() {
-        if (size() == 0) {
-            // nothing to sort
-            return;
-        }
-        final List all = new ArrayList();
-        all.addAll(this);
-        Collections.sort(all, comparator);
-
-        // XXX: Optimize me
-        if (true) {
-            clear();
-
-        } else {
-            // try to keep runs
-            final Iterator thisIter = this.iterator();
-            final Iterator sortIter = all.iterator();
-            while (sortIter.hasNext()) {
-                final Object thisObj = thisIter.next();
-                final Object sortObj = sortIter.next();
-
-                if (thisObj != sortObj) {
-                    thisIter.remove();
-                } else {
-                    sortIter.remove();
-                }
+        Collections.sort(getTranslations(), new Comparator() {
+            public int compare(final Object i1, final Object i2) {
+                final Object o1 = getTranslations().get(((Index)i1).getIndex());
+                final Object o2 = getTranslations().get(((Index)i2).getIndex());
+                return getComparator().compare(o1, o2);
             }
-        }
-        addAll(all);
+        });
+        fireListEvent(new ListEvent(this, ListEvent.CHANGED, 0, size()));
     }
 }

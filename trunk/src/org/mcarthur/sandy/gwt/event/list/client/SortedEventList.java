@@ -30,7 +30,7 @@ import java.util.Comparator;
 public interface SortedEventList extends EventList {
 
     /**
-     * Return the Comparator used to sort this list.
+     * Get the Comparator used to sort this list.
      * If this returns <code>null</code> then this list uses
      * <a href="http://java.sun.com/j2se/1.5.0/docs/api/java/lang/Comparable.html">natural ordering</a>.
      *

@@ -24,8 +24,8 @@ import java.util.Iterator;
  * This implementation of List does not maintain all of the List contracts.
  *
  * <p>
- * Elements in this list will be in one of two groups, filtered and unfiltered.
- * Filtered elements are not visable via this list and many methods do not act on them.
+ * Elements in this list could be considered to be in one of two groups, filtered and unfiltered.
+ * Filtered elements are not visable via this list and methods do not act on them.
  * Unfiltered elements are visable via this list.
  * </p>
  *
@@ -63,30 +63,24 @@ public interface FilteredEventList extends EventList {
 
 
     /**
-     * Appends the specified element to the end of this list.
-     *
-     * If the element is not acepted by the filter it will still be added to the list, though not viewable.
+     * Appends the specified element to the end of this list if accepted by the filter.
      */
     public boolean add(Object o);
 
     /**
-     * Inserts the specified element at the specified position in this list.
-     *
-     * If the element is not acepted by the filter it will still be added to the list, though not viewable.
+     * Inserts the specified element at the specified position in this list if accepted by the filter.
      */
     public void add(int index, Object element);
 
     /**
-     * Appends all of the elements in the specified collection to the end of this list.
-     *
-     * If elements are not acepted by the filter it will still be added to the list, though not viewable.
+     * Appends all of the elements in the specified collection to the end of this list that are
+     * accepted by the filter.
      */
     public boolean addAll(Collection c);
 
     /**
-     * Inserts all of the elements in the specified collection into this list at the specified position.
-     *
-     * If elements are not acepted by the filter it will still be added to the list, though not viewable.
+     * Inserts all of the elements in the specified collection into this list at the specified
+     * position if accepted by the filter.
      */
     public boolean addAll(int index, Collection c);
 
