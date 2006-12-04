@@ -29,21 +29,21 @@ public class ListEvent extends EventObject {
      * Identifies one or more elements were added.
      * @see #isAdded()
      */
-    public static final ListEventType ADDED = new ListEventType("ADDED");
+    public static final Type ADDED = new Type("ADDED");
 
     /**
      * Identifies one or more elements were changed.
      * @see #isChanged()
      */
-    public static final ListEventType CHANGED = new ListEventType("CHANGED");
+    public static final Type CHANGED = new Type("CHANGED");
 
     /**
      * Identifies one or more elements were removed.
      * @see #isRemoved()
      */
-    public static final ListEventType REMOVED = new ListEventType("REMOVED");
+    public static final Type REMOVED = new Type("REMOVED");
 
-    private final ListEventType type;
+    private final Type type;
 
     private final int indexStart;
     private final int indexEnd;
@@ -51,7 +51,7 @@ public class ListEvent extends EventObject {
     /**
      * Constructs a ListEvent for one element.
      * This is the same as calling
-     * {@link #ListEvent(EventList, org.mcarthur.sandy.gwt.event.list.client.ListEvent.ListEventType, int, int)}
+     * {@link #ListEvent(EventList, org.mcarthur.sandy.gwt.event.list.client.ListEvent.Type, int, int)}
      *  with sequential indexes.
      *
      * @param source The EventList on which the ListEvent initially occurred.
@@ -59,7 +59,7 @@ public class ListEvent extends EventObject {
      * @param index affected element.
      * @throws IllegalArgumentException if source is <code>null</code>.
      */
-    public ListEvent(final EventList source, final ListEventType type, final int index) throws IllegalArgumentException {
+    public ListEvent(final EventList source, final Type type, final int index) throws IllegalArgumentException {
         this(source, type, index, index+1);
     }
 
@@ -74,7 +74,7 @@ public class ListEvent extends EventObject {
      * @param indexEnd one end of the interval.
      * @throws IllegalArgumentException if source is <code>null</code>.
      */
-    public ListEvent(final EventList source, final ListEventType type, final int indexStart, final int indexEnd) throws IllegalArgumentException {
+    public ListEvent(final EventList source, final Type type, final int indexStart, final int indexEnd) throws IllegalArgumentException {
         super(source);
         assert indexStart != indexEnd : "indexStart and indexEnd must not be the same value.";
         assert type != null : "type must not be null";
@@ -111,7 +111,7 @@ public class ListEvent extends EventObject {
      *
      * @return one of {@link #ADDED}, {@link #CHANGED}, {@link #REMOVED}.
      */
-    public ListEventType getType() {
+    public Type getType() {
         return type;
     }
 
@@ -152,17 +152,20 @@ public class ListEvent extends EventObject {
         return "ListEvent[" + type + " (" + getIndexStart() + "," + getIndexEnd() + ")]";
     }
 
-    private static final class ListEventType {
+    /**
+     * Enum of the possible types of ListEvents.
+     */
+    public static final class Type {
         private final String name;
 
-        public ListEventType(final String name) {
+        private Type(final String name) {
             this.name = name;
         }
 
         public boolean equals(final Object o) {
             if (this == o) return true;
-            if (!(o instanceof ListEventType)) return false;
-            final ListEventType that = (ListEventType)o;
+            if (!(o instanceof Type)) return false;
+            final Type that = (Type)o;
             return name.equals(that.name);
         }
 

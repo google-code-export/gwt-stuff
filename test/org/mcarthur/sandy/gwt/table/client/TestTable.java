@@ -70,12 +70,21 @@ public class TestTable implements EntryPoint {
 
         final List objects = ot.getObjects();
 
+        RootPanel.get("tableDiv").add(ot);
+
         objects.add(new Person("Sandy", 28));
         objects.add(0, new Person("Keebz", 25));
         objects.add(new Person("Bill", 33));
         objects.add(new Person("Ted", 55));
 
-        RootPanel.get("tableDiv").add(ot);
+        List l = new ArrayList();
+        l.add(objects.get(0));
+        l.add(objects.get(1));
+        l.add(objects.get(3));
+        objects.retainAll(l);
+
+        // TODO: when this is uncommented instead of above, the table rows fail to work in Opera.
+        //RootPanel.get("tableDiv").add(ot);
 
         final FlowPanel fp = new FlowPanel();
         final Button remove2 = new Button("Remove 2");
