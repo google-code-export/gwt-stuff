@@ -38,6 +38,7 @@ import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
+import org.mcarthur.sandy.gwt.event.list.client.EventList;
 import org.mcarthur.sandy.gwt.event.list.client.EventLists;
 import org.mcarthur.sandy.gwt.event.list.client.FilteredEventList;
 import org.mcarthur.sandy.gwt.event.list.client.SortedEventList;
@@ -61,9 +62,10 @@ public class TestTable implements EntryPoint {
     private static int pCount = 0;
 
     public void onModuleLoad() {
-        sel = EventLists.sortedEventList();
-        fel = EventLists.filteredEventList(sel);
-        ot = new ObjectListTable(new OLTR(), fel);
+        EventList el;
+        sel = EventLists.sortedEventList(); el = sel;
+        //fel = EventLists.filteredEventList(sel); el = fel;
+        ot = new ObjectListTable(new OLTR(), el);
         //ot = new ObjectListTable(new OLTR(), EventLists.wrap(new ArrayList()));
         RootPanel.get("log").add(vp);
 
@@ -77,11 +79,15 @@ public class TestTable implements EntryPoint {
         objects.add(new Person("Bill", 33));
         objects.add(new Person("Ted", 55));
 
-        List l = new ArrayList();
-        l.add(objects.get(0));
-        l.add(objects.get(1));
-        l.add(objects.get(3));
-        objects.retainAll(l);
+        if (false) {
+            final List l = new ArrayList();
+            l.add(objects.get(0));
+            l.add(objects.get(1));
+            l.add(objects.get(3));
+            objects.retainAll(l);
+        } else {
+            objects.remove(1);
+        }
 
         // TODO: when this is uncommented instead of above, the table rows fail to work in Opera.
         //RootPanel.get("tableDiv").add(ot);

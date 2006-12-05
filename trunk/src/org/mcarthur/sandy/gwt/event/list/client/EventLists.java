@@ -89,7 +89,11 @@ public class EventLists {
      * @see Comparable
      */
     public static SortedEventList sortedEventList() {
-        return sortedEventList(null);
+        return sortedEventList((Comparator)null);
+    }
+
+    public static SortedEventList sortedEventList(final EventList eventList) {
+        return sortedEventList(eventList, null);
     }
 
     /**
@@ -100,6 +104,10 @@ public class EventLists {
      */
     public static SortedEventList sortedEventList(final Comparator comparator) {
         return new SortedEventListImplOld(comparator);
+    }
+
+    public static SortedEventList sortedEventList(final EventList eventList, final Comparator comparator) {
+        return new SortedEventListImpl(eventList, comparator);
     }
 
     /**

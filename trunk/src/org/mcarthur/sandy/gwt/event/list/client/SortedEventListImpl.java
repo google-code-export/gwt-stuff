@@ -23,11 +23,12 @@ import java.util.Iterator;
 import java.util.List;
 
 /**
+ * BROKEN!
  * A SortedEventList that presents a sorted view of another EventList.
  *
  * @author Sandy McArthur
  */
-abstract class SortedEventListImpl extends TransformedEventList implements SortedEventList {    
+class SortedEventListImpl extends TransformedEventList implements SortedEventList {    
     private Comparator comparator;
 
     private static final Comparator NATURAL = new Comparator() {
@@ -36,16 +37,15 @@ abstract class SortedEventListImpl extends TransformedEventList implements Sorte
         }
     };
 
-    private final List sorted = new ArrayList();
+    private final List reverse = new ArrayList();
 
     protected SortedEventListImpl(final EventList delegate, final Comparator comparator) {
         super(delegate);
         final int size = delegate.size();
         for (int i=0; i < size; i++) {
             getTranslations().add(new Index(i));
+            reverse.add(new Index(i));
         }
-        sorted.addAll(delegate);
-        Collections.sort(sorted, comparator != null ? comparator : NATURAL);
         delegate.addListEventListener(new SortedListEventListener());
         setComparator(comparator);
     }
@@ -61,46 +61,51 @@ abstract class SortedEventListImpl extends TransformedEventList implements Sorte
                     int pos;
                     for (pos = 0; pos < translations.size(); pos++) {
                         final Object posO = delegate.get(((Index)translations.get(pos)).getIndex());
-                        if (getComparator().compare(o, posO) > 0) {
+                        if (comparator.compare(o, posO) > 0) {
                             break;
                         }
                     }
 
                     final Index newIdx = new Index(i);
-                    if (pos == translations.size()) {
-                        // append
-                        translations.add(newIdx);
-                        sorted.add(o);
-                        fireListEvent(new ListEvent(SortedEventListImpl.this, ListEvent.ADDED, i));
+                    final Index revIdx = new Index(pos);
 
-                    } else {
-                        // insert
-                        final Iterator iter = translations.iterator();
-                        while (iter.hasNext()) {
-                            final Index idx = (Index)iter.next();
-                            if (idx.getIndex() >= i) {
-                                idx.add(1);
-                            }
+                    // insert
+                    final Iterator iter = translations.iterator();
+                    while (iter.hasNext()) {
+                        final Index idx = (Index)iter.next();
+                        if (idx.getIndex() >= i) {
+                            idx.add(1);
                         }
-                        translations.add(pos, newIdx);
-                        sorted.add(pos, o);
                     }
+                    translations.add(pos, newIdx);
+                    reverse.add(i, revIdx);
+                    fireListEvent(new ListEvent(SortedEventListImpl.this, ListEvent.ADDED, i));
                 }
             } else if (listEvent.isChanged()) {
-                for (int i = listEvent.getIndexStart(); i < listEvent.getIndexEnd(); i++) {
-                    final Object o = delegate.get(i);
-                    // TODO: need to implement a list that tracks the order of elements before the event.
-                }
+                // XXX: fuck it! just resort the whole thing.
+                sort();
 
             } else if (listEvent.isRemoved()) {
                 for (int i = listEvent.getIndexEnd() - 1; i >= listEvent.getIndexStart(); i--) {
-                    for (int pos = 0; pos < translations.size(); pos++) {
-                        final Index idx = (Index)translations.get(pos);
-                        if (idx.getIndex() == i) {
-                            translations.remove(pos);
-                            sorted.remove(pos);
-                            pos--;
-                        } else if (idx.getIndex() >= i) {
+                    // XXX: Should be able to remove them all in one loop
+                    final Index revIdx = (Index)reverse.get(i);
+                    final Index tnsIdx = (Index)translations.get(revIdx.getIndex());
+                    final Iterator tnsIter = translations.iterator();
+                    while (tnsIter.hasNext()) {
+                        final Index idx = (Index)tnsIter.next();
+                        if (idx == tnsIdx) {
+                            tnsIter.remove();
+                        } else if (idx.getIndex() > tnsIdx.getIndex()) {
+                            idx.sub(1);
+                        }
+                    }
+
+                    final Iterator revIter = reverse.iterator();
+                    while(revIter.hasNext()) {
+                        final Index idx = (Index)revIter.next();
+                        if (idx == revIdx) {
+                            revIter.remove();
+                        } else if (idx.getIndex() > revIdx.getIndex()) {
                             idx.sub(1);
                         }
                     }
@@ -122,13 +127,29 @@ abstract class SortedEventListImpl extends TransformedEventList implements Sorte
     }
 
     public void sort() {
-        Collections.sort(getTranslations(), new Comparator() {
-            public int compare(final Object i1, final Object i2) {
-                final Object o1 = getTranslations().get(((Index)i1).getIndex());
-                final Object o2 = getTranslations().get(((Index)i2).getIndex());
-                return getComparator().compare(o1, o2);
+        final List sorted = new ArrayList();
+        sorted.addAll(getDelegate());
+        Collections.sort(sorted, comparator);
+        for (int i=0; i < sorted.size(); i++) {
+            final Object o = sorted.get(i);
+            final Object t = get(i);
+            if (o != t) {
+                final Index idx = (Index)getTranslations().get(i);
+                idx.setIndex(i);
+                final Iterator iter = getDelegate().iterator();
+                for (int j=0; iter.hasNext(); j++) {
+                    final Object d = getDelegate().get(j);
+                    if (d == o) {
+                        ((Index)reverse.get(j)).setIndex(i);
+                    }
+                }
+                fireListEvent(new ListEvent(this, ListEvent.CHANGED, i));
             }
-        });
-        fireListEvent(new ListEvent(this, ListEvent.CHANGED, 0, size()));
+        }
+    }
+
+
+    public Object remove(final int index) {
+        return super.remove(index);
     }
 }
