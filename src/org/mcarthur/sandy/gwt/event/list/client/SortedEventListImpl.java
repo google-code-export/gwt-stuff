@@ -23,7 +23,6 @@ import java.util.Iterator;
 import java.util.List;
 
 /**
- * BROKEN!
  * A SortedEventList that presents a sorted view of another EventList.
  *
  * @author Sandy McArthur
@@ -54,6 +53,7 @@ class SortedEventListImpl extends TransformedEventList implements SortedEventLis
         public void listChanged(final ListEvent listEvent) {
             final List delegate = getDelegate();
             final List translations = getTranslations();
+            final List reverse = SortedEventListImpl.this.reverse;
 
             if (listEvent.isAdded()) {
                 for (int i = listEvent.getIndexStart(); i < listEvent.getIndexEnd(); i++) {
@@ -61,7 +61,7 @@ class SortedEventListImpl extends TransformedEventList implements SortedEventLis
                     int pos;
                     for (pos = 0; pos < translations.size(); pos++) {
                         final Object posO = delegate.get(((Index)translations.get(pos)).getIndex());
-                        if (comparator.compare(o, posO) > 0) {
+                        if (comparator.compare(posO, o) > 0) {
                             break;
                         }
                     }
@@ -70,10 +70,17 @@ class SortedEventListImpl extends TransformedEventList implements SortedEventLis
                     final Index revIdx = new Index(pos);
 
                     // insert
-                    final Iterator iter = translations.iterator();
-                    while (iter.hasNext()) {
-                        final Index idx = (Index)iter.next();
+                    final Iterator tranIter = translations.iterator();
+                    while (tranIter.hasNext()) {
+                        final Index idx = (Index)tranIter.next();
                         if (idx.getIndex() >= i) {
+                            idx.add(1);
+                        }
+                    }
+                    final Iterator revIter = reverse.iterator();
+                    while (revIter.hasNext()) {
+                        final Index idx = (Index)revIter.next();
+                        if (idx.getIndex() >= pos) {
                             idx.add(1);
                         }
                     }
@@ -82,6 +89,7 @@ class SortedEventListImpl extends TransformedEventList implements SortedEventLis
                     fireListEvent(new ListEvent(SortedEventListImpl.this, ListEvent.ADDED, i));
                 }
             } else if (listEvent.isChanged()) {
+                // TODO: Optimize
                 // XXX: fuck it! just resort the whole thing.
                 sort();
 
@@ -109,6 +117,7 @@ class SortedEventListImpl extends TransformedEventList implements SortedEventLis
                             idx.sub(1);
                         }
                     }
+                    fireListEvent(new ListEvent(SortedEventListImpl.this, ListEvent.REMOVED, revIdx.getIndex()));                    
                 }
             }
         }
@@ -127,6 +136,7 @@ class SortedEventListImpl extends TransformedEventList implements SortedEventLis
     }
 
     public void sort() {
+        // TODO: optimize
         final List sorted = new ArrayList();
         sorted.addAll(getDelegate());
         Collections.sort(sorted, comparator);
@@ -146,10 +156,5 @@ class SortedEventListImpl extends TransformedEventList implements SortedEventLis
                 fireListEvent(new ListEvent(this, ListEvent.CHANGED, i));
             }
         }
-    }
-
-
-    public Object remove(final int index) {
-        return super.remove(index);
     }
 }

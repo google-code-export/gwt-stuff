@@ -64,7 +64,7 @@ public class TestTable implements EntryPoint {
     public void onModuleLoad() {
         EventList el;
         sel = EventLists.sortedEventList(); el = sel;
-        //fel = EventLists.filteredEventList(sel); el = fel;
+        fel = EventLists.filteredEventList(sel); el = fel;
         ot = new ObjectListTable(new OLTR(), el);
         //ot = new ObjectListTable(new OLTR(), EventLists.wrap(new ArrayList()));
         RootPanel.get("log").add(vp);
@@ -188,6 +188,22 @@ public class TestTable implements EntryPoint {
                             return l < person.getAge() && person.getAge() < u;
                         }
                     });
+                }
+            });
+            lower.addKeyboardListener(new KeyboardListenerAdapter(){
+                public void onKeyUp(final Widget sender, final char keyCode, final int modifiers) {
+                    super.onKeyUp(sender, keyCode, modifiers);
+                    if (KeyboardListener.KEY_ENTER == keyCode) {
+                        filterButton.click();
+                    }
+                }
+            });
+            upper.addKeyboardListener(new KeyboardListenerAdapter(){
+                public void onKeyUp(final Widget sender, final char keyCode, final int modifiers) {
+                    super.onKeyUp(sender, keyCode, modifiers);
+                    if (KeyboardListener.KEY_ENTER == keyCode) {
+                        filterButton.click();
+                    }
                 }
             });
             final HorizontalPanel hp = new HorizontalPanel();

@@ -16,12 +16,11 @@
 
 package org.mcarthur.sandy.gwt.event.list.client;
 
-import com.google.gwt.core.client.GWT;
-
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
+import java.util.NoSuchElementException;
 
 /**
  * TODO: Write Javadoc
@@ -112,26 +111,13 @@ abstract class TransformedEventList extends AbstractEventList implements EventLi
 
     public boolean removeAll(final Collection c) {
         boolean modified = false;
-        boolean again;
-        do {
-            again = false;
-            final Iterator e = iterator();
-            try {
-                while (e.hasNext()) {
-                    if (c.contains(e.next())) {
-                        e.remove();
-                        modified = true;
-                    }
-                }
-            } catch (RuntimeException re) {
-                if (GWT.getTypeName(re).equals("java.util.ConcurrentModificationException")) {
-                    again = true;
-                } else {
-                    throw re;
-                }
-
+        final Iterator e = iterator();
+        while (e.hasNext()) {
+            if (c.contains(e.next())) {
+                e.remove();
+                modified = true;
             }
-        } while (again);
+        }
         return modified;
     }
 
@@ -153,26 +139,33 @@ abstract class TransformedEventList extends AbstractEventList implements EventLi
     }
 
     public Iterator iterator() {
+        // An Iterator that doesn't trip over ConcurrentModificationException
         return new Iterator() {
-            private Iterator iter = getTranslations().iterator();
-            private Index idx = null;
+            private int cursor = 0;
+            private int lastRet = -1;
 
             public boolean hasNext() {
-                return iter.hasNext();
+                return cursor != size();
             }
 
             public Object next() {
-                idx = (Index)iter.next();
-                return getDelegate().get(idx.getIndex());
+                try {
+                    final Object next = get(cursor);
+                    lastRet = cursor++;
+                    return next;
+                } catch(IndexOutOfBoundsException e) {
+                    throw new NoSuchElementException();
+                }
             }
 
             public void remove() {
-                if (idx != null) {
-                    getDelegate().remove(idx.getIndex());
-                    idx = null;
-                } else {
-                    throw new IllegalStateException("call next() first");
-                }
+                if (lastRet == -1)
+                    throw new IllegalStateException();
+
+                TransformedEventList.this.remove(lastRet);
+                if (lastRet < cursor)
+                    cursor--;
+                lastRet = -1;
             }
         };
     }

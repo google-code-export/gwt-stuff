@@ -25,6 +25,11 @@ import java.util.Comparator;
  * Mainly, for any method that adds or sets to a specific index the index is ignored to
  * maintain the elements in sorted order.
  *
+ * <p>
+ * It is assumed that the {@link Comparator} used to sort implementations will not change it's
+ * behavior. If you need to change the sort order of a list, use a new Comparator instance.
+ * </p>
+ *
  * @author Sandy McArthur
  */
 public interface SortedEventList extends EventList {
