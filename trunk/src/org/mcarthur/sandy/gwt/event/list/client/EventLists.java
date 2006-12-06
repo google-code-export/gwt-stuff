@@ -89,23 +89,41 @@ public class EventLists {
      * @see Comparable
      */
     public static SortedEventList sortedEventList() {
-        return sortedEventList((Comparator)null);
+        return sortedEventList(eventList());
     }
 
+    /**
+     * Create a sorted view of another EventList.
+     * Changes to <code>eventList</code> will be automatically reflected in the view and
+     * modifications to the SortedEventList's elements will be propagated to <code>eventList</code>.
+     *
+     * @param eventList the event list to create a sorted view of.
+     * @return a view over eventList that can be sorted.
+     * @see SortedEventList#setComparator(Comparator)
+     */
     public static SortedEventList sortedEventList(final EventList eventList) {
         return sortedEventList(eventList, null);
     }
 
     /**
-     * Create a <code>SortedEventList</code> with the initial sort order.
+     * Create a sorted event list with an initial sort order.
      *
      * @param comparator the Comparator used to sort the list, if <code>null</code> natural ordering is used.
-     * @return a <code>SortedEventList</code>.
+     * @return an empty sorted event list with an intial sort order.
      */
     public static SortedEventList sortedEventList(final Comparator comparator) {
-        return new SortedEventListImplOld(comparator);
+        return sortedEventList(eventList(), comparator);
     }
 
+    /**
+     * Create a sorted view of another EventList with an initial sort order.
+     * Changes to <code>eventList</code> will be automatically reflected in the view and
+     * modifications to the SortedEventList's elements will be propagated to <code>eventList</code>.
+     *
+     * @param eventList the event list to create a sorted view of.
+     * @param comparator the Comparator used to sort the list, if <code>null</code> natural ordering is used.
+     * @return a sorted view of <code>eventList</code> with an intial sort order.
+     */
     public static SortedEventList sortedEventList(final EventList eventList, final Comparator comparator) {
         return new SortedEventListImpl(eventList, comparator);
     }

@@ -35,8 +35,9 @@ public class TestEventList implements EntryPoint {
     public void onModuleLoad() {
         RootPanel.get("events").add(vp);
 
-        final List l = new ArrayList();
-        final EventList el = EventLists.wrap(l);
+        final EventList el;
+        el = EventLists.sortedEventList(EventLists.eventList());
+        //el = EventLists.sortedEventList();
         el.addListEventListener(new ListEventListener() {
             public void listChanged(final ListEvent listEvent) {
                 log(listEvent);
@@ -48,6 +49,7 @@ public class TestEventList implements EntryPoint {
         log(el);
         el.add("two");
         log(el);
+        log("one.compareTo(two): " + "one".compareTo("two"));
         el.add("three");
         log(el);
 
@@ -81,6 +83,10 @@ public class TestEventList implements EntryPoint {
         log(el);
 
         RootPanel.get("out").add(new Label(el.toString()));
+    }
+
+    public void log(final String str) {
+        vp.add(new Label(str));
     }
 
     public void log(final ListEvent listEvent) {
