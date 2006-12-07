@@ -22,6 +22,7 @@ import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.user.client.ui.VerticalPanel;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 
 /**
@@ -35,53 +36,84 @@ public class TestEventList implements EntryPoint {
     public void onModuleLoad() {
         RootPanel.get("events").add(vp);
 
-        final EventList el;
-        el = EventLists.sortedEventList(EventLists.eventList());
-        //el = EventLists.sortedEventList();
+        EventList el = EventLists.eventList();
+        //el = EventLists.sortedEventList(EventLists.eventList());
+        el = EventLists.sortedEventList(el);
+        //el = EventLists.filteredEventList(el);
         el.addListEventListener(new ListEventListener() {
             public void listChanged(final ListEvent listEvent) {
                 log(listEvent);
             }
         });
 
+        //log(el);
+        el.add(new Person("Sandy", 21));
+        //log(el);
+        el.add(0, new Person("Keebz", 25));
+        //log(el);
+        el.add(new Person("Bill", 33));
+        //log(el);
+        el.add(new Person("Ted", 55));
         log(el);
-        el.add("one");
+        //el.remove(1);
+        //log(el);
+        log("Name");
+        ((SortedEventList)el).setComparator(NAME);
         log(el);
-        el.add("two");
+        log("Age");
+        ((SortedEventList)el).setComparator(AGE);
         log(el);
-        log("one.compareTo(two): " + "one".compareTo("two"));
-        el.add("three");
+        log("Name");
+        ((SortedEventList)el).setComparator(NAME);
         log(el);
-
-        final List s = new ArrayList();
-        s.add("four");
-        s.add("five");
-        s.add("six");
-        s.add("seven");
-        s.add("eight");
-        s.add("nine");
-        el.addAll(s);
-        log(el);
-
-        el.remove("two");
-        log(el);
-        el.remove("four");
-        log(el);
-
-        s.remove("four");
-        s.remove("six");
-        s.remove("nine");
-
-        el.removeAll(s);
+        log("Age");
+        ((SortedEventList)el).setComparator(AGE);
         log(el);
 
-        s.clear();
-        //s.add("three");
-        s.add("six");
-        s.add("nine");
-        el.retainAll(s);
-        log(el);
+        if (false) {
+            el.add("1");
+            log(el);
+            el.add(0, "2");
+            log(el);
+            //log("one.compareTo(two): " + "one".compareTo("two"));
+            el.add("3");
+            log(el);
+            el.add("4");
+            log(el);
+            el.remove(1);
+            log(el);
 
+            ((SortedEventList)el).sort();
+            log(el);
+
+            final List s = new ArrayList();
+            s.add("5");
+            s.add("6");
+            s.add("7");
+            s.add("8");
+            s.add("9");
+            el.addAll(s);
+            log(el);
+
+            el.remove("1");
+            log(el);
+            el.remove("4");
+            log(el);
+
+            s.remove("4");
+            s.remove("6");
+            s.remove("9");
+
+            el.removeAll(s);
+            log(el);
+
+            s.clear();
+            //s.add("3");
+            s.add("6");
+            s.add("9");
+            el.retainAll(s);
+            log(el);
+        }
         RootPanel.get("out").add(new Label(el.toString()));
     }
 
@@ -95,5 +127,52 @@ public class TestEventList implements EntryPoint {
 
     public void log(final List list) {
         vp.add(new Label(list.toString()));
+    }
+
+    private static final Comparator NAME = new Comparator() {
+        public int compare(final Object o1, final Object o2) {
+            final Person p1 = (Person)o1;
+            final Person p2 = (Person)o2;
+            return p1.getName().compareTo(p2.getName());
+        }
+    };
+    private static final Comparator AGE = new Comparator() {
+        public int compare(final Object o1, final Object o2) {
+            final Person p1 = (Person)o1;
+            final Person p2 = (Person)o2;
+            return p1.getAge() - p2.getAge();
+        }
+    };
+
+    private static class Person implements Comparable {
+        private String name;
+        private final int age;
+
+        public Person(final String name, final int age) {
+            this.name = name;
+            this.age = age;
+        }
+
+        public String getName() {
+            return name;
+        }
+
+        public void setName(final String name) {
+            this.name = name;
+        }
+
+        public int getAge() {
+            return age;
+        }
+
+        public int compareTo(final Object o) {
+            final Person person = (Person)o;
+            final int ageDiff = person.age - age;
+            return ageDiff != 0 ? ageDiff : name.compareTo(person.name);
+        }
+
+        public String toString() {
+            return name + "{" + age + '}';
+        }
     }
 }

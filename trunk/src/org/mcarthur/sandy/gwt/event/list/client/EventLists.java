@@ -87,6 +87,10 @@ public class EventLists {
      *
      * @return a <code>SortedEventList</code>.
      * @see Comparable
+     * @see SortedEventList#setComparator(Comparator)
+     * @see #sortedEventList(EventList)
+     * @see #sortedEventList(java.util.Comparator)
+     * @see #sortedEventList(EventList, java.util.Comparator)
      */
     public static SortedEventList sortedEventList() {
         return sortedEventList(eventList());
@@ -99,7 +103,11 @@ public class EventLists {
      *
      * @param eventList the event list to create a sorted view of.
      * @return a view over eventList that can be sorted.
+     * @see Comparable
      * @see SortedEventList#setComparator(Comparator)
+     * @see #sortedEventList()
+     * @see #sortedEventList(java.util.Comparator)
+     * @see #sortedEventList(EventList, java.util.Comparator)
      */
     public static SortedEventList sortedEventList(final EventList eventList) {
         return sortedEventList(eventList, null);
@@ -110,6 +118,10 @@ public class EventLists {
      *
      * @param comparator the Comparator used to sort the list, if <code>null</code> natural ordering is used.
      * @return an empty sorted event list with an intial sort order.
+     * @see SortedEventList#setComparator(Comparator)
+     * @see #sortedEventList()
+     * @see #sortedEventList(EventList)
+     * @see #sortedEventList(EventList, java.util.Comparator)
      */
     public static SortedEventList sortedEventList(final Comparator comparator) {
         return sortedEventList(eventList(), comparator);
@@ -123,6 +135,10 @@ public class EventLists {
      * @param eventList the event list to create a sorted view of.
      * @param comparator the Comparator used to sort the list, if <code>null</code> natural ordering is used.
      * @return a sorted view of <code>eventList</code> with an intial sort order.
+     * @see SortedEventList#setComparator(Comparator)
+     * @see #sortedEventList()
+     * @see #sortedEventList(EventList)
+     * @see #sortedEventList(java.util.Comparator)
      */
     public static SortedEventList sortedEventList(final EventList eventList, final Comparator comparator) {
         return new SortedEventListImpl(eventList, comparator);

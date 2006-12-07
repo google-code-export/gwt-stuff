@@ -26,6 +26,7 @@ import java.util.List;
  * A SortedEventList that presents a sorted view of another EventList.
  *
  * @author Sandy McArthur
+ * @see EventLists#sortedEventList()
  */
 class SortedEventListImpl extends TransformedEventList implements SortedEventList {    
     private Comparator comparator;
@@ -70,23 +71,11 @@ class SortedEventListImpl extends TransformedEventList implements SortedEventLis
                     final Index revIdx = new Index(pos);
 
                     // insert
-                    final Iterator tranIter = translations.iterator();
-                    while (tranIter.hasNext()) {
-                        final Index idx = (Index)tranIter.next();
-                        if (idx.getIndex() >= i) {
-                            idx.add(1);
-                        }
-                    }
-                    final Iterator revIter = reverse.iterator();
-                    while (revIter.hasNext()) {
-                        final Index idx = (Index)revIter.next();
-                        if (idx.getIndex() >= pos) {
-                            idx.add(1);
-                        }
-                    }
+                    shiftUp(i, translations.iterator());
+                    shiftUp(pos, reverse.iterator());
                     translations.add(pos, newIdx);
                     reverse.add(i, revIdx);
-                    fireListEvent(new ListEvent(SortedEventListImpl.this, ListEvent.ADDED, i));
+                    fireListEvent(new ListEvent(SortedEventListImpl.this, ListEvent.ADDED, pos));
                 }
             } else if (listEvent.isChanged()) {
                 // TODO: Optimize
@@ -97,27 +86,30 @@ class SortedEventListImpl extends TransformedEventList implements SortedEventLis
                 for (int i = listEvent.getIndexEnd() - 1; i >= listEvent.getIndexStart(); i--) {
                     // XXX: Should be able to remove them all in one loop
                     final Index revIdx = (Index)reverse.get(i);
-                    final Index tnsIdx = (Index)translations.get(revIdx.getIndex());
-                    final Iterator tnsIter = translations.iterator();
-                    while (tnsIter.hasNext()) {
-                        final Index idx = (Index)tnsIter.next();
-                        if (idx == tnsIdx) {
-                            tnsIter.remove();
-                        } else if (idx.getIndex() > tnsIdx.getIndex()) {
-                            idx.sub(1);
-                        }
-                    }
-
-                    final Iterator revIter = reverse.iterator();
-                    while(revIter.hasNext()) {
-                        final Index idx = (Index)revIter.next();
-                        if (idx == revIdx) {
-                            revIter.remove();
-                        } else if (idx.getIndex() > revIdx.getIndex()) {
-                            idx.sub(1);
-                        }
-                    }
+                    final Index tranIdx = (Index)translations.get(revIdx.getIndex());
+                    removeAndShift(tranIdx, translations.iterator());
+                    removeAndShift(revIdx, reverse.iterator());
                     fireListEvent(new ListEvent(SortedEventListImpl.this, ListEvent.REMOVED, revIdx.getIndex()));                    
+                }
+            }
+        }
+
+        private void shiftUp(final int index, final Iterator iter) {
+            while (iter.hasNext()) {
+                final Index idx = (Index)iter.next();
+                if (idx.getIndex() >= index) {
+                    idx.add(1);
+                }
+            }
+        }
+
+        private void removeAndShift(final Index index, final Iterator iter) {
+            while (iter.hasNext()) {
+                final Index idx = (Index)iter.next();
+                if (idx == index) {
+                    iter.remove();
+                } else if (idx.getIndex() > index.getIndex()) {
+                    idx.sub(1);
                 }
             }
         }
@@ -136,25 +128,27 @@ class SortedEventListImpl extends TransformedEventList implements SortedEventLis
     }
 
     public void sort() {
+        if (size() == 0) {
+            return;
+        }
         // TODO: optimize
+        final List delegate = getDelegate();
         final List sorted = new ArrayList();
-        sorted.addAll(getDelegate());
+        sorted.addAll(delegate);
         Collections.sort(sorted, comparator);
+        
         for (int i=0; i < sorted.size(); i++) {
             final Object o = sorted.get(i);
-            final Object t = get(i);
-            if (o != t) {
-                final Index idx = (Index)getTranslations().get(i);
-                idx.setIndex(i);
-                final Iterator iter = getDelegate().iterator();
-                for (int j=0; iter.hasNext(); j++) {
-                    final Object d = getDelegate().get(j);
-                    if (d == o) {
-                        ((Index)reverse.get(j)).setIndex(i);
-                    }
+            int j;
+            for (j=0; j < delegate.size(); j++) {
+                if (o == delegate.get(j)) {
+                    break;
                 }
-                fireListEvent(new ListEvent(this, ListEvent.CHANGED, i));
             }
+            ((Index)getTranslations().get(i)).setIndex(j);
+            ((Index)reverse.get(j)).setIndex(i);
         }
+        final ListEvent event = new ListEvent(this, ListEvent.CHANGED, 0, size());
+        fireListEvent(event);
     }
 }
