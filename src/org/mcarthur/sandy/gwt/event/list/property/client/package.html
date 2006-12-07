@@ -1,0 +1,30 @@
+<html>
+<body>
+<p>
+    An {@link org.mcarthur.sandy.gwt.event.list.client.EventList} implementation that noticed when
+    elments in it change and fires events accordingly.
+</p>
+
+
+<h2>Including in your project</h2>
+<p>
+    To add this to your project you will need the GWT-Stuff-EventList and GWT-Stuff-PropertyChange
+    jars added to your classpath and add the following to your GWT module file:
+</p>
+<blockquote>
+    <code>&lt;inherits name="org.mcarthur.sandy.gwt.event.list.property.PropertyChangeEventList"/&gt;</code>
+</blockquote>
+
+<h2>Example Usage</h2>
+<p>
+    Use the PropertyChangeEventList when you have a collection of objects that implement
+    {@link org.mcarthur.sandy.gwt.event.property.client.PropertyChangeSource}.
+</p>
+<blockquote>
+    <code>
+        EventList eventList = new PropertyChangeEventList();
+    </code>
+</blockquote>
+
+</body>
+</html>

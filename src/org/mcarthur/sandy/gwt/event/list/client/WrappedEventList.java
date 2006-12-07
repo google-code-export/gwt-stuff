@@ -25,18 +25,17 @@ import java.util.List;
  * Wrapper of a {@link List} that fires events when changes are made.
  *
  * @author Sandy McArthur
+ * @see EventLists#wrap(List)
  */
-class WrappedEventList extends AbstractEventList implements EventList {
+public class WrappedEventList extends AbstractEventList implements EventList {
     private final List delegate;
 
-    public WrappedEventList(final List delegate) {
+    protected WrappedEventList(final List delegate) {
         this.delegate = delegate;
     }
 
     public boolean add(final Object element) throws NullPointerException {
-        if (element == null) {
-            throw new NullPointerException("null not allowed");
-        }
+        checkNotNull(element);
         final int index = delegate.size();
         final boolean b = delegate.add(element);
         fireListEvent(new ListEvent(this, ListEvent.ADDED, index));
@@ -44,20 +43,13 @@ class WrappedEventList extends AbstractEventList implements EventList {
     }
 
     public void add(final int index, final Object element) throws NullPointerException {
-        if (element == null) {
-            throw new NullPointerException("null not allowed");
-        }
+        checkNotNull(element);
         delegate.add(index, element);
         fireListEvent(new ListEvent(this, ListEvent.ADDED, index));
     }
 
     public boolean addAll(final Collection c) throws NullPointerException {
-        final Iterator iter = c.iterator();
-        while (iter.hasNext()) {
-            if (iter.next() == null) {
-                throw new NullPointerException("null not allowed");
-            }
-        }
+        checkNoneNull(c);
 
         final int indexStart = delegate.size();
         final boolean b = delegate.addAll(c);
@@ -66,12 +58,7 @@ class WrappedEventList extends AbstractEventList implements EventList {
     }
 
     public boolean addAll(final int index, final Collection c) throws NullPointerException {
-        final Iterator iter = c.iterator();
-        while (iter.hasNext()) {
-            if (iter.next() == null) {
-                throw new NullPointerException("null not allowed");
-            }
-        }
+        checkNoneNull(c);
 
         final boolean b = delegate.addAll(index, c);
         fireListEvent(new ListEvent(this, ListEvent.ADDED, index, c.size()));
@@ -113,7 +100,7 @@ class WrappedEventList extends AbstractEventList implements EventList {
     }
 
     public Iterator iterator() {
-        return new WrappedEventListIterator(this, delegate.iterator());
+        return super.iterator();
     }
 
     public int lastIndexOf(final Object element) {
@@ -140,7 +127,7 @@ class WrappedEventList extends AbstractEventList implements EventList {
         // Figure out which objects will be removed
         // and their order in delegate
         final List toBeRemoved = new ArrayList();
-        Iterator iter = delegate.iterator();
+        final Iterator iter = delegate.iterator();
         while (iter.hasNext()) {
             final Object o = iter.next();
             if (c.contains(o)) { // elements also in c
@@ -148,42 +135,14 @@ class WrappedEventList extends AbstractEventList implements EventList {
             }
         }
 
-        iter = toBeRemoved.iterator();
-        int start = -1;
-        int run = 1;
-        while (iter.hasNext() || start != -1) { // loop for each item to be removed and then once more
-            final Object o = iter.hasNext() ? iter.next() : null;
-            if (start == -1) { // first element
-                start = delegate.indexOf(o);
-                run = 1;
-
-            } else if (o != null && delegate.indexOf(o) == start) { // consecutive and not end
-                run++;
-
-            } else { // not consecutive or end
-                fireListEvent(new ListEvent(this, ListEvent.REMOVED, start, start + run));
-                if (o != null) { // not end
-                    start = delegate.indexOf(o);
-                } else { // end
-                    start = -1;
-                }
-                run = 1;
-            }
-
-            if (start != -1) { // not end
-                delegate.remove(start);
-            }
-        }
-
-        // were any removed?
-        return toBeRemoved.size() > 0;
+        return remove(toBeRemoved);
     }
 
     public boolean retainAll(final Collection c) {
         // Figure out which objects will be removed
         // and their order in delegate
         final List toBeRemoved = new ArrayList();
-        Iterator iter = delegate.iterator();
+        final Iterator iter = delegate.iterator();
         while (iter.hasNext()) {
             final Object o = iter.next();
             if (!c.contains(o)) { // elements not in c
@@ -191,6 +150,17 @@ class WrappedEventList extends AbstractEventList implements EventList {
             }
         }
 
+        return remove(toBeRemoved);
+    }
+
+    /**
+     * Remove elements and optimize event firing when possible.
+     *
+     * @param toBeRemoved elements that should be removed from this list.
+     * @return <code>true</code> when there were elements that removed.
+     */
+    private boolean remove(final List toBeRemoved) {
+        final Iterator iter;
         iter = toBeRemoved.iterator();
         int start = -1;
         int run = 1;
@@ -240,29 +210,17 @@ class WrappedEventList extends AbstractEventList implements EventList {
         return delegate;
     }
 
-    private class WrappedEventListIterator implements Iterator {
-        private final EventList eventList;
-        private final Iterator delegate;
-        private Object element;
-
-        public WrappedEventListIterator(final EventList eventList, final Iterator delegate) {
-            this.eventList = eventList;
-            this.delegate = delegate;
+    private static void checkNotNull(final Object element) {
+        if (element == null) {
+            throw new NullPointerException("null not allowed");
         }
+    }
 
-        public boolean hasNext() {
-            return delegate.hasNext();
-        }
-
-        public Object next() {
-            element = delegate.next();
-            return element;
-        }
-
-        public void remove() {
-            final int index = eventList.indexOf(element);
-            delegate.remove();
-            fireListEvent(new ListEvent(eventList, ListEvent.REMOVED, index));
+    private static void checkNoneNull(final Collection c) {
+        final Iterator iter = c.iterator();
+        while (iter.hasNext()) {
+            final Object element = iter.next();
+            checkNotNull(element);
         }
     }
 }

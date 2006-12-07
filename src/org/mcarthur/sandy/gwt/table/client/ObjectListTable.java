@@ -172,28 +172,6 @@ public class ObjectListTable extends Panel implements SourcesMouseEvents {
         return removed;
     }
 
-    private void add(final ObjectListTableRowGroup rowGroup, final int beforeIndex) {
-        // While it shouldn't be important to keep the tfoot element after the tbody elements
-        // it seems Opera needs this for generated DOM elements.
-        int domIndex = beforeIndex;
-        if (beforeIndex < tbodies.size()) {
-            final ObjectListTableRowGroup o = (ObjectListTableRowGroup)tbodies.get(beforeIndex);
-            if (o != null) {
-                domIndex = DOM.getChildIndex(getElement(), o.getElement());
-            }
-        } else if (tfoot != null) {
-            domIndex = DOM.getChildIndex(getElement(), tfoot.getElement());
-        } else {
-            domIndex = DOM.getChildCount(getElement());
-        }
-        tbodies.add(beforeIndex, rowGroup);
-        DOM.insertChild(getElement(), rowGroup.getElement(), domIndex);
-
-        // TODO? add to widgets before or after impl.add?
-        addWidgets(rowGroup);
-        
-    }
-
     private void add(final ObjectListTableRowGroup rowGroup, final ObjectListTableRowGroup beforeGroup) {
         final int beforeIndex;
         if (beforeGroup != null) {
@@ -293,7 +271,12 @@ public class ObjectListTable extends Panel implements SourcesMouseEvents {
                             // insert new
                             rowGroup = new ObjectListTableRowGroup(obj);
                             model.render(obj, rowGroup);
-                            add(rowGroup, i);
+
+                            ObjectListTableRowGroup before = null;
+                            if (i < tbodies.size()) {
+                                before = (ObjectListTableRowGroup)tbodies.get(i);
+                            }
+                            add(rowGroup, before, i);
                         }
 
                     }
@@ -471,34 +454,10 @@ public class ObjectListTable extends Panel implements SourcesMouseEvents {
         if (mouseListeners != null) {
             final int eventType = DOM.eventGetType(event);
             switch (eventType) {
-                case Event.ONMOUSEDOWN: {
-                    if (mouseListeners != null) {
-                        mouseListeners.fireMouseEvent(this, event);
-                    }
-                    break;
-                }
-
-                case Event.ONMOUSEUP: {
-                    if (mouseListeners != null) {
-                        mouseListeners.fireMouseEvent(this, event);
-                    }
-                    break;
-                }
-
-                case Event.ONMOUSEMOVE: {
-                    if (mouseListeners != null) {
-                        mouseListeners.fireMouseEvent(this, event);
-                    }
-                    break;
-                }
-
-                case Event.ONMOUSEOVER: {
-                    if (mouseListeners != null) {
-                        mouseListeners.fireMouseEvent(this, event);
-                    }
-                    break;
-                }
-
+                case Event.ONMOUSEDOWN:
+                case Event.ONMOUSEUP:
+                case Event.ONMOUSEMOVE:
+                case Event.ONMOUSEOVER:
                 case Event.ONMOUSEOUT: {
                     if (mouseListeners != null) {
                         mouseListeners.fireMouseEvent(this, event);

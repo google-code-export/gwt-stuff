@@ -26,6 +26,7 @@ import com.google.gwt.user.client.ui.ChangeListener;
 import com.google.gwt.user.client.ui.CheckBox;
 import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.FlowPanel;
+import com.google.gwt.user.client.ui.FocusListenerAdapter;
 import com.google.gwt.user.client.ui.HasHorizontalAlignment;
 import com.google.gwt.user.client.ui.HasVerticalAlignment;
 import com.google.gwt.user.client.ui.HorizontalPanel;
@@ -42,7 +43,11 @@ import org.mcarthur.sandy.gwt.event.list.client.EventList;
 import org.mcarthur.sandy.gwt.event.list.client.EventLists;
 import org.mcarthur.sandy.gwt.event.list.client.FilteredEventList;
 import org.mcarthur.sandy.gwt.event.list.client.SortedEventList;
+import org.mcarthur.sandy.gwt.event.list.property.client.PropertyChangeEventList;
+import org.mcarthur.sandy.gwt.event.property.client.PropertyChangeSource;
 
+import java.beans.PropertyChangeListener;
+import java.beans.PropertyChangeSupport;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.Date;
@@ -62,9 +67,9 @@ public class TestTable implements EntryPoint {
     private static int pCount = 0;
 
     public void onModuleLoad() {
-        EventList el;
-        sel = EventLists.sortedEventList(); el = sel;
-        fel = EventLists.filteredEventList(sel); el = fel;
+        EventList el = new PropertyChangeEventList();
+        sel = EventLists.sortedEventList(el); el = sel;
+        fel = EventLists.filteredEventList(el); el = fel;
         ot = new ObjectListTable(new OLTR(), el);
         //ot = new ObjectListTable(new OLTR(), EventLists.wrap(new ArrayList()));
         RootPanel.get("log").add(vp);
@@ -79,7 +84,7 @@ public class TestTable implements EntryPoint {
         objects.add(new Person("Bill", 33));
         objects.add(new Person("Ted", 55));
 
-        if (false) {
+        if (!false) {
             final List l = new ArrayList();
             l.add(objects.get(0));
             l.add(objects.get(1));
@@ -245,7 +250,7 @@ public class TestTable implements EntryPoint {
                     //Window.setTitle(tb.getText());
                     person.setName(tb.getText());
                     if (sel != null) {
-                        sel.sort();
+                        //sel.sort();
                     }
                 }
             });
@@ -256,6 +261,11 @@ public class TestTable implements EntryPoint {
                         final TextBox tb = (TextBox)sender;
                         tb.setFocus(false);
                     }
+                }
+            });
+            tb.addFocusListener(new FocusListenerAdapter() {
+                public void onFocus(Widget sender) {
+                    tb.setSelectionRange(0, tb.getText().length());
                 }
             });
             tb.setText(person.getName());
@@ -496,13 +506,14 @@ public class TestTable implements EntryPoint {
         }
     }
 
-    private static class Person implements Comparable {
+    private static class Person implements Comparable, PropertyChangeSource {
         private String name;
         private final int age;
 
+        private final PropertyChangeSupport pcs = new PropertyChangeSupport(this);
 
         public Person(final String name, final int age) {
-            this.name = name;
+            setName(name);
             this.age = age;
         }
 
@@ -511,7 +522,9 @@ public class TestTable implements EntryPoint {
         }
 
         public void setName(final String name) {
+            final Object old = this.name;
             this.name = name;
+            pcs.firePropertyChange("name", old, name);
         }
 
         public int getAge() {
@@ -522,6 +535,18 @@ public class TestTable implements EntryPoint {
             final Person person = (Person)o;
             final int ageDiff = person.age - age;
             return ageDiff != 0 ? ageDiff : name.compareTo(person.name);
+        }
+
+        public String toString() {
+            return name + "{" + age + '}';
+        }
+
+        public void addPropertyChangeListener(final PropertyChangeListener listener) {
+            pcs.addPropertyChangeListener(listener);
+        }
+
+        public void removePropertyChangeListener(final PropertyChangeListener listener) {
+            pcs.removePropertyChangeListener(listener);
         }
     }
 

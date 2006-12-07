@@ -49,9 +49,10 @@ class FilteredEventListImpl extends TransformedEventList implements FilteredEven
     private class FilteredListEventListener implements ListEventListener {
         public void listChanged(final ListEvent listEvent) {
             final EventList delegate = listEvent.getSourceList();
+            final List translations = getTranslations();
             if (listEvent.isAdded()) {
                 final int delta = listEvent.getIndexEnd() - listEvent.getIndexStart();
-                final Iterator iter = getTranslations().iterator();
+                final Iterator iter = translations.iterator();
                 int insertAt = 0;
                 while (iter.hasNext()) {
                     final Index index = (Index)iter.next();
@@ -66,7 +67,7 @@ class FilteredEventListImpl extends TransformedEventList implements FilteredEven
                 for (int i = listEvent.getIndexStart(); i < listEvent.getIndexEnd(); i++) {
                     final Object o = delegate.get(i);
                     if (filter.accept(o)) {
-                        getTranslations().add(insertAt, new Index(i));
+                        translations.add(insertAt, new Index(i));
                         // XXX: optimize for consecutive objects
                         fireListEvent(new ListEvent(FilteredEventListImpl.this, ListEvent.ADDED, insertAt));
                         insertAt++;
@@ -76,20 +77,19 @@ class FilteredEventListImpl extends TransformedEventList implements FilteredEven
             } else if (listEvent.isChanged()) {
                 for (int i = listEvent.getIndexStart(); i < listEvent.getIndexEnd(); i++) {
                     final boolean accepted = filter.accept(delegate.get(i));
-                    for (int k=0; k < getTranslations().size(); k++) {
-                        final Index index = (Index)getTranslations().get(k);
+                    for (int k=0; k < translations.size(); k++) {
+                        final Index index = getTranslationIndex(k);
                         if (index.getIndex() == i) {
                             if (accepted) {
                                 fireListEvent(new ListEvent(FilteredEventListImpl.this, ListEvent.CHANGED, k));
                             } else {
-                                getTranslations().remove(k);
+                                translations.remove(k);
                                 fireListEvent(new ListEvent(FilteredEventListImpl.this, ListEvent.REMOVED, k));
-                                k--;
                             }
                             break;
                         } else if (i < index.getIndex()) {
                             if (accepted) {
-                                getTranslations().add(k, new Index(i));
+                                translations.add(k, new Index(i));
                                 fireListEvent(new ListEvent(FilteredEventListImpl.this, ListEvent.ADDED, k));
                             }
                             break;
@@ -99,7 +99,7 @@ class FilteredEventListImpl extends TransformedEventList implements FilteredEven
 
             } else if (listEvent.isRemoved()) {
                 final int delta = listEvent.getIndexEnd() - listEvent.getIndexStart();
-                final Iterator iter = getTranslations().iterator();
+                final Iterator iter = translations.iterator();
                 int pos = 0;
                 int lower = delegate.size();
                 int upper = -1;
@@ -137,33 +137,35 @@ class FilteredEventListImpl extends TransformedEventList implements FilteredEven
 
     public void filter() {
         int pos = 0;
-        for (int i=0; i < getDelegate().size(); i++) {
-            final Object o = getDelegate().get(i);
+        final List delegate = getDelegate();
+        final List translations = getTranslations();
+        for (int i=0; i < delegate.size(); i++) {
+            final Object o = delegate.get(i);
             final boolean accepted = filter.accept(o);
             if (accepted) {
-                if (pos < getTranslations().size()) {
-                    final Index index = (Index)getTranslations().get(pos);
+                if (pos < translations.size()) {
+                    final Index index = getTranslationIndex(pos);
                     if (index.getIndex() != i) {
-                        getTranslations().add(pos, new Index(i));
+                        translations.add(pos, new Index(i));
                         fireListEvent(new ListEvent(this, ListEvent.ADDED, pos));
                     } // else already there, no change
                 } else {
-                    getTranslations().add(new Index(i));
-                    fireListEvent(new ListEvent(this, ListEvent.ADDED, getTranslations().size()-1));
+                    translations.add(new Index(i));
+                    fireListEvent(new ListEvent(this, ListEvent.ADDED, translations.size()-1));
                 }
                 pos++;
             } else {
-                if (pos < getTranslations().size()) {
-                    final Index index = (Index)getTranslations().get(pos);
+                if (pos < translations.size()) {
+                    final Index index = getTranslationIndex(pos);
                     if (index.getIndex() == i) {
-                        getTranslations().remove(pos);
+                        translations.remove(pos);
                         fireListEvent(new ListEvent(this, ListEvent.REMOVED, pos));
                     }
                 }
             }
         }
-        if (pos != getTranslations().size()) {
-            throw new IllegalStateException("pos: " + pos + " size: " + getTranslations().size());
+        if (pos != translations.size()) {
+            throw new IllegalStateException("pos: " + pos + " size: " + translations.size());
         }
     }
 

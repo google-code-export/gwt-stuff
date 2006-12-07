@@ -51,6 +51,7 @@ public interface SortedEventList extends EventList {
      * Setting this to a new value causes the list to be resorted.
      *
      * @param comparator the Comparator used to sort the list, if <code>null</code> natural ordering is used.
+     * @see Comparable
      */
     public void setComparator(Comparator comparator);
 
