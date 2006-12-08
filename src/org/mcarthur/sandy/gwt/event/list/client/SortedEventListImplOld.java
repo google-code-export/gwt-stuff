@@ -31,6 +31,7 @@ import java.util.List;
  * maintain sorted order.
  *
  * @author Sandy McArthur
+ * @deprecated Use {@link org.mcarthur.sandy.gwt.event.list.client.SortedEventListImpl
  */
 class SortedEventListImplOld extends WrappedEventList implements SortedEventList {
     private Comparator comparator;

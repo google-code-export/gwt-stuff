@@ -27,11 +27,14 @@ import java.util.List;
  * @author Sandy McArthur
  * @see EventLists#wrap(List)
  */
-public class WrappedEventList extends AbstractEventList implements EventList {
+public abstract class WrappedEventList extends AbstractEventList implements EventList {
     private final List delegate;
 
-    protected WrappedEventList(final List delegate) {
+    protected WrappedEventList(final List delegate) throws IllegalArgumentException {
         this.delegate = delegate;
+        if (delegate instanceof EventList) {
+            throw new IllegalArgumentException("EventList implementations do not need to be wrapped.");
+        }
     }
 
     public boolean add(final Object element) throws NullPointerException {

@@ -23,7 +23,7 @@ import java.util.List;
 import java.util.NoSuchElementException;
 
 /**
- * TODO: Write Javadoc
+ * An EventList that presents a transformed view of another EventList.
  *
  * @author Sandy McArthur
  */
@@ -84,7 +84,7 @@ abstract class TransformedEventList extends AbstractEventList implements EventLi
     }
 
     public void add(final int index, final Object element) {
-        getDelegate().add(index, element);
+        getDelegate().add(getTranslationIndex(index).getIndex(), element);
     }
 
     public boolean addAll(final Collection c) {
@@ -92,7 +92,7 @@ abstract class TransformedEventList extends AbstractEventList implements EventLi
     }
 
     public boolean addAll(final int index, final Collection c) {
-        return getDelegate().addAll(index, c);
+        return getDelegate().addAll(getTranslationIndex(index).getIndex(), c);
     }
 
     public Object get(final int index) {
