@@ -37,7 +37,6 @@ public class TestEventList implements EntryPoint {
         RootPanel.get("events").add(vp);
 
         EventList el = EventLists.eventList();
-        //el = EventLists.sortedEventList(EventLists.eventList());
         el = EventLists.sortedEventList(el);
         //el = EventLists.filteredEventList(el);
         el.addListEventListener(new ListEventListener() {
@@ -46,31 +45,31 @@ public class TestEventList implements EntryPoint {
             }
         });
 
-        //log(el);
-        el.add(new Person("Sandy", 21));
-        //log(el);
-        el.add(0, new Person("Keebz", 25));
-        //log(el);
-        el.add(new Person("Bill", 33));
-        //log(el);
-        el.add(new Person("Ted", 55));
-        log(el);
-        //el.remove(1);
-        //log(el);
-        log("Name");
-        ((SortedEventList)el).setComparator(NAME);
-        log(el);
-        log("Age");
-        ((SortedEventList)el).setComparator(AGE);
-        log(el);
-        log("Name");
-        ((SortedEventList)el).setComparator(NAME);
-        log(el);
-        log("Age");
-        ((SortedEventList)el).setComparator(AGE);
-        log(el);
-
         if (false) {
+            //log(el);
+            el.add(new Person("Sandy", 21));
+            //log(el);
+            el.add(0, new Person("Keebz", 25));
+            //log(el);
+            el.add(new Person("Bill", 33));
+            //log(el);
+            el.add(new Person("Ted", 55));
+            log(el);
+            //el.remove(1);
+            //log(el);
+            log("Name");
+            ((SortedEventList)el).setComparator(NAME);
+            log(el);
+            log("Age");
+            ((SortedEventList)el).setComparator(AGE);
+            log(el);
+            log("Name");
+            ((SortedEventList)el).setComparator(NAME);
+            log(el);
+            log("Age");
+            ((SortedEventList)el).setComparator(AGE);
+            log(el);
+        } else {
             el.add("1");
             log(el);
             el.add(0, "2");
