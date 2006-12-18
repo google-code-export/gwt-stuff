@@ -118,7 +118,7 @@
     </target>
 
     <target name="package" depends="compile-java" description="Package up the whole project as a jar">
-        <jar destfile="GWT-Stuff.jar">
+        <jar destfile="GWT-Stuff-${DSTAMP}.jar">
             <fileset dir="bin">
                 <include name="**/*.class"/>
             </fileset>
@@ -130,11 +130,10 @@
                 <include name="**"/>
             </fileset>
         </jar>
-        <copy file="doc/GWT-Stuff.txt" todir="."/>
     </target>
 
     <target name="package-login" depends="compile-java" description="Package up the Login module as a jar">
-        <jar destfile="GWT-Stuff-Login.jar">
+        <jar destfile="GWT-Stuff-Login-${DSTAMP}.jar">
             <fileset dir="bin">
                 <include name="org/mcarthur/sandy/gwt/login/**/*.class"/>
             </fileset>
@@ -146,11 +145,10 @@
                 <include name="org/mcarthur/sandy/gwt/login/**"/>
             </fileset>
         </jar>
-        <copy file="doc/GWT-Stuff-Login.txt" todir="."/>
     </target>
 
     <target name="package-eventlist" depends="compile-java" description="Package up the Event List module as a jar">
-        <jar destfile="GWT-Stuff-EventList.jar">
+        <jar destfile="GWT-Stuff-EventList-${DSTAMP}.jar">
             <fileset dir="bin">
                 <include name="org/mcarthur/sandy/gwt/event/list/**/*.class"/>
             </fileset>
@@ -159,11 +157,10 @@
                 <include name="org/mcarthur/sandy/gwt/event/list/**"/>
             </fileset>
         </jar>
-        <copy file="doc/GWT-Stuff-EventList.txt" todir="."/>
     </target>
 
     <target name="package-propertychange" depends="compile-java" description="Package up the Property Change module as a jar">
-        <jar destfile="GWT-Stuff-PropertyChange.jar">
+        <jar destfile="GWT-Stuff-PropertyChange-${DSTAMP}.jar">
             <fileset dir="bin">
                 <include name="org/mcarthur/sandy/gwt/event/property/**/*.class"/>
             </fileset>
@@ -172,11 +169,10 @@
                 <include name="org/mcarthur/sandy/gwt/event/property/**"/>
             </fileset>
         </jar>
-        <copy file="doc/GWT-Stuff-PropertyChange.txt" todir="."/>
     </target>
 
     <target name="package-table" depends="compile-java" description="Package up the Table module as a jar">
-        <jar destfile="GWT-Stuff-Table.jar">
+        <jar destfile="GWT-Stuff-Table-${DSTAMP}.jar">
             <fileset dir="bin">
                 <include name="org/mcarthur/sandy/gwt/table/**/*.class"/>
             </fileset>
@@ -188,7 +184,6 @@
                 <include name="org/mcarthur/sandy/gwt/table/**"/>
             </fileset>
         </jar>
-        <copy file="doc/GWT-Stuff-Table.txt" todir="."/>
     </target>
 
     <target name="javadoc" depends="init" description="Generate Javadocs">
