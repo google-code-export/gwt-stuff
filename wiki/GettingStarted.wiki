@@ -20,7 +20,13 @@ GWT-Stuff.jar to your classpath and second is to inherit the required GWT Module
 === Updating Classpath ===
 
 Once you've downloaded the needed jar(s) you need to add them to the classpath for your
-project.
+project. This will ultimately depend on how you build your project but if you are using
+the
+[http://code.google.com/webtoolkit/documentation/com.google.gwt.doc.DeveloperGuide.Fundamentals.CommandLineTools.html
+command line tools] provided with GWT then you'll need to edit the _Module-shell_ and
+_Module-compile_ scripts. Open each of them up and find the classpath (-cp) option and
+append ":lib/GWT-Stuff.jar" to the end. (On windows it will be ";lib/GWT-Stuff.jar") If
+you're not sure where that is look for ".jar" and add it after the lass occurrence of ".jar".
 
 === GWT Module Imports ===
 
