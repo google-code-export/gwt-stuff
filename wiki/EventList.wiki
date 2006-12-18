@@ -1,2 +1,3 @@
 #summary See GwtStuffEventList
+#labels Deprecated
 See: GwtStuffEventList
