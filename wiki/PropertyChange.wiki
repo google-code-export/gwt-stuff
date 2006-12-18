@@ -1,0 +1,4 @@
+#summary See GwtStuffPropertyChange
+#labels Deprecated
+
+See: GwtStuffPropertyChange
