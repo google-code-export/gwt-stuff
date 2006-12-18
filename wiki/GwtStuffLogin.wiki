@@ -1,0 +1,10 @@
+#summary GWT-Stuff Login Widget
+
+= Introduction =
+
+A login form widget.
+
+= Inherits =
+
+<inherits name="org.mcarthur.sandy.gwt.login.Login"/> :
+    This inherits the LoginPanel widgets for use in your project.
