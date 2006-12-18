@@ -1,0 +1,15 @@
+#summary GWT-Stuff Property Change Source interfaces
+
+= Introduction =
+
+This module provides interfaces that mark objects as sources for 
+[http://java.sun.com/j2se/1.5.0/docs/api/java/beans/PropertyChangeEvent.html
+java.beans.PropertyChangeEvent]s. This is needed because GWT does not support reflection
+and there is no standard way to indicate that an object is the source of property change
+events.
+
+= Dependencies =
+
+Since GWT does not yet support the java.beans.PropertyChangeSupport and related classes
+you will need to include the [http://code.google.com/p/gwtx/ GWTx] module in your project
+also to enable you to use these classes in your GWT Project.
