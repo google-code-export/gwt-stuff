@@ -19,15 +19,15 @@
 </p>
 <blockquote>
     <code>
-<pre style='color:#000020;'><span style='color:#6679aa; font-weight:bold; '>List</span> list <span style='color:#308080; '>=</span> <span style='color:#200080; font-weight:bold; '>new</span> ArrayList<span style='color:#308080; '>(</span><span style='color:#308080; '>)</span><span style='color:#406080; '>;</span>
-EventList eventList <span style='color:#308080; '>=</span> EventLists<span style='color:#308080; '>.</span>wrap<span style='color:#308080; '>(</span>list<span style='color:#308080; '>)</span><span style='color:#406080; '>;</span>
-ListEventListener listEventListener <span style='color:#308080; '>=</span> <span style='color:#200080; font-weight:bold; '>new</span> ListEventListener<span style='color:#308080; '>(</span><span style='color:#308080; '>)</span> <span style='color:#406080; '>{</span>
-    <span style='color:#200080; font-weight:bold; '>public</span> <span style='color:#7779bb; '>void</span> listChanged<span style='color:#308080; '>(</span>ListEvent listEvent<span style='color:#308080; '>)</span> <span style='color:#406080; '>{</span>
-        GWT<span style='color:#308080; '>.</span>log<span style='color:#308080; '>(</span>listEvent<span style='color:#308080; '>.</span>toString<span style='color:#308080; '>(</span><span style='color:#308080; '>)</span><span style='color:#308080; '>,</span> <span style='color:#200080; font-weight:bold; '>null</span><span style='color:#308080; '>)</span><span style='color:#406080; '>;</span>
-    <span style='color:#406080; '>}</span>
-<span style='color:#406080; '>}</span><span style='color:#406080; '>;</span>
-eventList<span style='color:#308080; '>.</span>addListEventListener<span style='color:#308080; '>(</span>listEventListener<span style='color:#308080; '>)</span><span style='color:#406080; '>;</span>
-</pre>
+      <pre>
+EventList eventList = EventLists.eventList(); // or EventLists.wrap(anList) 
+ListEventListener listEventListener = new ListEventListener() {
+    public void listChanged(ListEvent listEvent) {
+        GWT.log(listEvent.toString(), null);
+    }
+};
+eventList.addListEventListener(listEventListener);
+      </pre>
     </code>
 </blockquote>
 

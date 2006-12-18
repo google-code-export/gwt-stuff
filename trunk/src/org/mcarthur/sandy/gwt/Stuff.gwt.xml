@@ -1,5 +1,6 @@
 <module>
     <inherits name="org.mcarthur.sandy.gwt.event.list.EventList"/>
+    <inherits name="org.mcarthur.sandy.gwt.event.list.property.PropertyChangeEventList"/>
     <inherits name="org.mcarthur.sandy.gwt.event.property.PropertyChange"/>
     <inherits name="org.mcarthur.sandy.gwt.login.Login"/>
     <inherits name="org.mcarthur.sandy.gwt.table.Table"/>
