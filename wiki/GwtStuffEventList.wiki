@@ -11,7 +11,7 @@ the model changes.
 = Imports =
 
 <inherits name="org.mcarthur.sandy.gwt.event.list.EventList"/> :
-  This inherits the EventList lib for use in your project.
+  This inherits the EventList module for use in your project.
 
 <inherits name="org.mcarthur.sandy.gwt.event.list.property.PropertyChangeEventList"/> :
   This inherts the PropertyChangeEventList for use in your project.
