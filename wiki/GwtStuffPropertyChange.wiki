@@ -2,9 +2,8 @@
 
 = Introduction =
 
-This module provides interfaces that mark objects as sources for 
-[http://java.sun.com/j2se/1.5.0/docs/api/java/beans/PropertyChangeEvent.html
-java.beans.PropertyChangeEvent]s. This is needed because GWT does not support reflection
+This module provides interfaces that mark objects as sources for
+java.beans.PropertyChangeEvents. This is needed because GWT does not support reflection
 and there is no standard way to indicate that an object is the source of property change
 events.
 
