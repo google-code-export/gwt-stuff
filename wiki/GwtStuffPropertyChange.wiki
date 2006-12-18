@@ -13,3 +13,8 @@ events.
 Since GWT does not yet support the java.beans.PropertyChangeSupport and related classes
 you will need to include the [http://code.google.com/p/gwtx/ GWTx] module in your project
 also to enable you to use these classes in your GWT Project.
+
+= Inherits =
+
+<inherits name="org.mcarthur.sandy.gwt.event.property.PropertyChange"/> :
+    This inherits the Property Change module for use in your project.
