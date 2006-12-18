@@ -17,6 +17,11 @@ project.
 
 === GWT Module Imports ===
 
+See the various modules pages for how to import them into your GWT Module.
+  * GwtStuffEventList
+  * GwtStuffLogin
+  * GwtStuffPropertyChange
+  * GwtStuffTable
 
 = License =
 
