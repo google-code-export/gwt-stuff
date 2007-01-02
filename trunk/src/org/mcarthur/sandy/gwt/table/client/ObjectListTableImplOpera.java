@@ -24,7 +24,7 @@ import com.google.gwt.user.client.Element;
  *
  * @author Sandy McArthur
  */
-public class ObjectListTableImplOpera extends ObjectListTableImpl {
+class ObjectListTableImplOpera extends ObjectListTableImpl {
 
     /*
      * Opera seems to need the thead/tfoot elements to be kept at the start/end of the table's
