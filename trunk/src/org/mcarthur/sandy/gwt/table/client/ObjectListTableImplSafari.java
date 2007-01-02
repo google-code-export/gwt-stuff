@@ -16,7 +16,9 @@
 
 package org.mcarthur.sandy.gwt.table.client;
 
+import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.DOM;
+import com.google.gwt.user.client.DeferredCommand;
 import com.google.gwt.user.client.Element;
 
 /**
@@ -39,8 +41,23 @@ class ObjectListTableImplSafari extends ObjectListTableImpl {
         super.add(olt, rowGroup, beforeGroup, beforeIndex);
 
         // force table re-layout
-        // TODO: Use DeferredCommand to add/remove once at the end of updates.
-        DOM.appendChild(olt.getElement(), CAPTION);
-        DOM.removeChild(olt.getElement(), CAPTION);
+        if (true) {
+            // XXX? this benches as being faster? dunno why.
+            DOM.appendChild(olt.getElement(), CAPTION);
+            DOM.removeChild(olt.getElement(), CAPTION);
+        } else {
+            if (relayout == null) {
+                relayout = new Command() {
+                    public void execute() {
+                        DOM.appendChild(olt.getElement(), CAPTION);
+                        DOM.removeChild(olt.getElement(), CAPTION);
+                        relayout = null;
+                    }
+                };
+                DeferredCommand.add(relayout);
+            }
+        }
     }
+
+    private Command relayout = null;
 }
