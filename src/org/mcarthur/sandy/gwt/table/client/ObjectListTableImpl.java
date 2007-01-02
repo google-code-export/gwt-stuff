@@ -28,7 +28,7 @@ import com.google.gwt.user.client.Window;
 class ObjectListTableImpl {
 
     public void init() {
-        Window.setTitle("Loaded ObjectListTableImpl");
+        //Window.setTitle("Loaded ObjectListTableImpl");
     }
 
     /*

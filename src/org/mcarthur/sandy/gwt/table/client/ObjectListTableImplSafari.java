@@ -24,7 +24,7 @@ import com.google.gwt.user.client.Element;
  *
  * @author Sandy McArthur
  */
-public class ObjectListTableImplSafari extends ObjectListTableImpl {
+class ObjectListTableImplSafari extends ObjectListTableImpl {
 
     /*
      * Safari has a bug such that tbody tags are rendered on top of each other when you insert
@@ -39,6 +39,7 @@ public class ObjectListTableImplSafari extends ObjectListTableImpl {
         super.add(olt, rowGroup, beforeGroup, beforeIndex);
 
         // force table re-layout
+        // TODO: Use DeferredCommand to add/remove once at the end of updates.
         DOM.appendChild(olt.getElement(), CAPTION);
         DOM.removeChild(olt.getElement(), CAPTION);
     }
