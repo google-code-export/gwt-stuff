@@ -41,21 +41,27 @@ class ObjectListTableImplSafari extends ObjectListTableImpl {
         super.add(olt, rowGroup, beforeGroup, beforeIndex);
 
         // force table re-layout
-        if (true) {
-            // XXX? this benches as being faster? dunno why.
-            DOM.appendChild(olt.getElement(), CAPTION);
-            DOM.removeChild(olt.getElement(), CAPTION);
-        } else {
-            if (relayout == null) {
-                relayout = new Command() {
-                    public void execute() {
-                        DOM.appendChild(olt.getElement(), CAPTION);
-                        DOM.removeChild(olt.getElement(), CAPTION);
-                        relayout = null;
-                    }
-                };
-                DeferredCommand.add(relayout);
-            }
+        workaround(olt);
+
+    }
+
+    private void workaround(final ObjectListTable olt) {
+        // XXX? this benches as being faster? dunno why.
+        DOM.appendChild(olt.getElement(), CAPTION);
+        DOM.removeChild(olt.getElement(), CAPTION);
+    }
+
+    private void workaround2(final ObjectListTable olt) {
+        // XXX? why is this slower
+        if (relayout == null) {
+            relayout = new Command() {
+                public void execute() {
+                    DOM.appendChild(olt.getElement(), CAPTION);
+                    DOM.removeChild(olt.getElement(), CAPTION);
+                    relayout = null;
+                }
+            };
+            DeferredCommand.add(relayout);
         }
     }
 

@@ -76,7 +76,7 @@ public class ObjectListTable extends Panel implements SourcesMouseEvents {
      * @see #getObjects()
      */
     public ObjectListTable(final Renderer renderer) {
-        this(renderer, EventLists.wrap(new ArrayList()));
+        this(renderer, EventLists.eventList());
     }
 
     /**
