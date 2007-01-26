@@ -16,18 +16,46 @@
 
 package org.mcarthur.sandy.gwt.event.list.client;
 
+import java.util.AbstractList;
+import java.util.List;
+
 /**
  * TODO: Write Javadoc
  *
  * @author Sandy McArthur
  */
-public class PaginatedEventListImpl extends TransformedEventList implements PaginatedEventList {
-    private int start = 0;
-    private int maxSize = Integer.MAX_VALUE;
+class PaginatedEventListImpl extends TransformedEventList implements PaginatedEventList {
+    private int start;
+    private int maxSize;
+    private List translationList = new TranslationList();
 
     protected PaginatedEventListImpl(final EventList delegate) {
-        super(delegate);
+        this(delegate, Integer.MAX_VALUE);
+    }
 
+    protected PaginatedEventListImpl(final EventList delegate, final int maxSize) {
+        super(delegate);
+        getDelegate().addListEventListener(new PaginatedListEventListener());
+        setStart(0);
+        setMaxSize(maxSize);
+    }
+
+    private class PaginatedListEventListener implements ListEventListener {
+        public void listChanged(final ListEvent listEvent) {
+            // does the event affect our range?
+            if (start < listEvent.getIndexEnd() && listEvent.getIndexStart() < start + maxSize) {
+                // find translated start
+                int tStart = Math.max(0, listEvent.getIndexStart() - start);
+                // find translated end
+                int tEnd = Math.min(maxSize, listEvent.getIndexEnd() - start);
+                // fire new event
+                fireListEvent(new ListEvent(PaginatedEventListImpl.this, listEvent.getType(), tStart, tEnd));
+            }
+        }
+    }
+
+    protected List getTranslations() {
+        return translationList;
     }
 
     // TODO: event handling
@@ -38,6 +66,7 @@ public class PaginatedEventListImpl extends TransformedEventList implements Pagi
     }
 
     public void setStart(final int start) {
+        // TODO: fire event for list change.
         this.start = start;
     }
 
@@ -46,10 +75,30 @@ public class PaginatedEventListImpl extends TransformedEventList implements Pagi
     }
 
     public void setMaxSize(final int maxSize) {
+        // TODO: fire event for list change.
         this.maxSize = maxSize;
     }
 
     public int getTotal() {
         return getDelegate().size();
+    }
+
+    /**
+     * A List that creates
+     * {@link org.mcarthur.sandy.gwt.event.list.client.TransformedEventList.Index}s as needed based
+     * on {@link PaginatedEventListImpl#start} and {@link PaginatedEventListImpl#maxSize}.
+     */
+    private class TranslationList extends AbstractList {
+        public Object get(final int index) {
+            // FIXME: bug here.
+            if (index >= size()) {
+                throw new IndexOutOfBoundsException("Index: " + index + ", Size: " + size());
+            }
+            return new Index(start + index);
+        }
+
+        public int size() {
+            return Math.min(maxSize, getDelegate().size() - start);
+        }
     }
 }

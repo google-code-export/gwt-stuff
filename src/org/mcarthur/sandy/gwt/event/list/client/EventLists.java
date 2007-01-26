@@ -82,6 +82,18 @@ public class EventLists {
         return new FilteredEventListImpl(eventList, filter);
     }
 
+    public static PaginatedEventList paginatedEventList() {
+        return paginatedEventList(eventList());
+    }
+
+    public static PaginatedEventList paginatedEventList(final EventList eventList) {
+        return paginatedEventList(eventList, Integer.MAX_VALUE);
+    }
+
+    public static PaginatedEventList paginatedEventList(final EventList eventList, final int maxSize) {
+        return new PaginatedEventListImpl(eventList, maxSize);
+    }
+
     /**
      * Create a <code>SortedEventList</code> that defaults to natural ordering.
      *
