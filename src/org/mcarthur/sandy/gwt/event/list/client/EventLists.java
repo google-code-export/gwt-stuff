@@ -168,7 +168,7 @@ public class EventLists {
         if (list instanceof EventList) {
             return (EventList)list;
         } else if (list != null) {
-            return new WrappedEventListImpl(list);
+            return new WrappedEventList(list);
         } else {
             throw new IllegalArgumentException("list must not be null.");
         }

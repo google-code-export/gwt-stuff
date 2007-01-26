@@ -27,8 +27,7 @@ import java.util.NoSuchElementException;
  *
  * @author Sandy McArthur
  */
-abstract class TransformedEventList extends AbstractEventList implements EventList {
-    private final EventList delegate;
+public abstract class TransformedEventList extends DelegateEventList implements EventList {
     /**
      * A list of {@link Index}es that map the TransformedEventList's index to the delegate list's
      * indexes.
@@ -36,11 +35,7 @@ abstract class TransformedEventList extends AbstractEventList implements EventLi
     private List translations = new ArrayList();
 
     protected TransformedEventList(final EventList delegate) {
-        this.delegate = delegate;
-    }
-
-    protected EventList getDelegate() {
-        return delegate;
+        super(delegate);
     }
 
     protected List getTranslations() {
@@ -79,26 +74,18 @@ abstract class TransformedEventList extends AbstractEventList implements EventLi
         }
     }
 
-    public boolean add(final Object o) {
-        return getDelegate().add(o);
-    }
-
     public void add(final int index, final Object element) {
-        getDelegate().add(getTranslationIndex(index).getIndex(), element);
-    }
-
-    public boolean addAll(final Collection c) {
-        return getDelegate().addAll(c);
+        super.add(getTranslationIndex(index).getIndex(), element);
     }
 
     public boolean addAll(final int index, final Collection c) {
-        return getDelegate().addAll(getTranslationIndex(index).getIndex(), c);
+        return super.addAll(getTranslationIndex(index).getIndex(), c);
     }
 
     public Object get(final int index) {
         if (index < size()) {
             final Index idx = getTranslationIndex(index);
-            return getDelegate().get(idx.getIndex());
+            return super.get(idx.getIndex());
         } else {
             throw new IndexOutOfBoundsException("index: " + index + " must be less than size(): " + size());
         }
@@ -107,13 +94,14 @@ abstract class TransformedEventList extends AbstractEventList implements EventLi
     public Object remove(final int index) {
         if (index < size()) {
             final Index idx = getTranslationIndex(index);
-            return getDelegate().remove(idx.getIndex());
+            return super.remove(idx.getIndex());
         } else {
             throw new IndexOutOfBoundsException(index + " out of bounds");
         }
     }
 
-    public boolean removeAll(final Collection c) {
+    // TODO: Remove this
+    private boolean XremoveAll(final Collection c) {
         boolean modified = false;
         final Iterator e = iterator();
         while (e.hasNext()) {
@@ -128,7 +116,7 @@ abstract class TransformedEventList extends AbstractEventList implements EventLi
     public Object set(final int index, final Object element) {
         if (index < size()) {
             final Index idx = getTranslationIndex(index);
-            return getDelegate().set(idx.getIndex(), element);
+            return super.set(idx.getIndex(), element);
         } else {
             throw new IndexOutOfBoundsException("index: " + index + " out of bounds");
         }

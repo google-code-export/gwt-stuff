@@ -16,13 +16,40 @@
 
 package org.mcarthur.sandy.gwt.event.list.client;
 
-import java.util.List;
-
 /**
+ * TODO: Write Javadoc
+ *
  * @author Sandy McArthur
  */
-class WrappedEventListImpl extends WrappedEventList {
-    protected WrappedEventListImpl(final List delegate) {
+public class PaginatedEventListImpl extends TransformedEventList implements PaginatedEventList {
+    private int start = 0;
+    private int maxSize = Integer.MAX_VALUE;
+
+    protected PaginatedEventListImpl(final EventList delegate) {
         super(delegate);
+
+    }
+
+    // TODO: event handling
+    // TODO: paginate code
+    
+    public int getStart() {
+        return start;
+    }
+
+    public void setStart(final int start) {
+        this.start = start;
+    }
+
+    public int getMaxSize() {
+        return maxSize;
+    }
+
+    public void setMaxSize(final int maxSize) {
+        this.maxSize = maxSize;
+    }
+
+    public int getTotal() {
+        return getDelegate().size();
     }
 }
