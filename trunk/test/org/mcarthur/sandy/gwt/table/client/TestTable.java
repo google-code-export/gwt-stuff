@@ -42,8 +42,9 @@ import com.google.gwt.user.client.ui.Widget;
 import org.mcarthur.sandy.gwt.event.list.client.EventList;
 import org.mcarthur.sandy.gwt.event.list.client.EventLists;
 import org.mcarthur.sandy.gwt.event.list.client.FilteredEventList;
+import org.mcarthur.sandy.gwt.event.list.client.PaginatedEventList;
 import org.mcarthur.sandy.gwt.event.list.client.SortedEventList;
-import org.mcarthur.sandy.gwt.event.list.property.client.PropertyChangeEventList;
+import org.mcarthur.sandy.gwt.event.list.property.client.ObservingEventList;
 import org.mcarthur.sandy.gwt.event.property.client.PropertyChangeSource;
 
 import java.beans.PropertyChangeListener;
@@ -64,12 +65,14 @@ public class TestTable implements EntryPoint {
     private static ObjectListTable ot;
     private static SortedEventList sel;
     private static FilteredEventList fel;
+    private static PaginatedEventList pel;
     private static int pCount = 0;
 
     public void onModuleLoad() {
-        EventList el = new PropertyChangeEventList();
+        EventList el = new ObservingEventList();
         sel = EventLists.sortedEventList(el); el = sel;
         fel = EventLists.filteredEventList(el); el = fel;
+        pel = EventLists.paginatedEventList(el, 10); pel.setStart(1); el = pel;
         ot = new ObjectListTable(new OLTR(), el);
         //ot = new ObjectListTable(new OLTR(), EventLists.wrap(new ArrayList()));
         RootPanel.get("log").add(vp);
