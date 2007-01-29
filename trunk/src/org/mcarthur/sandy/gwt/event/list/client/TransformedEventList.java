@@ -87,7 +87,7 @@ public abstract class TransformedEventList extends DelegateEventList implements 
             final Index idx = getTranslationIndex(index);
             return super.get(idx.getIndex());
         } else {
-            throw new IndexOutOfBoundsException("index: " + index + " must be less than size(): " + size());
+            throw new IndexOutOfBoundsException("Index: " + index + ", Size: " + size());
         }
     }
 
@@ -96,7 +96,7 @@ public abstract class TransformedEventList extends DelegateEventList implements 
             final Index idx = getTranslationIndex(index);
             return super.remove(idx.getIndex());
         } else {
-            throw new IndexOutOfBoundsException(index + " out of bounds");
+            throw new IndexOutOfBoundsException("Index: " + index + ", Size: " + size());
         }
     }
 
@@ -118,7 +118,7 @@ public abstract class TransformedEventList extends DelegateEventList implements 
             final Index idx = getTranslationIndex(index);
             return super.set(idx.getIndex(), element);
         } else {
-            throw new IndexOutOfBoundsException("index: " + index + " out of bounds");
+            throw new IndexOutOfBoundsException("Index: " + index + ", Size: " + size());
         }
     }
 
