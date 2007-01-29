@@ -42,6 +42,32 @@ class PaginatedEventListImpl extends TransformedEventList implements PaginatedEv
 
     private class PaginatedListEventListener implements ListEventListener {
         public void listChanged(final ListEvent listEvent) {
+            // TODO: rework this.
+            if (false) { // not done
+                if (listEvent.isAdded()) {
+                    if (listEvent.getIndexStart() < start + maxSize) {
+                        //
+                        // if total - start < maxSize after add then fire add
+                        // if total - start >= maxSize after add then fire update
+                    }
+                } else if (listEvent.isChanged()) {
+                    // does the event affect our range?
+                    if (start < listEvent.getIndexEnd() && listEvent.getIndexStart() < start + maxSize) {
+                        // find translated start
+                        int tStart = Math.max(0, listEvent.getIndexStart() - start);
+                        // find translated end
+                        int tEnd = Math.min(maxSize, listEvent.getIndexEnd() - start);
+                        // fire new event
+                        fireListEvent(new ListEvent(PaginatedEventListImpl.this, ListEvent.CHANGED, tStart, tEnd));
+                    }
+                } else if (listEvent.isRemoved()) {
+                    if (listEvent.getIndexStart() < start + maxSize) {
+                        // if total - start < maxSize before remove then fire remove
+                        // if total - start >= maxSize before remove then fire update
+                    }
+                }
+            }
+
             // does the event affect our range?
             if (start < listEvent.getIndexEnd() && listEvent.getIndexStart() < start + maxSize) {
                 // find translated start
@@ -58,9 +84,6 @@ class PaginatedEventListImpl extends TransformedEventList implements PaginatedEv
         return translationList;
     }
 
-    // TODO: event handling
-    // TODO: paginate code
-    
     public int getStart() {
         return start;
     }
