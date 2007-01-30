@@ -100,19 +100,6 @@ public abstract class TransformedEventList extends DelegateEventList implements 
         }
     }
 
-    // TODO: Remove this
-    private boolean XremoveAll(final Collection c) {
-        boolean modified = false;
-        final Iterator e = iterator();
-        while (e.hasNext()) {
-            if (c.contains(e.next())) {
-                e.remove();
-                modified = true;
-            }
-        }
-        return modified;
-    }
-
     public Object set(final int index, final Object element) {
         if (index < size()) {
             final Index idx = getTranslationIndex(index);

@@ -20,7 +20,7 @@ import java.util.AbstractList;
 import java.util.List;
 
 /**
- * TODO: Write Javadoc
+ * PaginatedEventList that presents a view of one page of another EventList.
  *
  * @author Sandy McArthur
  */
@@ -42,40 +42,47 @@ class PaginatedEventListImpl extends TransformedEventList implements PaginatedEv
 
     private class PaginatedListEventListener implements ListEventListener {
         public void listChanged(final ListEvent listEvent) {
-            // TODO: rework this.
-            if (false) { // not done
-                if (listEvent.isAdded()) {
-                    if (listEvent.getIndexStart() < start + maxSize) {
-                        //
-                        // if total - start < maxSize after add then fire add
-                        // if total - start >= maxSize after add then fire update
+            // XXX: lots of room for event fireing optimizations here
+            final int indexStart = listEvent.getIndexStart();
+            final int indexEnd = listEvent.getIndexEnd();
+            final int maxEnd = start + maxSize;
+            if (listEvent.isAdded()) {
+                if (indexStart < maxEnd) {
+                    final int addedSize = indexEnd - indexStart;
+                    final int oldTotal = getTotal() - addedSize;
+                    // if the old size was less than the max size
+                    if (oldTotal < maxEnd) {
+                        // we need to add to increase size() to maxSize and update for the rest
+                        final int visableAddedSize = Math.min(maxEnd - indexStart, addedSize);
+                        final int addStart = Math.max(0, indexStart - start);
+                        final int addEnd = addStart + visableAddedSize;
+                        fireListEvent(new ListEvent(PaginatedEventListImpl.this, ListEvent.ADDED, addStart, addEnd));
+                        fireListEvent(new ListEvent(PaginatedEventListImpl.this, ListEvent.CHANGED, addEnd, size()));
+                    } else {
+                        fireListEvent(new ListEvent(PaginatedEventListImpl.this, ListEvent.CHANGED, 0, maxSize));
                     }
-                } else if (listEvent.isChanged()) {
-                    // does the event affect our range?
-                    if (start < listEvent.getIndexEnd() && listEvent.getIndexStart() < start + maxSize) {
-                        // find translated start
-                        int tStart = Math.max(0, listEvent.getIndexStart() - start);
-                        // find translated end
-                        int tEnd = Math.min(maxSize, listEvent.getIndexEnd() - start);
-                        // fire new event
-                        fireListEvent(new ListEvent(PaginatedEventListImpl.this, ListEvent.CHANGED, tStart, tEnd));
-                    }
-                } else if (listEvent.isRemoved()) {
-                    if (listEvent.getIndexStart() < start + maxSize) {
-                        // if total - start < maxSize before remove then fire remove
-                        // if total - start >= maxSize before remove then fire update
+                } // else add beyond this view
+            } else if (listEvent.isChanged()) {
+                // does the event affect our range?
+                if (start < indexEnd && indexStart < maxEnd) {
+                    // clamp to current page range
+                    final int changedStart = Math.max(0, indexStart - start);
+                    final int changedEnd = Math.min(maxSize, indexEnd - start);
+                    fireListEvent(new ListEvent(PaginatedEventListImpl.this, ListEvent.CHANGED, changedStart, changedEnd));
+                }
+            } else if (listEvent.isRemoved()) {
+                if (indexStart < maxEnd) {
+                    final int removedSize = indexEnd - indexStart;
+                    final int oldTotal = getTotal() + removedSize;
+                    // if the new size shrinks the visible size
+                    if (size() < maxSize) {
+                        final int removedStart = Math.max(0, indexStart - start);
+                        final int removedEnd = removedStart + removedSize;
+                        fireListEvent(new ListEvent(PaginatedEventListImpl.this, ListEvent.REMOVED, removedStart, removedEnd));
+                    } else {
+                        fireListEvent(new ListEvent(PaginatedEventListImpl.this, ListEvent.CHANGED, 0, maxSize));
                     }
                 }
-            }
-
-            // does the event affect our range?
-            if (start < listEvent.getIndexEnd() && listEvent.getIndexStart() < start + maxSize) {
-                // find translated start
-                int tStart = Math.max(0, listEvent.getIndexStart() - start);
-                // find translated end
-                int tEnd = Math.min(maxSize, listEvent.getIndexEnd() - start);
-                // fire new event
-                fireListEvent(new ListEvent(PaginatedEventListImpl.this, listEvent.getType(), tStart, tEnd));
             }
         }
     }
@@ -113,7 +120,6 @@ class PaginatedEventListImpl extends TransformedEventList implements PaginatedEv
      */
     private class TranslationList extends AbstractList {
         public Object get(final int index) {
-            // FIXME: bug here.
             if (index >= size()) {
                 throw new IndexOutOfBoundsException("Index: " + index + ", Size: " + size());
             }
@@ -121,7 +127,7 @@ class PaginatedEventListImpl extends TransformedEventList implements PaginatedEv
         }
 
         public int size() {
-            return Math.min(maxSize, getDelegate().size() - start);
+            return Math.min(maxSize, getTotal() - start);
         }
     }
 }
