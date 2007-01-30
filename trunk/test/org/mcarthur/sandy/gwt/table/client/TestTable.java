@@ -72,7 +72,7 @@ public class TestTable implements EntryPoint {
         EventList el = new ObservingEventList();
         sel = EventLists.sortedEventList(el); el = sel;
         fel = EventLists.filteredEventList(el); el = fel;
-        pel = EventLists.paginatedEventList(el, 10); pel.setStart(1); el = pel;
+        pel = EventLists.paginatedEventList(el, 4); pel.setStart(0); el = pel;
         ot = new ObjectListTable(new OLTR(), el);
         //ot = new ObjectListTable(new OLTR(), EventLists.wrap(new ArrayList()));
         RootPanel.get("log").add(vp);
@@ -220,6 +220,63 @@ public class TestTable implements EntryPoint {
             hp.add(new Label("to:"));
             hp.add(upper);
             hp.add(filterButton);
+            fp.add(hp);
+        }
+
+        if (pel != null) {
+            final TextBox maxSize = new TextBox();
+            maxSize.setWidth("3em");
+            maxSize.setText(Integer.toString(pel.getMaxSize()));
+            maxSize.setTitle("Enter the size of each page");
+            final Button setMaxSize = new Button("Set maxSize");
+            setMaxSize.addClickListener(new ClickListener() {
+                public void onClick(final Widget sender) {
+                    try {
+                        pel.setMaxSize(Integer.parseInt(maxSize.getText()));
+                    } catch (NumberFormatException nfe) {
+                        Window.alert("maxSize must be a integer");
+                    }
+                }
+            });
+            maxSize.addKeyboardListener(new KeyboardListenerAdapter() {
+                public void onKeyUp(final Widget sender, final char keyCode, final int modifiers) {
+                    super.onKeyUp(sender, keyCode, modifiers);
+                    if (KeyboardListener.KEY_ENTER == keyCode) {
+                        setMaxSize.click();
+                    }
+                }
+            });
+
+            final TextBox start = new TextBox();
+            start.setWidth("3em");
+            start.setText(Integer.toString(pel.getStart()));
+            start.setTitle("Enter the offset for the page.");
+            final Button setStart = new Button("Set start offset");
+            setStart.addClickListener(new ClickListener() {
+                public void onClick(final Widget sender) {
+                    try {
+                        pel.setStart(Integer.parseInt(start.getText()));
+                    } catch (NumberFormatException nfe) {
+                        Window.alert("start offset must be a integer");
+                    }
+                }
+            });
+            start.addKeyboardListener(new KeyboardListenerAdapter() {
+                public void onKeyUp(final Widget sender, final char keyCode, final int modifiers) {
+                    super.onKeyUp(sender, keyCode, modifiers);
+                    if (KeyboardListener.KEY_ENTER == keyCode) {
+                        setStart.click();
+                    }
+                }
+            });
+
+
+            final HorizontalPanel hp = new HorizontalPanel();
+            hp.add(maxSize);
+            hp.add(setMaxSize);
+
+            hp.add(start);
+            hp.add(setStart);
             fp.add(hp);
         }
 

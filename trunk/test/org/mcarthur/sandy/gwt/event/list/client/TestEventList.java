@@ -26,7 +26,7 @@ import java.util.Comparator;
 import java.util.List;
 
 /**
- * TODO: Write Class JavaDoc
+ * Test app for EventList
  *
  * @author Sandy McArthur
  */
