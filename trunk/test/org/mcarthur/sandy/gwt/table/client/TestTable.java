@@ -42,6 +42,8 @@ import com.google.gwt.user.client.ui.Widget;
 import org.mcarthur.sandy.gwt.event.list.client.EventList;
 import org.mcarthur.sandy.gwt.event.list.client.EventLists;
 import org.mcarthur.sandy.gwt.event.list.client.FilteredEventList;
+import org.mcarthur.sandy.gwt.event.list.client.ListEvent;
+import org.mcarthur.sandy.gwt.event.list.client.ListEventListener;
 import org.mcarthur.sandy.gwt.event.list.client.PaginatedEventList;
 import org.mcarthur.sandy.gwt.event.list.client.SortedEventList;
 import org.mcarthur.sandy.gwt.event.list.property.client.ObservingEventList;
@@ -62,19 +64,19 @@ import java.util.List;
 public class TestTable implements EntryPoint {
     private static VerticalPanel vp = new VerticalPanel();
 
-    private static ObjectListTable ot;
-    private static SortedEventList sel;
-    private static FilteredEventList fel;
-    private static PaginatedEventList pel;
-    private static int pCount = 0;
+    private ObjectListTable ot;
+    private EventList el;
+    private SortedEventList sel;
+    private FilteredEventList fel;
+    private PaginatedEventList pel;
+    private int pCount = 0;
 
     public void onModuleLoad() {
-        EventList el = new ObservingEventList();
+        EventList el = new ObservingEventList(); this.el = el;
         sel = EventLists.sortedEventList(el); el = sel;
         fel = EventLists.filteredEventList(el); el = fel;
-        pel = EventLists.paginatedEventList(el, 4); pel.setStart(0); el = pel;
+        pel = EventLists.paginatedEventList(el, 4); el = pel;
         ot = new ObjectListTable(new OLTR(), el);
-        //ot = new ObjectListTable(new OLTR(), EventLists.wrap(new ArrayList()));
         RootPanel.get("log").add(vp);
 
 
@@ -151,7 +153,7 @@ public class TestTable implements EntryPoint {
             public void onClick(final Widget sender) {
                 final List l = new ArrayList();
                 for (int i=0; i < instances; i++) {
-                    objects.add(new Person("Person " + (pCount++), (int)(Math.random() * 100)));
+                    l.add(new Person("Person " + (pCount++), (int)(Math.random() * 100)));
                 }
                 final long start = System.currentTimeMillis();
                 DeferredCommand.add(new Command() {
@@ -270,13 +272,35 @@ public class TestTable implements EntryPoint {
                 }
             });
 
+            final Button nextPage = new Button("Next Page");
+            nextPage.addClickListener(new ClickListener() {
+                public void onClick(final Widget sender) {
+                    int m = Integer.parseInt(maxSize.getText());
+                    int s = Integer.parseInt(start.getText()) + m;
+                    start.setText("" + s);
+                    setStart.click();
+                }
+            });
+
+            final Button r1 = new Button("Deep Remove");
+            r1.setTitle("Removes first element of deepest EventList");
+            r1.addClickListener(new ClickListener() {
+                public void onClick(final Widget sender) {
+                    List el = TestTable.this.el;
+                    if (el.size() > 0) {
+                        el.remove(0);
+                    }
+                }
+            });
 
             final HorizontalPanel hp = new HorizontalPanel();
             hp.add(maxSize);
             hp.add(setMaxSize);
-
             hp.add(start);
             hp.add(setStart);
+            hp.add(nextPage);
+            hp.add(new TotalLabel(pel));
+            hp.add(r1);
             fp.add(hp);
         }
 
@@ -284,7 +308,7 @@ public class TestTable implements EntryPoint {
 
     }
 
-    private static class OLTR implements ObjectListTable.Renderer {
+    private class OLTR implements ObjectListTable.Renderer {
 
         public void render(final Object obj, final TableBodyGroup rowGroup) {
             final Person person = (Person)obj;
@@ -309,9 +333,6 @@ public class TestTable implements EntryPoint {
                     // FIXME: BUG: Rows that are added before the table is attached, don't fire events.
                     //Window.setTitle(tb.getText());
                     person.setName(tb.getText());
-                    if (sel != null) {
-                        //sel.sort();
-                    }
                 }
             });
             tb.addKeyboardListener(new KeyboardListenerAdapter() {
@@ -481,9 +502,9 @@ public class TestTable implements EntryPoint {
             rowGroup.add(tr);
         }
 
-        private static RowGroupMouseListener rgml = new RowGroupMouseListener();
+        private RowGroupMouseListener rgml = new RowGroupMouseListener();
 
-        private static class RowGroupMouseListener implements TableRowGroup.MouseListener {
+        private class RowGroupMouseListener implements TableRowGroup.MouseListener {
             public void onMouseDown(final TableRowGroup rowGroup, final Event event) {
                 //To change body of implemented methods use File | Settings | File Templates.
             }
@@ -515,7 +536,7 @@ public class TestTable implements EntryPoint {
 
         private final RowMouseListener rml = new RowMouseListener();
 
-        private static class RowMouseListener implements TableRow.MouseListener {
+        private class RowMouseListener implements TableRow.MouseListener {
             public void onMouseDown(final TableRow row, final Event event) {
                 //To change body of implemented methods use File | Settings | File Templates.
             }
@@ -640,5 +661,22 @@ public class TestTable implements EntryPoint {
             RootPanel.get("log").add(vp);
         }
         vp.insert(new Label(new Date() + " " + str), 0);
+    }
+
+    private static class TotalLabel extends Label {
+        private final PaginatedEventList pel;
+
+        public TotalLabel(final PaginatedEventList pel) {
+            this.pel = pel;
+            pel.addListEventListener(new ListEventListener() {
+                public void listChanged(final ListEvent listEvent) {
+                    update();
+                }
+            });
+            update();
+        }
+        private void update() {
+            setText("Total: " + pel.getTotal());
+        }
     }
 }

@@ -50,6 +50,7 @@ class FilteredEventListImpl extends TransformedEventList implements FilteredEven
         public void listChanged(final ListEvent listEvent) {
             final EventList delegate = listEvent.getSourceList();
             final List translations = getTranslations();
+
             if (listEvent.isAdded()) {
                 final int delta = listEvent.getIndexEnd() - listEvent.getIndexStart();
                 final Iterator iter = translations.iterator();
@@ -119,6 +120,9 @@ class FilteredEventListImpl extends TransformedEventList implements FilteredEven
                 if (lower <= upper) {
                     fireListEvent(new ListEvent(FilteredEventListImpl.this, ListEvent.REMOVED, lower, upper+1));
                 }
+
+            } else {
+                fireListEvent(listEvent.resource(FilteredEventListImpl.this));
             }
         }
     }

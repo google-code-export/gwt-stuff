@@ -17,6 +17,14 @@
 package org.mcarthur.sandy.gwt.event.list.client;
 
 /**
+ * An EventList that provides a view of range of another EventList.
+ *
+ * <p>
+ * When the backing EventList changes in a way that doesn't affect the list of elements
+ * a {@link org.mcarthur.sandy.gwt.event.list.client.ListEvent} of type
+ * {@link org.mcarthur.sandy.gwt.event.list.client.ListEvent#OTHER} is fired.
+ * </p>
+ *
  * @author Sandy McArthur
  */
 public interface PaginatedEventList extends EventList {
@@ -33,8 +41,10 @@ public interface PaginatedEventList extends EventList {
      * Set the index of the backing list element that is the first element in this list.
      *
      * @param start the index of the backing list element that is the first element in this list.
+     * @throws IllegalArgumentException when start is negative.
+     * @throws UnsupportedOperationException if the start offset cannot be changed.
      */
-    public void setStart(int start);
+    public void setStart(int start) throws IllegalArgumentException, UnsupportedOperationException;
 
     /**
      * Get the max size of this list.
@@ -50,8 +60,10 @@ public interface PaginatedEventList extends EventList {
      * This is essentially the number of elements in a page.
      *
      * @param maxSize the max size of this list.
+     * @throws IllegalArgumentException when maxSize is negative.
+     * @throws UnsupportedOperationException if the maxSize cannot be changed.
      */
-    public void setMaxSize(int maxSize);
+    public void setMaxSize(int maxSize) throws IllegalArgumentException, UnsupportedOperationException;
 
     /**
      * Returns the number of elements in this list.

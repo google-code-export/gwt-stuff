@@ -82,14 +82,33 @@ public class EventLists {
         return new FilteredEventListImpl(eventList, filter);
     }
 
+    /**
+     * Creates a new empty paginated event list.
+     * 
+     * @return a new empty paginated event list.
+     */
     public static PaginatedEventList paginatedEventList() {
         return paginatedEventList(eventList());
     }
 
+    /**
+     * Creates a paginated view of another EventList.
+     * The default max page size is {@link Integer#MAX_VALUE}.
+     *
+     * @param eventList the EventList to create a paginated view of.
+     * @return a paginated view of <code>eventList</code> with the maximum page size.
+     */
     public static PaginatedEventList paginatedEventList(final EventList eventList) {
         return paginatedEventList(eventList, Integer.MAX_VALUE);
     }
 
+    /**
+     * Creates a paginated view of another EventList with the specified max page size.
+     *
+     * @param eventList the EventList to create a paginated view of.
+     * @param maxSize max size of one page.
+     * @return a paginated view of <code>eventList</code>.
+     */
     public static PaginatedEventList paginatedEventList(final EventList eventList, final int maxSize) {
         return new PaginatedEventListImpl(eventList, maxSize);
     }

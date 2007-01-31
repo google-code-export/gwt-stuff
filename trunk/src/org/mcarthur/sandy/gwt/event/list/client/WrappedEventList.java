@@ -56,7 +56,9 @@ class WrappedEventList extends AbstractEventList implements EventList {
 
         final int indexStart = delegate.size();
         final boolean b = delegate.addAll(c);
-        fireListEvent(new ListEvent(this, ListEvent.ADDED, indexStart, delegate.size()));
+        if (c.size() > 0) {
+            fireListEvent(new ListEvent(this, ListEvent.ADDED, indexStart, delegate.size()));
+        }
         return b;
     }
 
@@ -163,8 +165,7 @@ class WrappedEventList extends AbstractEventList implements EventList {
      * @return <code>true</code> when there were elements that removed.
      */
     private boolean remove(final List toBeRemoved) {
-        final Iterator iter;
-        iter = toBeRemoved.iterator();
+        final Iterator iter = toBeRemoved.iterator();
         int start = -1;
         int run = 1;
         while (iter.hasNext() || start != -1) { // loop for each item to be removed and then once more

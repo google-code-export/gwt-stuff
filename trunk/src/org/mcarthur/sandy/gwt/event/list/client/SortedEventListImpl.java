@@ -91,6 +91,9 @@ class SortedEventListImpl extends TransformedEventList implements SortedEventLis
                     removeAndShift(revIdx, reverse.iterator());
                     fireListEvent(new ListEvent(SortedEventListImpl.this, ListEvent.REMOVED, revIdx.getIndex()));                    
                 }
+                
+            } else {
+                fireListEvent(listEvent.resource(SortedEventListImpl.this));
             }
         }
 

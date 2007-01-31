@@ -16,10 +16,10 @@
 
 package org.mcarthur.sandy.gwt.event.list.property.client;
 
-import org.mcarthur.sandy.gwt.event.list.client.EventList;
-import org.mcarthur.sandy.gwt.event.list.client.ListEvent;
-import org.mcarthur.sandy.gwt.event.list.client.EventLists;
 import org.mcarthur.sandy.gwt.event.list.client.DelegateEventList;
+import org.mcarthur.sandy.gwt.event.list.client.EventList;
+import org.mcarthur.sandy.gwt.event.list.client.EventLists;
+import org.mcarthur.sandy.gwt.event.list.client.ListEvent;
 import org.mcarthur.sandy.gwt.event.list.client.ListEventListener;
 import org.mcarthur.sandy.gwt.event.property.client.PropertyChangeSource;
 
@@ -55,7 +55,7 @@ public final class ObservingEventList extends DelegateEventList implements Event
         super(EventLists.eventList());
         getDelegate().addListEventListener(new ListEventListener() {
             public void listChanged(final ListEvent listEvent) {
-               fireListEvent(new ListEvent(ObservingEventList.this, listEvent.getType(), listEvent.getIndexStart(), listEvent.getIndexEnd()));
+                fireListEvent(listEvent.resource(ObservingEventList.this));
             }
         });
     }

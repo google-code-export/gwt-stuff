@@ -42,10 +42,11 @@ class PaginatedEventListImpl extends TransformedEventList implements PaginatedEv
 
     private class PaginatedListEventListener implements ListEventListener {
         public void listChanged(final ListEvent listEvent) {
-            // XXX: lots of room for event fireing optimizations here
+            // XXX: lots of room for event fireng optimizations here
             final int indexStart = listEvent.getIndexStart();
             final int indexEnd = listEvent.getIndexEnd();
             final int maxEnd = start + maxSize;
+
             if (listEvent.isAdded()) {
                 if (indexStart < maxEnd) {
                     final int addedSize = indexEnd - indexStart;
@@ -56,12 +57,19 @@ class PaginatedEventListImpl extends TransformedEventList implements PaginatedEv
                         final int visableAddedSize = Math.min(maxEnd - indexStart, addedSize);
                         final int addStart = Math.max(0, indexStart - start);
                         final int addEnd = addStart + visableAddedSize;
-                        fireListEvent(new ListEvent(PaginatedEventListImpl.this, ListEvent.ADDED, addStart, addEnd));
-                        fireListEvent(new ListEvent(PaginatedEventListImpl.this, ListEvent.CHANGED, addEnd, size()));
+                        if (size() > 0) {
+                            fireListEvent(new ListEvent(PaginatedEventListImpl.this, ListEvent.ADDED, addStart, addEnd));
+                            if (addEnd != size()) {
+                                fireListEvent(new ListEvent(PaginatedEventListImpl.this, ListEvent.CHANGED, addEnd, size()));
+                            }
+                        }
                     } else {
                         fireListEvent(new ListEvent(PaginatedEventListImpl.this, ListEvent.CHANGED, 0, maxSize));
                     }
-                } // else add beyond this view
+                } else {
+                    fireListEvent(new ListEvent(PaginatedEventListImpl.this));
+                }
+
             } else if (listEvent.isChanged()) {
                 // does the event affect our range?
                 if (start < indexEnd && indexStart < maxEnd) {
@@ -69,7 +77,10 @@ class PaginatedEventListImpl extends TransformedEventList implements PaginatedEv
                     final int changedStart = Math.max(0, indexStart - start);
                     final int changedEnd = Math.min(maxSize, indexEnd - start);
                     fireListEvent(new ListEvent(PaginatedEventListImpl.this, ListEvent.CHANGED, changedStart, changedEnd));
+                } else {
+                    fireListEvent(new ListEvent(PaginatedEventListImpl.this));
                 }
+
             } else if (listEvent.isRemoved()) {
                 if (indexStart < maxEnd) {
                     final int removedSize = indexEnd - indexStart;
@@ -82,7 +93,12 @@ class PaginatedEventListImpl extends TransformedEventList implements PaginatedEv
                     } else {
                         fireListEvent(new ListEvent(PaginatedEventListImpl.this, ListEvent.CHANGED, 0, maxSize));
                     }
+                } else {
+                    fireListEvent(new ListEvent(PaginatedEventListImpl.this));                    
                 }
+
+            } else {
+                fireListEvent(listEvent.resource(PaginatedEventListImpl.this));
             }
         }
     }
@@ -96,8 +112,33 @@ class PaginatedEventListImpl extends TransformedEventList implements PaginatedEv
     }
 
     public void setStart(final int start) {
-        // TODO: fire event for list change.
-        this.start = start;
+        if (start < 0) {
+            throw new IllegalArgumentException("Start must be positive. was: " + start);
+        }
+        if (this.start != start) {
+            final int oldStart = this.start;
+            final int oldSize = size();
+            this.start = start;
+            final int newSize = size();
+            if (oldSize < newSize) {
+                // bigger, start decreased
+                final int sizeChange = newSize - oldSize;
+                fireListEvent(new ListEvent(PaginatedEventListImpl.this, ListEvent.ADDED, 0, sizeChange));
+                if (newSize > sizeChange) {
+                    fireListEvent(new ListEvent(PaginatedEventListImpl.this, ListEvent.CHANGED, sizeChange, newSize));
+                }
+            } else if (oldSize > newSize) {
+                // smaller, start increased
+                final int startChange = start - oldStart;
+                final int sizeChange = oldSize - newSize;
+                fireListEvent(new ListEvent(PaginatedEventListImpl.this, ListEvent.REMOVED, 0, sizeChange));
+                if (newSize > 0) {
+                    fireListEvent(new ListEvent(PaginatedEventListImpl.this, ListEvent.CHANGED, 0, newSize));
+                }
+            } else if (newSize > 0) {
+                fireListEvent(new ListEvent(PaginatedEventListImpl.this, ListEvent.CHANGED, 0, newSize));
+            }
+        }
     }
 
     public int getMaxSize() {
@@ -105,8 +146,26 @@ class PaginatedEventListImpl extends TransformedEventList implements PaginatedEv
     }
 
     public void setMaxSize(final int maxSize) {
-        // TODO: fire event for list change.
+        if (maxSize < 0) {
+            throw new IllegalArgumentException("MaxSize must be positive. was: " + maxSize);
+        }
+        final int oldMaxSize = this.maxSize;
+        final int oldSize = size();
         this.maxSize = maxSize;
+        final int size = size();
+        if (oldMaxSize < maxSize) {
+            // grew, Add
+            final int actualChange = size - oldSize;
+            if (actualChange > 0) {
+                fireListEvent(new ListEvent(PaginatedEventListImpl.this, ListEvent.ADDED, size - actualChange, size));
+            }
+        } else if (oldMaxSize > maxSize) {
+            // shrunk, remove
+            final int actualChange = oldSize - size;
+            if (actualChange > 0) {
+                fireListEvent(new ListEvent(PaginatedEventListImpl.this, ListEvent.REMOVED, size, size + actualChange));
+            }
+        }
     }
 
     public int getTotal() {
@@ -127,7 +186,7 @@ class PaginatedEventListImpl extends TransformedEventList implements PaginatedEv
         }
 
         public int size() {
-            return Math.min(maxSize, getTotal() - start);
+            return Math.max(0, Math.min(maxSize, getTotal() - start));
         }
     }
 }
