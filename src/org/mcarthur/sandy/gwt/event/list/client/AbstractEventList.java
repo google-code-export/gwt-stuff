@@ -17,9 +17,8 @@
 package org.mcarthur.sandy.gwt.event.list.client;
 
 import java.util.AbstractList;
-import java.util.List;
 import java.util.ArrayList;
-import java.util.Iterator;
+import java.util.List;
 
 /**
  * A skeletal implementation of the EventList interface.
@@ -44,9 +43,9 @@ public abstract class AbstractEventList extends AbstractList implements EventLis
      * @param listEvent the event to signal.
      */
     protected void fireListEvent(final ListEvent listEvent) {
-        final Iterator iter = listeners.iterator();
-        while (iter.hasNext()) {
-            final ListEventListener listEventListener = (ListEventListener)iter.next();
+        final Object[] l = listeners.toArray();
+        for (int i=0; i< l.length; i++) {
+            final ListEventListener listEventListener = (ListEventListener)l[i];
             listEventListener.listChanged(listEvent);
         }
     }

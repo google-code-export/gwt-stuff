@@ -38,6 +38,12 @@ public class ListEvent extends EventObject {
     public static final Type CHANGED = new Type("CHANGED");
 
     /**
+     * Identifies zero elements changed but the list changed in other ways.
+     * @see #ListEvent(EventList)
+     */
+    public static final Type OTHER = new Type("OTHER");
+
+    /**
      * Identifies one or more elements were removed.
      * @see #isRemoved()
      */
@@ -47,6 +53,18 @@ public class ListEvent extends EventObject {
 
     private final int indexStart;
     private final int indexEnd;
+
+    /**
+     * Construct a ListEvent when none of the elements changed but the list did in some other manner.
+     * @param source The EventList on which the ListEvent initially occurred.
+     * @see #OTHER
+     */
+    public ListEvent(final EventList source) {
+        super(source);
+        type = OTHER;
+        indexStart = -1;
+        indexEnd = -1;
+    }
 
     /**
      * Constructs a ListEvent for one element.
@@ -89,6 +107,20 @@ public class ListEvent extends EventObject {
     }
 
     /**
+     * Creates a copy of this ListEvent using a new EventList source.
+     *
+     * @param newSource the new source EventList for the ListEvent.
+     * @return a ListEvent copy but with newSource as the event's source.
+     */
+    public ListEvent resource(final EventList newSource) {
+        if (getType() == OTHER) {
+            return new ListEvent(newSource);
+        } else {
+            return new ListEvent(newSource, getType(), getIndexStart(), getIndexEnd());
+        }
+    }
+
+    /**
      * First index in the range, inclusive.
      *
      * @return first index in the range, inclusive.
@@ -109,7 +141,7 @@ public class ListEvent extends EventObject {
     /**
      * The type of event.
      *
-     * @return one of {@link #ADDED}, {@link #CHANGED}, {@link #REMOVED}.
+     * @return one of {@link #ADDED}, {@link #CHANGED}, {@link #REMOVED}, {@link #OTHER}.
      */
     public Type getType() {
         return type;
@@ -149,7 +181,11 @@ public class ListEvent extends EventObject {
     }
 
     public String toString() {
-        return "ListEvent[" + type + " (" + getIndexStart() + "," + getIndexEnd() + ")]";
+        if (type == OTHER) {
+            return "ListEvent[" + type + "]";
+        } else {
+            return "ListEvent[" + type + " (" + getIndexStart() + "," + getIndexEnd() + ")]";
+        }
     }
 
     /**

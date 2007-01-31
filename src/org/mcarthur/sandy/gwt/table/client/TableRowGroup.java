@@ -182,9 +182,6 @@ public abstract class TableRowGroup extends UIObject implements EventListener {
                         DOM.insertChild(rowGroupElement, row.getElement(), i);
                     }
                 }
-
-            } else {
-                throw new IllegalStateException("Unexpected ListEvent.type: " + listEvent.getType());
             }
         }
     }
