@@ -44,7 +44,7 @@ import org.mcarthur.sandy.gwt.event.list.client.EventLists;
 import org.mcarthur.sandy.gwt.event.list.client.FilteredEventList;
 import org.mcarthur.sandy.gwt.event.list.client.ListEvent;
 import org.mcarthur.sandy.gwt.event.list.client.ListEventListener;
-import org.mcarthur.sandy.gwt.event.list.client.PaginatedEventList;
+import org.mcarthur.sandy.gwt.event.list.client.RangedEventList;
 import org.mcarthur.sandy.gwt.event.list.client.SortedEventList;
 import org.mcarthur.sandy.gwt.event.list.property.client.ObservingEventList;
 import org.mcarthur.sandy.gwt.event.property.client.PropertyChangeSource;
@@ -68,14 +68,14 @@ public class TestTable implements EntryPoint {
     private EventList el;
     private SortedEventList sel;
     private FilteredEventList fel;
-    private PaginatedEventList pel;
+    private RangedEventList pel;
     private int pCount = 0;
 
     public void onModuleLoad() {
         EventList el = new ObservingEventList(); this.el = el;
         sel = EventLists.sortedEventList(el); el = sel;
         fel = EventLists.filteredEventList(el); el = fel;
-        pel = EventLists.paginatedEventList(el, 4); el = pel;
+        pel = EventLists.rangedEventList(el, 4); el = pel;
         ot = new ObjectListTable(new OLTR(), el);
         RootPanel.get("log").add(vp);
 
@@ -664,9 +664,9 @@ public class TestTable implements EntryPoint {
     }
 
     private static class TotalLabel extends Label {
-        private final PaginatedEventList pel;
+        private final RangedEventList pel;
 
-        public TotalLabel(final PaginatedEventList pel) {
+        public TotalLabel(final RangedEventList pel) {
             this.pel = pel;
             pel.addListEventListener(new ListEventListener() {
                 public void listChanged(final ListEvent listEvent) {

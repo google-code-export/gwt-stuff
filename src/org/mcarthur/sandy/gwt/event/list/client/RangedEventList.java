@@ -27,7 +27,7 @@ package org.mcarthur.sandy.gwt.event.list.client;
  *
  * @author Sandy McArthur
  */
-public interface PaginatedEventList extends EventList {
+public interface RangedEventList extends EventList {
 
     /**
      * Get the index of the backing list element that is the first element in this list.
