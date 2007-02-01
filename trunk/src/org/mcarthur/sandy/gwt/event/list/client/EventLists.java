@@ -83,34 +83,34 @@ public class EventLists {
     }
 
     /**
-     * Creates a new empty paginated event list.
+     * Creates a new empty ranged event list.
      * 
-     * @return a new empty paginated event list.
+     * @return a new empty ranged event list.
      */
-    public static PaginatedEventList paginatedEventList() {
-        return paginatedEventList(eventList());
+    public static RangedEventList rangedEventList() {
+        return rangedEventList(eventList());
     }
 
     /**
-     * Creates a paginated view of another EventList.
-     * The default max page size is {@link Integer#MAX_VALUE}.
+     * Creates a ranged view of another EventList.
+     * The default max range size is {@link Integer#MAX_VALUE}.
      *
-     * @param eventList the EventList to create a paginated view of.
-     * @return a paginated view of <code>eventList</code> with the maximum page size.
+     * @param eventList the EventList to create a ranged view of.
+     * @return a ranged view of <code>eventList</code> with the maximum page size.
      */
-    public static PaginatedEventList paginatedEventList(final EventList eventList) {
-        return paginatedEventList(eventList, Integer.MAX_VALUE);
+    public static RangedEventList rangedEventList(final EventList eventList) {
+        return rangedEventList(eventList, Integer.MAX_VALUE);
     }
 
     /**
-     * Creates a paginated view of another EventList with the specified max page size.
+     * Creates a ranged view of another EventList with the specified max range size.
      *
      * @param eventList the EventList to create a paginated view of.
-     * @param maxSize max size of one page.
-     * @return a paginated view of <code>eventList</code>.
+     * @param maxSize max size of one range.
+     * @return a ranged view of <code>eventList</code>.
      */
-    public static PaginatedEventList paginatedEventList(final EventList eventList, final int maxSize) {
-        return new PaginatedEventListImpl(eventList, maxSize);
+    public static RangedEventList rangedEventList(final EventList eventList, final int maxSize) {
+        return new RangedEventListImpl(eventList, maxSize);
     }
 
     /**
@@ -173,6 +173,14 @@ public class EventLists {
      */
     public static SortedEventList sortedEventList(final EventList eventList, final Comparator comparator) {
         return new SortedEventListImpl(eventList, comparator);
+    }
+
+    public static RangedEventList steadyRangedEventList(final EventList eventList) {
+        return steadyRangedEventList(eventList, Integer.MAX_VALUE);
+    }
+
+    public static RangedEventList steadyRangedEventList(final EventList eventList, final int maxSize) {
+        throw new UnsupportedOperationException("not yet implemented");
     }
 
     /**
