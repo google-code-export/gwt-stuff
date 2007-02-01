@@ -96,6 +96,25 @@ public abstract class TransformedEventList extends DelegateEventList implements 
         return super.addAll(getTranslationIndex(index).getIndex(), c);
     }
 
+    public boolean contains(final Object element) {
+        if (element != null) {
+            final Iterator iter = iterator();
+            while (iter.hasNext()) {
+                if (element.equals(iter.next())) {
+                    return true;
+                }
+            }
+        } else {
+            final Iterator iter = iterator();
+            while (iter.hasNext()) {
+                if (iter.next()==null) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+    
     public Object get(final int index) {
         if (index < size()) {
             final Index idx = getTranslationIndex(index);
