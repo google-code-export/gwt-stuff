@@ -38,14 +38,28 @@ public abstract class TransformedEventList extends DelegateEventList implements 
         super(delegate);
     }
 
+    /**
+     * A List of <code>Index</code>s where the translation index is this list's index and the value
+     * of the Index is the backing list's index.
+     * @return a list of Index objects.
+     * @see Index
+     */
     protected List getTranslations() {
         return translations;
     }
 
+    /**
+     * Convenience for <code>(Index)getTranslations().get(index)</code>.
+     * @param index the position to look up.
+     * @return the Index for a position.
+     */
     protected Index getTranslationIndex(final int index) {
         return (Index)getTranslations().get(index);
     }
 
+    /**
+     * A mutable number.
+     */
     protected static class Index {
         private int index;
 

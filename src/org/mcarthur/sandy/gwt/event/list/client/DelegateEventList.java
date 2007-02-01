@@ -26,12 +26,16 @@ import java.util.Iterator;
  * @author Sandy McArthur
  */
 public abstract class DelegateEventList extends AbstractEventList implements EventList {
-    protected final EventList delegate;
+    private final EventList delegate;
 
     protected DelegateEventList(final EventList delegate) {
         this.delegate = delegate;
     }
 
+    /**
+     * Get the backing EventList.
+     * @return the backing EventList.
+     */
     protected EventList getDelegate() {
         return delegate;
     }

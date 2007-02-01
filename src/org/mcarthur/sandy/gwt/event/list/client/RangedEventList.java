@@ -17,7 +17,7 @@
 package org.mcarthur.sandy.gwt.event.list.client;
 
 /**
- * An EventList that provides a view of range of another EventList.
+ * An EventList that provides a view that is a range of elements in another EventList.
  *
  * <p>
  * When the backing EventList changes in a way that doesn't affect the list of elements

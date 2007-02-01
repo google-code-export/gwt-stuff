@@ -148,7 +148,7 @@ class SortedEventListImpl extends TransformedEventList implements SortedEventLis
                     break;
                 }
             }
-            ((Index)getTranslations().get(i)).setIndex(j);
+            getTranslationIndex(i).setIndex(j);
             ((Index)reverse.get(j)).setIndex(i);
         }
         final ListEvent event = new ListEvent(this, ListEvent.CHANGED, 0, size());
