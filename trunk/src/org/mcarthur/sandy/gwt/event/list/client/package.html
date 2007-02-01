@@ -1,7 +1,7 @@
 <html>
 <body>
 <p>
-    An observable {@link java.util.List} implementation.
+    Observable {@link java.util.List} implementations.
 </p>
 
 <h2>Including in your project</h2>
@@ -15,12 +15,14 @@
 <h2>Example Usage</h2>
 <p>
     The most basic usage is to take an existing list and wrap it in an EventList wrapper and only
-    access the list via that wrapper.
+    access the list via that wrapper. Or you can simply create an empty EventList and populate it.
+    Almost all types of EventList are created via the
+    {@link org.mcarthur.sandy.gwt.event.list.client.EventLists} utility class.
 </p>
 <blockquote>
     <code>
       <pre>
-EventList eventList = EventLists.eventList(); // or EventLists.wrap(anList) 
+EventList eventList = EventLists.eventList(); // or EventLists.wrap(anExistingList)
 ListEventListener listEventListener = new ListEventListener() {
     public void listChanged(ListEvent listEvent) {
         GWT.log(listEvent.toString(), null);

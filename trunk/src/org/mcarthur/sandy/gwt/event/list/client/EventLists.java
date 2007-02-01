@@ -33,6 +33,7 @@ public class EventLists {
      * Create a new EventList.
      *
      * @return a new EventList.
+     * @see #wrap(java.util.List)
      */
     public static EventList eventList() {
         return wrap(new ArrayList());
@@ -96,7 +97,8 @@ public class EventLists {
      * The default max range size is {@link Integer#MAX_VALUE}.
      *
      * @param eventList the EventList to create a ranged view of.
-     * @return a ranged view of <code>eventList</code> with the maximum page size.
+     * @return a ranged view of <code>eventList</code> with the maximum range size.
+     * @see #steadyRangedEventList(EventList)
      */
     public static RangedEventList rangedEventList(final EventList eventList) {
         return rangedEventList(eventList, Integer.MAX_VALUE);
@@ -106,8 +108,9 @@ public class EventLists {
      * Creates a ranged view of another EventList with the specified max range size.
      *
      * @param eventList the EventList to create a paginated view of.
-     * @param maxSize max size of one range.
+     * @param maxSize max size of the range.
      * @return a ranged view of <code>eventList</code>.
+     * @see #steadyRangedEventList(EventList, int)
      */
     public static RangedEventList rangedEventList(final EventList eventList, final int maxSize) {
         return new RangedEventListImpl(eventList, maxSize);
@@ -175,10 +178,29 @@ public class EventLists {
         return new SortedEventListImpl(eventList, comparator);
     }
 
+    /**
+     * Creates a ranged view of another EventList that adjusts the start offset to minimize element
+     * volitility. This can happen when there are inserts or removals to the backing list that fall
+     * outside the current range.
+     *
+     * @param eventList the EventList to create a steady ranged view of.
+     * @return a steady ranged view of <code>eventList</code>.
+     * @see #rangedEventList(EventList)
+     */
     public static RangedEventList steadyRangedEventList(final EventList eventList) {
         return steadyRangedEventList(eventList, Integer.MAX_VALUE);
     }
 
+    /**
+     * Creates a ranged view of another EventList that adjusts the start offset to minimize element
+     * volitility. This can happen when there are inserts or removals to the backing list that fall
+     * outside the current range.
+     *
+     * @param eventList the EventList to create a steady ranged view of.
+     * @param maxSize max size of the range.
+     * @return a steady ranged view of <code>eventList</code>.
+     * @see #rangedEventList(EventList, int)
+     */
     public static RangedEventList steadyRangedEventList(final EventList eventList, final int maxSize) {
         throw new UnsupportedOperationException("not yet implemented");
     }
