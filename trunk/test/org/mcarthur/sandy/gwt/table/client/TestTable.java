@@ -75,7 +75,8 @@ public class TestTable implements EntryPoint {
         EventList el = new ObservingEventList(); this.el = el;
         sel = EventLists.sortedEventList(el); el = sel;
         fel = EventLists.filteredEventList(el); el = fel;
-        pel = EventLists.rangedEventList(el, 4); el = pel;
+        //pel = EventLists.rangedEventList(el, 4); el = pel;
+        pel = EventLists.steadyRangedEventList(el, 4); el = pel;
         ot = new ObjectListTable(new OLTR(), el);
         RootPanel.get("log").add(vp);
 
@@ -229,6 +230,11 @@ public class TestTable implements EntryPoint {
             final TextBox maxSize = new TextBox();
             maxSize.setWidth("3em");
             maxSize.setText(Integer.toString(pel.getMaxSize()));
+            pel.addListEventListener(new ListEventListener() {
+                public void listChanged(ListEvent listEvent) {
+                    maxSize.setText(Integer.toString(pel.getMaxSize()));
+                }
+            });
             maxSize.setTitle("Enter the size of each page");
             final Button setMaxSize = new Button("Set maxSize");
             setMaxSize.addClickListener(new ClickListener() {
@@ -252,6 +258,11 @@ public class TestTable implements EntryPoint {
             final TextBox start = new TextBox();
             start.setWidth("3em");
             start.setText(Integer.toString(pel.getStart()));
+            pel.addListEventListener(new ListEventListener() {
+                public void listChanged(ListEvent listEvent) {
+                    start.setText(Integer.toString(pel.getStart()));
+                }
+            });
             start.setTitle("Enter the offset for the page.");
             final Button setStart = new Button("Set start offset");
             setStart.addClickListener(new ClickListener() {
