@@ -20,12 +20,12 @@ import java.util.AbstractList;
 import java.util.List;
 
 /**
- * RangedEventList that presents a view of one page of another EventList.
+ * RangedEventList that presents a view of a range of elements in another EventList.
  *
  * @author Sandy McArthur
  */
 class RangedEventListImpl extends TransformedEventList implements RangedEventList {
-    private int start;
+    private int startOffset;
     private int maxSize;
     private List translationList = new TranslationList();
 
@@ -35,9 +35,13 @@ class RangedEventListImpl extends TransformedEventList implements RangedEventLis
 
     protected RangedEventListImpl(final EventList delegate, final int maxSize) {
         super(delegate);
-        getDelegate().addListEventListener(new PaginatedListEventListener());
-        setStart(0);
+        getDelegate().addListEventListener(getListEventListener());
+        setStartOffset(0);
         setMaxSize(maxSize);
+    }
+
+    protected ListEventListener getListEventListener() {
+        return new PaginatedListEventListener();
     }
 
     private class PaginatedListEventListener implements ListEventListener {
@@ -45,7 +49,7 @@ class RangedEventListImpl extends TransformedEventList implements RangedEventLis
             // XXX: lots of room for event fireng optimizations here
             final int indexStart = listEvent.getIndexStart();
             final int indexEnd = listEvent.getIndexEnd();
-            final int maxEnd = start + maxSize;
+            final int maxEnd = getStart() + getMaxSize();
 
             if (listEvent.isAdded()) {
                 if (indexStart < maxEnd) {
@@ -55,7 +59,7 @@ class RangedEventListImpl extends TransformedEventList implements RangedEventLis
                     if (oldTotal < maxEnd) {
                         // we need to add to increase size() to maxSize and update for the rest
                         final int visableAddedSize = Math.min(maxEnd - indexStart, addedSize);
-                        final int addStart = Math.max(0, indexStart - start);
+                        final int addStart = Math.max(0, indexStart - getStart());
                         final int addEnd = addStart + visableAddedSize;
                         if (size() > 0) {
                             fireListEvent(new ListEvent(RangedEventListImpl.this, ListEvent.ADDED, addStart, addEnd));
@@ -64,7 +68,7 @@ class RangedEventListImpl extends TransformedEventList implements RangedEventLis
                             }
                         }
                     } else {
-                        fireListEvent(new ListEvent(RangedEventListImpl.this, ListEvent.CHANGED, 0, maxSize));
+                        fireListEvent(new ListEvent(RangedEventListImpl.this, ListEvent.CHANGED, 0, getMaxSize()));
                     }
                 } else {
                     fireListEvent(new ListEvent(RangedEventListImpl.this));
@@ -72,10 +76,10 @@ class RangedEventListImpl extends TransformedEventList implements RangedEventLis
 
             } else if (listEvent.isChanged()) {
                 // does the event affect our range?
-                if (start < indexEnd && indexStart < maxEnd) {
+                if (getStart() < indexEnd && indexStart < maxEnd) {
                     // clamp to current page range
-                    final int changedStart = Math.max(0, indexStart - start);
-                    final int changedEnd = Math.min(maxSize, indexEnd - start);
+                    final int changedStart = Math.max(0, indexStart - getStart());
+                    final int changedEnd = Math.min(getMaxSize(), indexEnd - getStart());
                     fireListEvent(new ListEvent(RangedEventListImpl.this, ListEvent.CHANGED, changedStart, changedEnd));
                 } else {
                     fireListEvent(new ListEvent(RangedEventListImpl.this));
@@ -84,14 +88,13 @@ class RangedEventListImpl extends TransformedEventList implements RangedEventLis
             } else if (listEvent.isRemoved()) {
                 if (indexStart < maxEnd) {
                     final int removedSize = indexEnd - indexStart;
-                    final int oldTotal = getTotal() + removedSize;
                     // if the new size shrinks the visible size
-                    if (size() < maxSize) {
-                        final int removedStart = Math.max(0, indexStart - start);
+                    if (size() < getMaxSize()) {
+                        final int removedStart = Math.max(0, indexStart - getStart());
                         final int removedEnd = removedStart + removedSize;
                         fireListEvent(new ListEvent(RangedEventListImpl.this, ListEvent.REMOVED, removedStart, removedEnd));
                     } else {
-                        fireListEvent(new ListEvent(RangedEventListImpl.this, ListEvent.CHANGED, 0, maxSize));
+                        fireListEvent(new ListEvent(RangedEventListImpl.this, ListEvent.CHANGED, 0, getMaxSize()));
                     }
                 } else {
                     fireListEvent(new ListEvent(RangedEventListImpl.this));
@@ -108,17 +111,16 @@ class RangedEventListImpl extends TransformedEventList implements RangedEventLis
     }
 
     public int getStart() {
-        return start;
+        return getStartOffset();
     }
 
     public void setStart(final int start) {
         if (start < 0) {
             throw new IllegalArgumentException("Start must be positive. was: " + start);
         }
-        if (this.start != start) {
-            final int oldStart = this.start;
+        if (getStartOffset() != start) {
             final int oldSize = size();
-            this.start = start;
+            setStartOffset(start);
             final int newSize = size();
             if (oldSize < newSize) {
                 // bigger, start decreased
@@ -129,7 +131,6 @@ class RangedEventListImpl extends TransformedEventList implements RangedEventLis
                 }
             } else if (oldSize > newSize) {
                 // smaller, start increased
-                final int startChange = start - oldStart;
                 final int sizeChange = oldSize - newSize;
                 fireListEvent(new ListEvent(RangedEventListImpl.this, ListEvent.REMOVED, 0, sizeChange));
                 if (newSize > 0) {
@@ -139,6 +140,15 @@ class RangedEventListImpl extends TransformedEventList implements RangedEventLis
                 fireListEvent(new ListEvent(RangedEventListImpl.this, ListEvent.CHANGED, 0, newSize));
             }
         }
+    }
+
+    protected int getStartOffset() {
+        return startOffset;
+    }
+
+    protected void setStartOffset(final int startOffset) {
+        assert startOffset >= 0;
+        this.startOffset = startOffset;
     }
 
     public int getMaxSize() {
@@ -173,20 +183,19 @@ class RangedEventListImpl extends TransformedEventList implements RangedEventLis
     }
 
     /**
-     * A List that creates
-     * {@link org.mcarthur.sandy.gwt.event.list.client.TransformedEventList.Index}s as needed based
-     * on {@link RangedEventListImpl#start} and {@link RangedEventListImpl#maxSize}.
+     * A List that creates {@link TransformedEventList.Index}s as needed based
+     * on {@link RangedEventList#getStart()} and {@link RangedEventList#getMaxSize()}.
      */
     private class TranslationList extends AbstractList {
         public Object get(final int index) {
             if (index >= size()) {
                 throw new IndexOutOfBoundsException("Index: " + index + ", Size: " + size());
             }
-            return new Index(start + index);
+            return new Index(getStart() + index);
         }
 
         public int size() {
-            return Math.max(0, Math.min(maxSize, getTotal() - start));
+            return Math.max(0, Math.min(getMaxSize(), getTotal() - getStart()));
         }
     }
 }

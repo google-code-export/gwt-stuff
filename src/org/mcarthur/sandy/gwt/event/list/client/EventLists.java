@@ -202,7 +202,7 @@ public class EventLists {
      * @see #rangedEventList(EventList, int)
      */
     public static RangedEventList steadyRangedEventList(final EventList eventList, final int maxSize) {
-        throw new UnsupportedOperationException("not yet implemented");
+        return new SteadyRangedEventListImpl(eventList, maxSize);
     }
 
     /**
