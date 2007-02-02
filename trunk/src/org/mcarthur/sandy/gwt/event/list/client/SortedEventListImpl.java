@@ -37,6 +37,12 @@ class SortedEventListImpl extends TransformedEventList implements SortedEventLis
         }
     };
 
+    /**
+     * A list of {@link Index}es that map the TransformedEventList's index to the delegate list's
+     * indexes.
+     */
+    private List translations = new ArrayList();
+
     private final List reverse = new ArrayList();
 
     protected SortedEventListImpl(final EventList delegate, final Comparator comparator) {
@@ -48,6 +54,38 @@ class SortedEventListImpl extends TransformedEventList implements SortedEventLis
         }
         delegate.addListEventListener(new SortedListEventListener());
         setComparator(comparator);
+    }
+
+    /**
+     * A List of <code>Index</code>s where the translation index is this list's index and the value
+     * of the Index is the backing list's index.
+     * @return a list of Index objects.
+     * @see org.mcarthur.sandy.gwt.event.list.client.TransformedEventList.Index
+     */
+    private List getTranslations() {
+        return translations;
+    }
+
+    /**
+     * Convenience for <code>(Index)getTranslations().get(index)</code>.
+     * @param index the position to look up.
+     * @return the Index for a position.
+     */
+    private Index getTranslationIndex(final int index) {
+        return (Index)getTranslations().get(index);
+    }
+
+    protected int getSourceIndex(final int mutationIndex) {
+        // TODO: deal with mutationIndex == size()
+        if (mutationIndex < size()) {
+            return getTranslationIndex(mutationIndex).getIndex();
+        } else {
+            return size();
+        }
+    }
+
+    public int size() {
+        return getTranslations().size();
     }
 
     private class SortedListEventListener implements ListEventListener {

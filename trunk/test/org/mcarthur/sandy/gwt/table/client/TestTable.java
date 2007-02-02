@@ -68,15 +68,15 @@ public class TestTable implements EntryPoint {
     private EventList el;
     private SortedEventList sel;
     private FilteredEventList fel;
-    private RangedEventList pel;
+    private RangedEventList rel;
     private int pCount = 0;
 
     public void onModuleLoad() {
         EventList el = new ObservingEventList(); this.el = el;
         sel = EventLists.sortedEventList(el); el = sel;
         fel = EventLists.filteredEventList(el); el = fel;
-        //pel = EventLists.rangedEventList(el, 4); el = pel;
-        pel = EventLists.steadyRangedEventList(el, 4); el = pel;
+        //rel = EventLists.rangedEventList(el, 4); el = rel;
+        rel = EventLists.steadyRangedEventList(el, 4); el = rel;
         ot = new ObjectListTable(new OLTR(), el);
         RootPanel.get("log").add(vp);
 
@@ -226,13 +226,13 @@ public class TestTable implements EntryPoint {
             fp.add(hp);
         }
 
-        if (pel != null) {
+        if (rel != null) {
             final TextBox maxSize = new TextBox();
             maxSize.setWidth("3em");
-            maxSize.setText(Integer.toString(pel.getMaxSize()));
-            pel.addListEventListener(new ListEventListener() {
+            maxSize.setText(Integer.toString(rel.getMaxSize()));
+            rel.addListEventListener(new ListEventListener() {
                 public void listChanged(ListEvent listEvent) {
-                    maxSize.setText(Integer.toString(pel.getMaxSize()));
+                    maxSize.setText(Integer.toString(rel.getMaxSize()));
                 }
             });
             maxSize.setTitle("Enter the size of each page");
@@ -240,7 +240,7 @@ public class TestTable implements EntryPoint {
             setMaxSize.addClickListener(new ClickListener() {
                 public void onClick(final Widget sender) {
                     try {
-                        pel.setMaxSize(Integer.parseInt(maxSize.getText()));
+                        rel.setMaxSize(Integer.parseInt(maxSize.getText()));
                     } catch (NumberFormatException nfe) {
                         Window.alert("maxSize must be a integer");
                     }
@@ -257,10 +257,10 @@ public class TestTable implements EntryPoint {
 
             final TextBox start = new TextBox();
             start.setWidth("3em");
-            start.setText(Integer.toString(pel.getStart()));
-            pel.addListEventListener(new ListEventListener() {
+            start.setText(Integer.toString(rel.getStart()));
+            rel.addListEventListener(new ListEventListener() {
                 public void listChanged(ListEvent listEvent) {
-                    start.setText(Integer.toString(pel.getStart()));
+                    start.setText(Integer.toString(rel.getStart()));
                 }
             });
             start.setTitle("Enter the offset for the page.");
@@ -268,7 +268,7 @@ public class TestTable implements EntryPoint {
             setStart.addClickListener(new ClickListener() {
                 public void onClick(final Widget sender) {
                     try {
-                        pel.setStart(Integer.parseInt(start.getText()));
+                        rel.setStart(Integer.parseInt(start.getText()));
                     } catch (NumberFormatException nfe) {
                         Window.alert("start offset must be a integer");
                     }
@@ -310,7 +310,7 @@ public class TestTable implements EntryPoint {
             hp.add(start);
             hp.add(setStart);
             hp.add(nextPage);
-            hp.add(new TotalLabel(pel));
+            hp.add(new TotalLabel(rel));
             hp.add(r1);
             fp.add(hp);
         }

@@ -106,8 +106,16 @@ class RangedEventListImpl extends TransformedEventList implements RangedEventLis
         }
     }
 
-    protected List getTranslations() {
+    private List getTranslations() {
         return translationList;
+    }
+
+    protected int getSourceIndex(final int mutationIndex) {
+        return getStart() + mutationIndex;
+    }
+
+    public int size() {
+        return getTranslations().size();
     }
 
     public int getStart() {

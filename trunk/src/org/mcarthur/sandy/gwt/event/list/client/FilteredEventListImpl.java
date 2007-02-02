@@ -36,6 +36,12 @@ class FilteredEventListImpl extends TransformedEventList implements FilteredEven
         }
     };
 
+    /**
+     * A list of {@link Index}es that map the TransformedEventList's index to the delegate list's
+     * indexes.
+     */
+    private List translations = new ArrayList();
+
     public FilteredEventListImpl(final EventList delegate) {
         this(delegate, null);
     }
@@ -44,6 +50,39 @@ class FilteredEventListImpl extends TransformedEventList implements FilteredEven
         super(delegate);
         delegate.addListEventListener(new FilteredListEventListener());
         setFilter(filter);
+    }
+
+    /**
+     * A List of <code>Index</code>s where the translation index is this list's index and the value
+     * of the Index is the backing list's index.
+     * @return a list of Index objects.
+     * @see org.mcarthur.sandy.gwt.event.list.client.TransformedEventList.Index
+     */
+    private List getTranslations() {
+        return translations;
+    }
+
+    /**
+     * Convenience for <code>(Index)getTranslations().get(index)</code>.
+     * @param index the position to look up.
+     * @return the Index for a position.
+     */
+    private Index getTranslationIndex(final int index) {
+        return (Index)getTranslations().get(index);
+    }
+
+    protected int getSourceIndex(final int mutationIndex) {
+        if (mutationIndex < getTranslations().size()) {
+            return getTranslationIndex(mutationIndex).getIndex();
+        } else if (getTranslations().size() > 0) {
+            return getTranslationIndex(getTranslations().size() - 1).getIndex() + 1;
+        } else {
+            return 0;            
+        }
+    }
+
+    public int size() {
+        return getTranslations().size();
     }
 
     private class FilteredListEventListener implements ListEventListener {
@@ -179,9 +218,13 @@ class FilteredEventListImpl extends TransformedEventList implements FilteredEven
 
     public void add(final int index, final Object element) {
         if (filter.accept(element)) {
-            final Object o = get(index);
-            final int p = getDelegate().indexOf(o);
-            super.add(p, element);
+            if (index == size()) {
+                super.add(size(), element);
+            } else {
+                final Object o = get(index);
+                final int p = getDelegate().indexOf(o);
+                super.add(p, element);
+            }
         } else {
             throw new IllegalArgumentException("Filter rejected element.");
         }
