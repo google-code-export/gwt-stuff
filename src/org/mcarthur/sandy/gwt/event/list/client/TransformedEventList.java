@@ -16,10 +16,7 @@
 
 package org.mcarthur.sandy.gwt.event.list.client;
 
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Iterator;
-import java.util.List;
 import java.util.NoSuchElementException;
 
 /**
@@ -27,35 +24,22 @@ import java.util.NoSuchElementException;
  *
  * @author Sandy McArthur
  */
-public abstract class TransformedEventList extends DelegateEventList implements EventList {
-    /**
-     * A list of {@link Index}es that map the TransformedEventList's index to the delegate list's
-     * indexes.
-     */
-    private List translations = new ArrayList();
+public abstract class TransformedEventList extends AbstractEventList implements EventList {
+    private final EventList delegate;
 
     protected TransformedEventList(final EventList delegate) {
-        super(delegate);
+        this.delegate = delegate;
     }
 
     /**
-     * A List of <code>Index</code>s where the translation index is this list's index and the value
-     * of the Index is the backing list's index.
-     * @return a list of Index objects.
-     * @see Index
+     * Get the backing EventList.
+     * @return the backing EventList.
      */
-    protected List getTranslations() {
-        return translations;
+    protected EventList getDelegate() {
+        return delegate;
     }
 
-    /**
-     * Convenience for <code>(Index)getTranslations().get(index)</code>.
-     * @param index the position to look up.
-     * @return the Index for a position.
-     */
-    protected Index getTranslationIndex(final int index) {
-        return (Index)getTranslations().get(index);
-    }
+    protected abstract int getSourceIndex(int mutationIndex);
 
     /**
      * A mutable number.
@@ -89,36 +73,12 @@ public abstract class TransformedEventList extends DelegateEventList implements 
     }
 
     public void add(final int index, final Object element) {
-        super.add(getTranslationIndex(index).getIndex(), element);
+        getDelegate().add(getSourceIndex(index), element);
     }
 
-    public boolean addAll(final int index, final Collection c) {
-        return super.addAll(getTranslationIndex(index).getIndex(), c);
-    }
-
-    public boolean contains(final Object element) {
-        if (element != null) {
-            final Iterator iter = iterator();
-            while (iter.hasNext()) {
-                if (element.equals(iter.next())) {
-                    return true;
-                }
-            }
-        } else {
-            final Iterator iter = iterator();
-            while (iter.hasNext()) {
-                if (iter.next()==null) {
-                    return true;
-                }
-            }
-        }
-        return false;
-    }
-    
     public Object get(final int index) {
         if (index < size()) {
-            final Index idx = getTranslationIndex(index);
-            return super.get(idx.getIndex());
+            return getDelegate().get(getSourceIndex(index));
         } else {
             throw new IndexOutOfBoundsException("Index: " + index + ", Size: " + size());
         }
@@ -126,8 +86,7 @@ public abstract class TransformedEventList extends DelegateEventList implements 
 
     public Object remove(final int index) {
         if (index < size()) {
-            final Index idx = getTranslationIndex(index);
-            return super.remove(idx.getIndex());
+            return getDelegate().remove(getSourceIndex(index));
         } else {
             throw new IndexOutOfBoundsException("Index: " + index + ", Size: " + size());
         }
@@ -135,20 +94,13 @@ public abstract class TransformedEventList extends DelegateEventList implements 
 
     public Object set(final int index, final Object element) {
         if (index < size()) {
-            final Index idx = getTranslationIndex(index);
-            return super.set(idx.getIndex(), element);
+            return getDelegate().set(getSourceIndex(index), element);
         } else {
             throw new IndexOutOfBoundsException("Index: " + index + ", Size: " + size());
         }
     }
 
-    public int size() {
-        return getTranslations().size();
-    }
-
-    public Object[] toArray() {
-        return super.toArray();
-    }
+    public abstract int size();
 
     public Iterator iterator() {
         // An Iterator that doesn't trip over ConcurrentModificationException
