@@ -18,9 +18,12 @@ package org.mcarthur.sandy.gwt.event.list.test;
 
 import org.mcarthur.sandy.gwt.event.list.client.EventList;
 import org.mcarthur.sandy.gwt.event.list.client.EventLists;
+import org.mcarthur.sandy.gwt.event.list.client.ListEvent;
+import org.mcarthur.sandy.gwt.event.list.client.ListEventListener;
 import org.mcarthur.sandy.gwt.event.list.client.SortedEventList;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -112,5 +115,29 @@ public class SortedEventListTest extends TransformedEventListTest {
 
         el.remove(I20);
         assertFalse(el.contains(I20));
+    }
+
+    public void testRemoveEventListener() throws Exception {
+
+        final EventList deepest = EventLists.eventList();
+        deepest.add("hello");
+        deepest.add("world");
+
+        final SortedEventList sel = EventLists.sortedEventList(deepest);
+
+        sel.addListEventListener(new ListEventListener() {
+
+            public void listChanged(final ListEvent listEvent) {
+                //System.out.println("list changed: " + listEvent + " size = " + sel.size());
+                // assertEquals(0, sel.size());
+                for (Iterator iter = sel.iterator(); iter.hasNext();) {
+                    final Object element = iter.next();
+                }
+
+            }
+
+        });
+
+        deepest.clear();
     }
 }

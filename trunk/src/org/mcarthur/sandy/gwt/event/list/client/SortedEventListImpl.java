@@ -121,15 +121,20 @@ class SortedEventListImpl extends TransformedEventList implements SortedEventLis
                 sort();
 
             } else if (listEvent.isRemoved()) {
+                // XXX: convert this to a Queue with GWT gets it with Java 1.5 support
+                final List events = new ArrayList();
                 for (int i = listEvent.getIndexEnd() - 1; i >= listEvent.getIndexStart(); i--) {
-                    // XXX: Should be able to remove them all in one loop
                     final Index revIdx = (Index)reverse.get(i);
                     final Index tranIdx = (Index)translations.get(revIdx.getIndex());
                     removeAndShift(tranIdx, translations.iterator());
                     removeAndShift(revIdx, reverse.iterator());
-                    fireListEvent(new ListEvent(SortedEventListImpl.this, ListEvent.REMOVED, revIdx.getIndex()));                    
+                    events.add(new ListEvent(SortedEventListImpl.this, ListEvent.REMOVED, revIdx.getIndex()));
                 }
                 
+                for (Iterator iter = events.iterator(); iter.hasNext();) {
+                    fireListEvent((ListEvent)iter.next());
+                }
+
             } else {
                 fireListEvent(listEvent.resource(SortedEventListImpl.this));
             }
