@@ -118,17 +118,21 @@ public abstract class TransformedEventList extends AbstractEventList implements 
                     lastRet = cursor++;
                     return next;
                 } catch(IndexOutOfBoundsException e) {
-                    throw new NoSuchElementException();
+                    final NoSuchElementException nsee = new NoSuchElementException();
+                    nsee.initCause(e);
+                    throw nsee;
                 }
             }
 
             public void remove() {
-                if (lastRet == -1)
+                if (lastRet == -1) {
                     throw new IllegalStateException();
+                }
 
                 TransformedEventList.this.remove(lastRet);
-                if (lastRet < cursor)
+                if (lastRet < cursor) {
                     cursor--;
+                }
                 lastRet = -1;
             }
         };
