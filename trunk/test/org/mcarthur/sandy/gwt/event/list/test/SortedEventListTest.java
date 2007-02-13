@@ -18,11 +18,13 @@ package org.mcarthur.sandy.gwt.event.list.test;
 
 import org.mcarthur.sandy.gwt.event.list.client.EventList;
 import org.mcarthur.sandy.gwt.event.list.client.EventLists;
+import org.mcarthur.sandy.gwt.event.list.client.FilteredEventList;
 import org.mcarthur.sandy.gwt.event.list.client.ListEvent;
 import org.mcarthur.sandy.gwt.event.list.client.ListEventListener;
 import org.mcarthur.sandy.gwt.event.list.client.SortedEventList;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
@@ -39,11 +41,11 @@ public class SortedEventListTest extends TransformedEventListTest {
     private final Integer I20 = new Integer(20);
 
     public void testAdd() {
-        EventList el = EventLists.eventList();
+        final EventList el = EventLists.eventList();
         el.add(I0);
         el.add(I20);
 
-        SortedEventList sel = EventLists.sortedEventList(el);
+        final SortedEventList sel = EventLists.sortedEventList(el);
 
         assertEquals(sel.get(0), I0);
         assertEquals(sel.get(1), I20);
@@ -63,13 +65,13 @@ public class SortedEventListTest extends TransformedEventListTest {
     }
 
     public void testAddAll() {
-        List l = new ArrayList();
+        final List l = new ArrayList();
         l.add(I0);
         l.add(I20);
         l.add(I10);
         l.add(I5);
 
-        SortedEventList sel = EventLists.sortedEventList();
+        final SortedEventList sel = EventLists.sortedEventList();
         sel.addAll(l);
 
         assertEquals(sel.get(0), I0);
@@ -89,7 +91,7 @@ public class SortedEventListTest extends TransformedEventListTest {
     }
 
     public void testIndexOf() {
-        SortedEventList sel = EventLists.sortedEventList();
+        final SortedEventList sel = EventLists.sortedEventList();
 
         sel.add(I20);
         sel.add(I5);
@@ -102,13 +104,13 @@ public class SortedEventListTest extends TransformedEventListTest {
     }
 
     public void testRemove() {
-        EventList el = EventLists.eventList();
+        final EventList el = EventLists.eventList();
         el.add(I10);
         el.add(I5);
         el.add(I20);
         el.add(I0);
 
-        SortedEventList sel = EventLists.sortedEventList(el);
+        final SortedEventList sel = EventLists.sortedEventList(el);
 
         sel.remove(2);
         assertFalse(el.contains(I10));
@@ -117,7 +119,7 @@ public class SortedEventListTest extends TransformedEventListTest {
         assertFalse(el.contains(I20));
     }
 
-    public void testRemoveEventListener() throws Exception {
+    public void testConsistentStateForRemovedEvents() throws Exception {
 
         final EventList deepest = EventLists.eventList();
         deepest.add("hello");
@@ -140,4 +142,42 @@ public class SortedEventListTest extends TransformedEventListTest {
 
         deepest.clear();
     }
+
+    public void testSortWithAFilteredList() {
+        final EventList el = EventLists.eventList();
+        for (int i=0; i < 10; i++) {
+            el.add(new Integer(i));
+        }
+        Collections.shuffle(el);
+
+        final FilteredEventList fel = EventLists.filteredEventList(el);
+        fel.setFilter(new FilteredEventList.Filter() {
+            public boolean accept(final Object element) {
+                return ((Number)element).intValue() % 2 == 0;
+            }
+        });
+
+        final SortedEventList sel = EventLists.sortedEventList(fel);
+
+        sel.sort();
+
+        assertEquals(10, el.size());
+        assertEquals(5, fel.size());
+        assertEquals(5, sel.size());
+        assertTrue(el.containsAll(fel));
+        assertTrue(el.containsAll(sel));
+        assertTrue(fel.containsAll(sel));
+        assertTrue(sel.containsAll(fel));
+
+        final List sorted = new ArrayList(sel);
+        Collections.sort(sorted);
+        assertEquals(sorted, sel);
+
+        //System.err.println(" el: " + el);
+        //System.err.println("fel: " + fel);
+        //System.err.println("sel: " + sel);
+        //System.err.println("far: " + Arrays.asList(fel.toArray()));
+        //System.err.println("sar: " + Arrays.asList(sel.toArray()));
+    }
+
 }
