@@ -87,81 +87,96 @@ class FilteredEventListImpl extends TransformedEventList implements FilteredEven
 
     private class FilteredListEventListener implements ListEventListener {
         public void listChanged(final ListEvent listEvent) {
-            final EventList delegate = listEvent.getSourceList();
-            final List translations = getTranslations();
-
             if (listEvent.isAdded()) {
-                final int delta = listEvent.getIndexEnd() - listEvent.getIndexStart();
-                final Iterator iter = translations.iterator();
-                int insertAt = 0;
-                while (iter.hasNext()) {
-                    final Index index = (Index)iter.next();
-                    // Assumes Filter maintains order
-                    if (index.getIndex() >= listEvent.getIndexStart()) {
-                        index.add(delta);
-                    } else {
-                        insertAt++;
-                    }
-                }
-
-                for (int i = listEvent.getIndexStart(); i < listEvent.getIndexEnd(); i++) {
-                    final Object o = delegate.get(i);
-                    if (filter.accept(o)) {
-                        translations.add(insertAt, new Index(i));
-                        // XXX: optimize for consecutive objects
-                        fireListEvent(new ListEvent(FilteredEventListImpl.this, ListEvent.ADDED, insertAt));
-                        insertAt++;
-                    }
-                }
+                listChangedAdded(listEvent);
 
             } else if (listEvent.isChanged()) {
-                for (int i = listEvent.getIndexStart(); i < listEvent.getIndexEnd(); i++) {
-                    final boolean accepted = filter.accept(delegate.get(i));
-                    for (int k=0; k < translations.size(); k++) {
-                        final Index index = getTranslationIndex(k);
-                        if (index.getIndex() == i) {
-                            if (accepted) {
-                                fireListEvent(new ListEvent(FilteredEventListImpl.this, ListEvent.CHANGED, k));
-                            } else {
-                                translations.remove(k);
-                                fireListEvent(new ListEvent(FilteredEventListImpl.this, ListEvent.REMOVED, k));
-                            }
-                            break;
-                        } else if (i < index.getIndex()) {
-                            if (accepted) {
-                                translations.add(k, new Index(i));
-                                fireListEvent(new ListEvent(FilteredEventListImpl.this, ListEvent.ADDED, k));
-                            }
-                            break;
-                        }
-                    }
-                }
+                listChangedChanged(listEvent);
 
             } else if (listEvent.isRemoved()) {
-                final int delta = listEvent.getIndexEnd() - listEvent.getIndexStart();
-                final Iterator iter = translations.iterator();
-                int pos = 0;
-                int lower = delegate.size();
-                int upper = -1;
-                while (iter.hasNext()) {
-                    final Index index = (Index)iter.next();
-                    final int i = index.getIndex();
-                    // assumes filter maintains order
-                    if (listEvent.getIndexStart() <= i && i < listEvent.getIndexEnd()) {
-                        iter.remove();
-                        lower = Math.min(lower, pos);
-                        upper = Math.max(pos, upper);
-                    } else if (listEvent.getIndexEnd() <= i) {
-                        index.sub(delta);
-                    }
-                    pos++;
-                }
-                if (lower <= upper) {
-                    fireListEvent(new ListEvent(FilteredEventListImpl.this, ListEvent.REMOVED, lower, upper+1));
-                }
+                listChangedRemoved(listEvent);
 
             } else {
                 fireListEvent(listEvent.resource(FilteredEventListImpl.this));
+            }
+        }
+
+        private void listChangedAdded(final ListEvent listEvent) {
+            final List translations = getTranslations();
+            final EventList delegate = getDelegate();
+            final int delta = listEvent.getIndexEnd() - listEvent.getIndexStart();
+            final Iterator iter = translations.iterator();
+            int insertAt = 0;
+            while (iter.hasNext()) {
+                final Index index = (Index)iter.next();
+                // Assumes Filter maintains order
+                if (index.getIndex() >= listEvent.getIndexStart()) {
+                    index.add(delta);
+                } else {
+                    insertAt++;
+                }
+            }
+
+            for (int i = listEvent.getIndexStart(); i < listEvent.getIndexEnd(); i++) {
+                final Object o = delegate.get(i);
+                if (filter.accept(o)) {
+                    translations.add(insertAt, new Index(i));
+                    // XXX: optimize for consecutive objects
+                    fireListEvent(new ListEvent(FilteredEventListImpl.this, ListEvent.ADDED, insertAt));
+                    insertAt++;
+                }
+            }
+        }
+
+        private void listChangedChanged(final ListEvent listEvent) {
+            final EventList delegate = getDelegate();
+            final List translations = getTranslations();
+            for (int i = listEvent.getIndexStart(); i < listEvent.getIndexEnd(); i++) {
+                final boolean accepted = filter.accept(delegate.get(i));
+                for (int k=0; k < translations.size(); k++) {
+                    final Index index = getTranslationIndex(k);
+                    if (index.getIndex() == i) {
+                        if (accepted) {
+                            fireListEvent(new ListEvent(FilteredEventListImpl.this, ListEvent.CHANGED, k));
+                        } else {
+                            translations.remove(k);
+                            fireListEvent(new ListEvent(FilteredEventListImpl.this, ListEvent.REMOVED, k));
+                        }
+                        break;
+                    } else if (i < index.getIndex()) {
+                        if (accepted) {
+                            translations.add(k, new Index(i));
+                            fireListEvent(new ListEvent(FilteredEventListImpl.this, ListEvent.ADDED, k));
+                        }
+                        break;
+                    }
+                }
+            }
+        }
+
+        private void listChangedRemoved(final ListEvent listEvent) {
+            final List translations = getTranslations();
+            final EventList delegate = getDelegate();
+            final int delta = listEvent.getIndexEnd() - listEvent.getIndexStart();
+            final Iterator iter = translations.iterator();
+            int pos = 0;
+            int lower = delegate.size();
+            int upper = -1;
+            while (iter.hasNext()) {
+                final Index index = (Index)iter.next();
+                final int i = index.getIndex();
+                // assumes filter maintains order
+                if (listEvent.getIndexStart() <= i && i < listEvent.getIndexEnd()) {
+                    iter.remove();
+                    lower = Math.min(lower, pos);
+                    upper = Math.max(pos, upper);
+                } else if (listEvent.getIndexEnd() <= i) {
+                    index.sub(delta);
+                }
+                pos++;
+            }
+            if (lower <= upper) {
+                fireListEvent(new ListEvent(FilteredEventListImpl.this, ListEvent.REMOVED, lower, upper+1));
             }
         }
     }

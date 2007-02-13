@@ -41,7 +41,7 @@ class SortedEventListImpl extends TransformedEventList implements SortedEventLis
      * A list of {@link Index}es that map the TransformedEventList's index to the delegate list's
      * indexes.
      */
-    private List translations = new ArrayList();
+    private final List translations = new ArrayList();
 
     private final List reverse = new ArrayList();
 
@@ -84,59 +84,73 @@ class SortedEventListImpl extends TransformedEventList implements SortedEventLis
         }
     }
 
+    private List getReverse() {
+        return reverse;
+    }
+
     public int size() {
         return getTranslations().size();
     }
 
     private class SortedListEventListener implements ListEventListener {
         public void listChanged(final ListEvent listEvent) {
-            final List delegate = getDelegate();
-            final List translations = getTranslations();
-            final List reverse = SortedEventListImpl.this.reverse;
-
             if (listEvent.isAdded()) {
-                for (int i = listEvent.getIndexStart(); i < listEvent.getIndexEnd(); i++) {
-                    final Object o = delegate.get(i);
-                    int pos;
-                    for (pos = 0; pos < translations.size(); pos++) {
-                        final Object posO = delegate.get(((Index)translations.get(pos)).getIndex());
-                        if (comparator.compare(posO, o) > 0) {
-                            break;
-                        }
-                    }
+                listChangedAdded(listEvent);
 
-                    final Index newIdx = new Index(i);
-                    final Index revIdx = new Index(pos);
-
-                    // insert
-                    shiftUp(i, translations.iterator());
-                    shiftUp(pos, reverse.iterator());
-                    translations.add(pos, newIdx);
-                    reverse.add(i, revIdx);
-                    fireListEvent(new ListEvent(SortedEventListImpl.this, ListEvent.ADDED, pos));
-                }
             } else if (listEvent.isChanged()) {
                 // TODO: Optimize
                 // XXX: fuck it! just resort the whole thing.
                 sort();
 
             } else if (listEvent.isRemoved()) {
-                // XXX: convert this to a Queue with GWT gets it with Java 1.5 support
-                final List events = new ArrayList();
-                for (int i = listEvent.getIndexEnd() - 1; i >= listEvent.getIndexStart(); i--) {
-                    final Index revIdx = (Index)reverse.get(i);
-                    final Index tranIdx = (Index)translations.get(revIdx.getIndex());
-                    removeAndShift(tranIdx, translations.iterator());
-                    removeAndShift(revIdx, reverse.iterator());
-                    events.add(new ListEvent(SortedEventListImpl.this, ListEvent.REMOVED, revIdx.getIndex()));
-                }
-                
-                for (Iterator iter = events.iterator(); iter.hasNext();) {
-                    fireListEvent((ListEvent)iter.next());
-                }
+                listChangedRemoved(listEvent);
 
             } else {
                 fireListEvent(listEvent.resource(SortedEventListImpl.this));
+            }
+        }
+
+        private void listChangedAdded(final ListEvent listEvent) {
+            final List delegate = getDelegate();
+            final List translations = getTranslations();
+            final List reverse = getReverse();
+            for (int i = listEvent.getIndexStart(); i < listEvent.getIndexEnd(); i++) {
+                final Object o = delegate.get(i);
+                int pos;
+                for (pos = 0; pos < translations.size(); pos++) {
+                    final Object posO = delegate.get(((Index)translations.get(pos)).getIndex());
+                    if (comparator.compare(posO, o) > 0) {
+                        break;
+                    }
+                }
+
+                final Index newIdx = new Index(i);
+                final Index revIdx = new Index(pos);
+
+                // insert
+                shiftUp(i, translations.iterator());
+                shiftUp(pos, reverse.iterator());
+                translations.add(pos, newIdx);
+                reverse.add(i, revIdx);
+                fireListEvent(new ListEvent(SortedEventListImpl.this, ListEvent.ADDED, pos));
+            }
+        }
+
+        private void listChangedRemoved(final ListEvent listEvent) {
+            final List reverse = getReverse();
+            final List translations = getTranslations();
+            // XXX: convert this to a Queue with GWT gets it with Java 1.5 support
+            final List events = new ArrayList();
+            for (int i = listEvent.getIndexEnd() - 1; i >= listEvent.getIndexStart(); i--) {
+                final Index revIdx = (Index)reverse.get(i);
+                final Index tranIdx = (Index)translations.get(revIdx.getIndex());
+                removeAndShift(tranIdx, translations.iterator());
+                removeAndShift(revIdx, reverse.iterator());
+                events.add(new ListEvent(SortedEventListImpl.this, ListEvent.REMOVED, revIdx.getIndex()));
+            }
+
+            for (Iterator iter = events.iterator(); iter.hasNext();) {
+                fireListEvent((ListEvent)iter.next());
             }
         }
 
