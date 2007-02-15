@@ -8,13 +8,13 @@
         <tstamp/>
 
         <!-- Configure: either edit there here or specify with -Dname=value when invking Ant -->
-        <property name="gwt.basedir" value="C:/gwt-windows-1.2.22/" description="The base directory where you installed GWT."/>
+        <property name="gwt.basedir" value="C:/gwt-windows-1.3.3/" description="The base directory where you installed GWT."/>
         <property name="gwt.compiler.style" value="OBF" description="GWTCompiler -style option value, defaults to OBF"/>
 
         <!-- Classpath to compile sources -->
         <path id="project.class.path">
             <pathelement path="${basedir}/src"/>
-            <pathelement path="${basedir}/test"/>
+            <!--<pathelement path="${basedir}/test"/>-->
             <!-- If you have any external GWT modules, add their jars here. -->
             <fileset dir="${basedir}/lib">
                 <include name="*.jar"/>
@@ -82,7 +82,7 @@
 
     <target name="compile-java" depends="init" description="Compile java source to bin">
         <mkdir dir="bin"/>
-        <javac srcdir="src:test" destdir="bin" includes="**" debug="on" optimize="off" source="1.4">
+        <javac srcdir="src" destdir="bin" includes="**" debug="on" optimize="off" source="1.4">
             <classpath refid="project.class.path"/>
         </javac>
     </target>
@@ -126,9 +126,6 @@
             <fileset dir="src">
                 <include name="**"/>
             </fileset>
-            <fileset dir="test">
-                <include name="**"/>
-            </fileset>
         </jar>
     </target>
 
@@ -139,9 +136,6 @@
             </fileset>
             <!-- Get everything; source, modules, html files -->
             <fileset dir="src">
-                <include name="org/mcarthur/sandy/gwt/login/**"/>
-            </fileset>
-            <fileset dir="test">
                 <include name="org/mcarthur/sandy/gwt/login/**"/>
             </fileset>
         </jar>
@@ -178,9 +172,6 @@
             </fileset>
             <!-- Get everything; source, modules, html files -->
             <fileset dir="src">
-                <include name="org/mcarthur/sandy/gwt/table/**"/>
-            </fileset>
-            <fileset dir="test">
                 <include name="org/mcarthur/sandy/gwt/table/**"/>
             </fileset>
         </jar>
