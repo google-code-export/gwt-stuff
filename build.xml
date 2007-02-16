@@ -51,6 +51,7 @@
                     <arg value="${basedir}/gen"/>
                     <arg value="@{module}/@{page}"/>
                     <classpath path="src"/>
+                    <classpath path="test"/>
                     <classpath path="bin"/>
                     <classpath refid="project.class.path"/>
                     <classpath refid="gwt.class.path"/>
@@ -70,6 +71,7 @@
                     <arg value="${basedir}/gen"/>
                     <arg value="@{module}"/>
                     <classpath path="src"/>
+                    <classpath path="test"/>
                     <classpath path="bin"/>
                     <classpath refid="project.class.path"/>
                     <classpath refid="gwt.class.path"/>
