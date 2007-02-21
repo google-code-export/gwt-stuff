@@ -23,6 +23,6 @@ import org.mcarthur.sandy.gwt.table.client.TableBodyGroup;
 *
 * @author Sandy McArthur
 */
-public interface AdvancedPropertyTableInfo extends PropertyTableInfo {
+public interface AdvancedPropertyTableModel extends PropertyTableModel {
     public void rendered(final Object obj, final TableBodyGroup rowGroup);
 }

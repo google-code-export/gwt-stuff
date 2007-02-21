@@ -25,7 +25,7 @@ import java.util.Collection;
 *
 * @author Sandy McArthur
 */
-public interface PropertyTableInfo {
+public interface PropertyTableModel {
 
     public EventList getElements();
 
