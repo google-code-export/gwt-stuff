@@ -25,10 +25,13 @@ import java.util.Iterator;
  *
  * @author Sandy McArthur
  */
-public abstract class DelegateEventList extends AbstractEventList implements EventList {
-    private final EventList delegate;
+public abstract class DelegateEventList extends AbstractEventList implements EventList, DetachableEventList {
+    private EventList delegate;
 
     protected DelegateEventList(final EventList delegate) {
+        if (delegate == null) {
+            throw new NullPointerException("delegate must not be null.");
+        }
         this.delegate = delegate;
     }
 
@@ -37,6 +40,9 @@ public abstract class DelegateEventList extends AbstractEventList implements Eve
      * @return the backing EventList.
      */
     protected EventList getDelegate() {
+        if (delegate == null) {
+            throw new IllegalStateException("detached.");
+        }
         return delegate;
     }
 
@@ -114,5 +120,11 @@ public abstract class DelegateEventList extends AbstractEventList implements Eve
 
     public Object[] toArray() {
         return getDelegate().toArray();
+    }
+
+    public EventList detach() {
+        final EventList old = getDelegate();
+        delegate = null;
+        return old;
     }
 }

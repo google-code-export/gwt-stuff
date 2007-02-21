@@ -51,13 +51,15 @@ import java.util.Iterator;
 public final class ObservingEventList extends DelegateEventList implements EventList {
     private final PropertyChangeListener pcl = new PropertyChangeEventListListener();
 
+    private final ListEventListener observingListEventListener = new ListEventListener() {
+        public void listChanged(final ListEvent listEvent) {
+            fireListEvent(listEvent.resource(ObservingEventList.this));
+        }
+    };
+
     public ObservingEventList() {
         super(EventLists.eventList());
-        getDelegate().addListEventListener(new ListEventListener() {
-            public void listChanged(final ListEvent listEvent) {
-                fireListEvent(listEvent.resource(ObservingEventList.this));
-            }
-        });
+        getDelegate().addListEventListener(observingListEventListener);
     }
 
     /**
@@ -186,5 +188,16 @@ public final class ObservingEventList extends DelegateEventList implements Event
                 }
             }
         }
+    }
+
+    public EventList detach() {
+        final EventList eventList = super.detach();
+        eventList.removeListEventListener(observingListEventListener);
+        final Iterator iter = eventList.iterator();
+        while (iter.hasNext()) {
+            final PropertyChangeSource pcs = (PropertyChangeSource)iter.next();
+            pcs.removePropertyChangeListener(pcl);
+        }
+        return eventList;
     }
 }
