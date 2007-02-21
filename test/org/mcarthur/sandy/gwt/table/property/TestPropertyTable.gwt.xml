@@ -1,0 +1,8 @@
+<module>
+
+    <inherits name="com.google.gwt.user.User"/>
+    <inherits name="org.mcarthur.sandy.gwt.table.Table"/>
+
+    <entry-point class="org.mcarthur.sandy.gwt.table.property.client.TestPropertyTable"/>
+
+</module>
