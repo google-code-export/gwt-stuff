@@ -21,7 +21,7 @@ package org.mcarthur.sandy.gwt.event.list.client;
  *
  * @author Sandy McArthur
  */
-public class SteadyRangedEventListImpl extends RangedEventListImpl implements RangedEventList {
+class SteadyRangedEventListImpl extends RangedEventListImpl implements RangedEventList {
 
     protected SteadyRangedEventListImpl(final EventList delegate, final int maxSize) {
         super(delegate, maxSize);
