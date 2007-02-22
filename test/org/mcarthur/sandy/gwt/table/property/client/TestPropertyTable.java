@@ -25,9 +25,11 @@ import org.mcarthur.sandy.gwt.event.list.client.EventLists;
 import org.mcarthur.sandy.gwt.table.client.alpha.PropertyDescriptor;
 import org.mcarthur.sandy.gwt.table.client.alpha.PropertyTable;
 import org.mcarthur.sandy.gwt.table.client.alpha.PropertyTableModel;
+import org.mcarthur.sandy.gwt.table.client.alpha.SortablePropertyDescriptor;
 
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -65,7 +67,7 @@ public class TestPropertyTable implements EntryPoint {
             return pd;
         }
 
-        private class FirstPD implements PropertyDescriptor {
+        private class FirstPD implements SortablePropertyDescriptor {
 
             public String getName() {
                 return "first";
@@ -82,6 +84,16 @@ public class TestPropertyTable implements EntryPoint {
             public Widget createWidget(final Object element) {
                 final Contact c = (Contact)element;
                 return new Label(c.getFirst());
+            }
+
+            public Comparator getComparator() {
+                return new Comparator() {
+                    public int compare(final Object o1, final Object o2) {
+                        final Contact c1 = (Contact)o1;
+                        final Contact c2 = (Contact)o2;
+                        return c1.getFirst().compareTo(c2.getFirst());
+                    }
+                };
             }
         }
 
