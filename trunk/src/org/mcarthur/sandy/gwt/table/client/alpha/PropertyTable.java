@@ -21,6 +21,7 @@ import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.MenuBar;
+import com.google.gwt.user.client.ui.MenuItem;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import org.mcarthur.sandy.gwt.table.client.ObjectListTable;
 import org.mcarthur.sandy.gwt.table.client.TableBodyGroup;
@@ -30,6 +31,7 @@ import org.mcarthur.sandy.gwt.table.client.TableHeaderCell;
 import org.mcarthur.sandy.gwt.table.client.TableHeaderGroup;
 import org.mcarthur.sandy.gwt.table.client.TableRow;
 
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -91,7 +93,8 @@ public class PropertyTable extends Composite {
 
                 final MenuBar colMenu = new MenuBar(true);
                 if (pd instanceof SortablePropertyDescriptor) {
-                    // TODO: sort menu items
+                    final MenuItem sortItem = createSortMenu((SortablePropertyDescriptor)pd);
+                    colMenu.addItem(sortItem);
                 }
                 if (pd instanceof FilterablePropertyDescriptor) {
                     // TODO: filter menu items
@@ -109,6 +112,31 @@ public class PropertyTable extends Composite {
                 tr.add(thc);
             }
             headerGroup.add(tr);
+        }
+
+        private MenuItem createSortMenu(final SortablePropertyDescriptor spd) {
+            final Comparator comparator = spd.getComparator();
+
+            final MenuBar sortMenu = new MenuBar(true);
+            sortMenu.addItem("Sort Up", new Command() {
+                public void execute() {
+                    Window.alert("Sort Up not implemented.");
+                    // TODO: enable SortedEventList with comparator
+                }
+            });
+            sortMenu.addItem("Sort Down", new Command() {
+                public void execute() {
+                    Window.alert("Sort Down not implemented.");
+                    final Comparator reverse = new Comparator() {
+                        public int compare(final Object o1, final Object o2) {
+                            return comparator.compare(o2, o1);
+                        }
+                    };
+                    // TODO: enable SortedEventList with reverse
+                }
+            });
+
+            return new MenuItem("Sort <span style=\"float:right;\">&#187</span>", true, sortMenu);
         }
 
         public void renderFooter(final TableFooterGroup footerGroup) {
