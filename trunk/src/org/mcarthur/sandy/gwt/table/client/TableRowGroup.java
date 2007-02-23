@@ -44,6 +44,8 @@ import java.util.List;
  * @see <a href="http://www.w3.org/TR/html4/struct/tables.html#h-11.2.3">HTML Row Group</a>
  */
 public abstract class TableRowGroup extends UIObject implements EventListener {
+    static final int MOUSEEVENTSALL = Event.MOUSEEVENTS | Event.ONCLICK | Event.ONDBLCLICK;
+
     private final EventList rows = EventLists.eventList();
     private List mouseListeners = null;
 
@@ -147,7 +149,7 @@ public abstract class TableRowGroup extends UIObject implements EventListener {
 
     public void addMouseListener(final MouseListener listener) {
         if (mouseListeners == null) {
-            sinkEvents(Event.MOUSEEVENTS | Event.ONCLICK | Event.ONDBLCLICK);
+            sinkEvents(TableRowGroup.MOUSEEVENTSALL);
             mouseListeners = new ArrayList();
         }
         mouseListeners.add(listener);
@@ -156,6 +158,10 @@ public abstract class TableRowGroup extends UIObject implements EventListener {
     public void removeMouseListener(final MouseListener listener) {
         if (mouseListeners != null) {
             mouseListeners.remove(listener);
+            if (mouseListeners.isEmpty()) {
+                unsinkEvents(TableRowGroup.MOUSEEVENTSALL);
+                mouseListeners = null;
+            }
         }
     }
 
