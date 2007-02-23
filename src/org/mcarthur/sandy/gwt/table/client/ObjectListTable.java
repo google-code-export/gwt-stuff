@@ -59,7 +59,7 @@ public class ObjectListTable extends Panel implements SourcesMouseEvents {
 
     private TableHeaderGroup thead;
     private TableFooterGroup tfoot;
-    private List tbodies = new ArrayList();
+    private List/*<TableBodyGroup>*/ tbodies = new ArrayList();
 
     private final WidgetCollection widgets = new WidgetCollection(this);
 
@@ -103,15 +103,25 @@ public class ObjectListTable extends Panel implements SourcesMouseEvents {
         return objects;
     }
 
-    List getTbodies() {
+    List/*<TableBodyGroup>*/ getTbodies() {
         return tbodies;
     }
 
     TableFooterGroup getTfoot() {
+        if (tfoot == null) {
+            final ObjectListTableFooterGroup footerGroup = new ObjectListTableFooterGroup();
+            model.renderFooter(footerGroup);
+            attach(footerGroup); // TODO: Does this do the right thing?
+        }
         return tfoot;
     }
 
     TableHeaderGroup getThead() {
+        if (thead == null) {
+            final ObjectListTableHeaderGroup headerGroup = new ObjectListTableHeaderGroup();
+            model.renderHeader(headerGroup);
+            attach(headerGroup); // TODO: Does this do the right thing?
+        }
         return thead;
     }
 
@@ -119,7 +129,7 @@ public class ObjectListTable extends Panel implements SourcesMouseEvents {
      * Converts objects into table rows.
      *
      * <p>
-     * <b>Note:</b> Modifying the EventList backing this table from the render is not allowed and
+     * <b>Note:</b> Modifying the EventList backing this table from the renderer is not allowed and
      * can lead to undefined behavior.
      * </p>
      */
@@ -148,6 +158,65 @@ public class ObjectListTable extends Panel implements SourcesMouseEvents {
          * @param footerGroup the table footer row group.
          */
         public void renderFooter(TableFooterGroup footerGroup);
+    }
+
+    /**
+     * A renderer implementing this interface receives notification when TableRowGroups are
+     * attached and detached to the browser's document. This provides a means to register and
+     * unregister event listeners that affect the TableRowGroups state.
+     *
+     * <p>
+     * <b>Note:</b> Adding or removing table rows or table cells from an attach or detach event
+     * can lead to undefined behavior.
+     * </p>
+     */
+    public interface AttachRenderer extends Renderer {
+
+        /**
+         * Invoked when a TableBodyGroup has been attached to the browser's document.
+         *
+         * @param obj the object this row group represents.
+         * @param rowGroup the row group representing the object.
+         * @see #onDetach(Object, TableBodyGroup)
+         */
+        public void onAttach(Object obj, TableBodyGroup rowGroup);
+
+        /**
+         * Invoked when a TableHeaderGroup has been attached to the browser's document.
+         *
+         * @param rowGroup the table's header row group.
+         */
+        public void onAttach(TableHeaderGroup rowGroup);
+
+        /**
+         * Invoked when a TableFooterGroup has been attached to the browser's document.
+         * 
+         * @param rowGroup the table's footer row group.
+         */
+        public void onAttach(TableFooterGroup rowGroup);
+
+        /**
+         * Invoked when a TableBodyGroup is detached from the browser's document.
+         * 
+         * @param obj the object this row group represents.
+         * @param rowGroup the row group representing the object.
+         * @see #onAttach(Object, TableBodyGroup)
+         */
+        public void onDetach(Object obj, TableBodyGroup rowGroup);
+
+        /**
+         * Invoked when a TableHeaderGroup is detached from the browser's document.
+         *
+         * @param rowGroup the table's header row group.
+         */
+        public void onDetach(TableHeaderGroup rowGroup);
+
+        /**
+         * Invoked when a TableFooterGroup is detached from the browser's document.
+         *
+         * @param rowGroup the table's footer row group.
+         */
+        public void onDetach(TableFooterGroup rowGroup);
     }
 
     /**
@@ -417,19 +486,39 @@ public class ObjectListTable extends Panel implements SourcesMouseEvents {
 
     protected void onAttach() {
         super.onAttach();
+
+        if (model instanceof AttachRenderer) {
+            final AttachRenderer attachRenderer = (AttachRenderer)model;
+
+            attachRenderer.onAttach(getThead());
+
+            final List tbodies = getTbodies();
+            final Iterator iter=tbodies.iterator();
+            while (iter.hasNext()) {
+                final ObjectListTableRowGroup tbody = (ObjectListTableRowGroup)iter.next();
+                attachRenderer.onAttach(tbody.getObject(), tbody);
+            }
+
+            attachRenderer.onAttach(getTfoot());
+        }
     }
 
-    protected void onLoad() {
-        super.onLoad();
-        if (thead == null) {
-            final ObjectListTableHeaderGroup headerGroup = new ObjectListTableHeaderGroup();
-            model.renderHeader(headerGroup);
-            attach(headerGroup);
-        }
-        if (tfoot == null) {
-            final ObjectListTableFooterGroup footerGroup = new ObjectListTableFooterGroup();
-            model.renderFooter(footerGroup);
-            attach(footerGroup);
+    protected void onDetach() {
+        super.onDetach();
+
+        if (model instanceof AttachRenderer) {
+            final AttachRenderer attachRenderer = (AttachRenderer)model;
+
+            attachRenderer.onDetach(getThead());
+
+            final List tbodies = getTbodies();
+            final Iterator iter=tbodies.iterator();
+            while (iter.hasNext()) {
+                final ObjectListTableRowGroup tbody = (ObjectListTableRowGroup)iter.next();
+                attachRenderer.onDetach(tbody.getObject(), tbody);
+            }
+
+            attachRenderer.onDetach(getTfoot());
         }
     }
 
