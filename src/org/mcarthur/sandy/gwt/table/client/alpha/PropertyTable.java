@@ -47,12 +47,14 @@ public class PropertyTable extends Composite {
     private final ObjectListTable olt;
 
     private final PropertyTableModel ptm;
+    private final PropertyTableEventList ptel;
 
     public PropertyTable(final PropertyTableModel ptm) {
         initWidget(vp);
 
         this.ptm = ptm;
-        olt = new ObjectListTable(new PropertyRenderer(), ptm.getElements());
+        ptel = new PropertyTableEventList(ptm.getElements());
+        olt = new ObjectListTable(new PropertyRenderer(), ptel);
 
         vp.add(hp);
         vp.add(olt);
@@ -120,23 +122,23 @@ public class PropertyTable extends Composite {
             final MenuBar sortMenu = new MenuBar(true);
             sortMenu.addItem("Sort Up", new Command() {
                 public void execute() {
-                    Window.alert("Sort Up not implemented.");
-                    // TODO: enable SortedEventList with comparator
-                }
-            });
-            sortMenu.addItem("Sort Down", new Command() {
-                public void execute() {
-                    Window.alert("Sort Down not implemented.");
+                    //Window.alert("Sort Up not implemented.");
                     final Comparator reverse = new Comparator() {
                         public int compare(final Object o1, final Object o2) {
                             return comparator.compare(o2, o1);
                         }
                     };
-                    // TODO: enable SortedEventList with reverse
+                    ptel.setComparator(reverse);
+                }
+            });
+            sortMenu.addItem("Sort Down", new Command() {
+                public void execute() {
+                    //Window.alert("Sort Down not implemented.");
+                    ptel.setComparator(comparator);
                 }
             });
 
-            return new MenuItem("Sort <span style=\"float:right;\">&#187</span>", true, sortMenu);
+            return new MenuItem("<span style=\"float:right;\">&#187</span>Sort", true, sortMenu);
         }
 
         public void renderFooter(final TableFooterGroup footerGroup) {
