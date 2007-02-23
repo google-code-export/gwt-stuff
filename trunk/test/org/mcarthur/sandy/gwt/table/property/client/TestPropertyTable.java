@@ -126,7 +126,7 @@ public class TestPropertyTable implements EntryPoint {
     private static List firstNames;
     private static List lastNames;
     static {
-        String[] f = {"Bob", "Joe", "Tom", "Jane", "Jill", "Sally", "Laura", "Sandy", "Alex", "Mary", "Mark", "Zack", " Beth", "Greg"};
+        String[] f = {"Bob", "Joe", "Tom", "Jane", "Jill", "Sally", "Laura", "Sandy", "Alex", "Mary", "Mark", "Zack", "Beth", "Greg"};
         firstNames = Arrays.asList(f);
         //Collections.shuffle(firstNames);
 
