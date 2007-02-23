@@ -184,7 +184,7 @@ public abstract class TableRow extends UIObject implements HasWidgets, EventList
 
     public void addMouseListener(final MouseListener listener) {
         if (mouseListeners == null) {
-            sinkEvents(Event.MOUSEEVENTS | Event.ONCLICK | Event.ONDBLCLICK);
+            sinkEvents(TableRowGroup.MOUSEEVENTSALL);
             mouseListeners = new ArrayList();
         }
         mouseListeners.add(listener);
@@ -193,6 +193,10 @@ public abstract class TableRow extends UIObject implements HasWidgets, EventList
     public void removeMouseListener(final MouseListener listener) {
         if (mouseListeners != null) {
             mouseListeners.remove(listener);
+            if (mouseListeners.isEmpty()) {
+                unsinkEvents(TableRowGroup.MOUSEEVENTSALL);
+                mouseListeners = null;
+            }
         }
     }
 
