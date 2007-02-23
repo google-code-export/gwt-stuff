@@ -56,7 +56,7 @@ public abstract class TableRow extends UIObject implements HasWidgets, EventList
      * Add a cell to this table row.
      *
      * @param cell the cell to add.
-     * @throws IllegalArgumentException if the TableRow subclass requires a specific cell type.
+     * @throws IllegalArgumentException when the <code>cell</code> is not from {@link #newTableDataCell()} or {@link #newTableHeaderCell()}.
      * @see #newTableDataCell()
      * @see #newTableHeaderCell()
      */

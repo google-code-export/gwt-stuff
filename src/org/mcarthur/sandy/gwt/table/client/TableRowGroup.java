@@ -44,7 +44,7 @@ import java.util.List;
  * @see <a href="http://www.w3.org/TR/html4/struct/tables.html#h-11.2.3">HTML Row Group</a>
  */
 public abstract class TableRowGroup extends UIObject implements EventListener {
-    private final EventList rows = EventLists.wrap(new ArrayList());
+    private final EventList rows = EventLists.eventList();
     private List mouseListeners = null;
 
     protected TableRowGroup(final Element element) {
@@ -58,6 +58,8 @@ public abstract class TableRowGroup extends UIObject implements EventListener {
      * This has the same effect as <code>getRows().add(row)</code>.
      *
      * @param row the table row to be added.
+     * @throws IllegalArgumentException when <code>row</code> is not from {@link #newTableRow()}.
+     * @see #newTableRow()
      */
     public void add(final TableRow row) throws IllegalArgumentException {
         rows.add(row);
