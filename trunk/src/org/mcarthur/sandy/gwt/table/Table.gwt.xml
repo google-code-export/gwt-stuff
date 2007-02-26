@@ -1,5 +1,6 @@
 <module>
     <inherits name="com.google.gwt.user.User"/>
+    <inherits name="com.google.gwt.junit.JUnit"/>
     <inherits name="org.mcarthur.sandy.gwt.event.list.EventList"/>
 
     <!-- Default rule -->

@@ -79,13 +79,52 @@
             </sequential>
         </macrodef>
 
+        <macrodef name="gwttestcase">
+            <attribute name="testclass"/>
+            <sequential>
+                <java classname="junit.textui.TestRunner" failonerror="true" fork="true">
+                    <jvmarg value="${gwt.jvmarg}"/>
+                    <jvmarg value="-Dgwt.args=-out www-test"/>
+                    <arg value="@{testclass}"/>
+                    <classpath path="src"/>
+                    <classpath path="test"/>
+                    <classpath path="bin"/>
+                    <classpath refid="project.class.path"/>
+                    <classpath refid="gwt.class.path"/>
+                </java>
+            </sequential>
+        </macrodef>
+
+        <macrodef name="gwttestcaseweb">
+            <attribute name="testclass"/>
+            <sequential>
+                <java classname="junit.textui.TestRunner" failonerror="true" fork="true">
+                    <jvmarg value="${gwt.jvmarg}"/>
+                    <jvmarg value="-Dgwt.args=-web -out www-test"/>
+                    <arg value="@{testclass}"/>
+                    <classpath path="src"/>
+                    <classpath path="test"/>
+                    <classpath path="bin"/>
+                    <classpath refid="project.class.path"/>
+                    <classpath refid="gwt.class.path"/>
+                </java>
+            </sequential>
+        </macrodef>
 
     </target>
 
-    <target name="compile-java" depends="init" description="Compile java source to bin">
+    <target name="compile-src" depends="init" description="Compile java source to bin">
         <mkdir dir="bin"/>
         <javac srcdir="src" destdir="bin" includes="**" debug="on" optimize="off" source="1.4">
             <classpath refid="project.class.path"/>
+        </javac>
+    </target>
+
+    <target name="compile-test" depends="init,compile-src" description="Compile java source to bin">
+        <mkdir dir="bin"/>
+        <javac srcdir="test" destdir="bin" includes="**" debug="on" optimize="off" source="1.4">
+            <classpath refid="project.class.path"/>
+            <classpath refid="gwt.class.path"/>
         </javac>
     </target>
 
@@ -109,17 +148,17 @@
         <gwtshell module="org.mcarthur.sandy.gwt.event.list.TestEventList" page="TestEventList.html"/>
     </target>
 
-    <target name="gwtcompile-TestTable" depends="init">
+    <target name="gwtcompile-TestObjectListTable" depends="init">
         <mkdir dir="www"/>
-        <gwtcompile module="org.mcarthur.sandy.gwt.table.TestTable"/>
+        <gwtcompile module="org.mcarthur.sandy.gwt.table.olt.TestObjectListTable"/>
     </target>
 
-    <target name="gwtshell-TestTable" depends="init">
+    <target name="gwtshell-TestObjectListTable" depends="init">
         <mkdir dir="www"/>
-        <gwtshell module="org.mcarthur.sandy.gwt.table.TestTable" page="TestTable.html"/>
+        <gwtshell module="org.mcarthur.sandy.gwt.table.olt.TestObjectListTable" page="TestObjectListTable.html"/>
     </target>
 
-    <target name="package" depends="compile-java" description="Package up the whole project as a jar">
+    <target name="package" depends="compile-src" description="Package up the whole project as a jar">
         <jar destfile="GWT-Stuff-${DSTAMP}.jar">
             <fileset dir="bin">
                 <include name="**/*.class"/>
@@ -127,54 +166,6 @@
             <!-- Get everything; source, modules, html files -->
             <fileset dir="src">
                 <include name="**"/>
-            </fileset>
-        </jar>
-    </target>
-
-    <target name="package-login" depends="compile-java" description="Package up the Login module as a jar">
-        <jar destfile="GWT-Stuff-Login-${DSTAMP}.jar">
-            <fileset dir="bin">
-                <include name="org/mcarthur/sandy/gwt/login/**/*.class"/>
-            </fileset>
-            <!-- Get everything; source, modules, html files -->
-            <fileset dir="src">
-                <include name="org/mcarthur/sandy/gwt/login/**"/>
-            </fileset>
-        </jar>
-    </target>
-
-    <target name="package-eventlist" depends="compile-java" description="Package up the Event List module as a jar">
-        <jar destfile="GWT-Stuff-EventList-${DSTAMP}.jar">
-            <fileset dir="bin">
-                <include name="org/mcarthur/sandy/gwt/event/list/**/*.class"/>
-            </fileset>
-            <!-- Get everything; source, modules, html files -->
-            <fileset dir="src">
-                <include name="org/mcarthur/sandy/gwt/event/list/**"/>
-            </fileset>
-        </jar>
-    </target>
-
-    <target name="package-propertychange" depends="compile-java" description="Package up the Property Change module as a jar">
-        <jar destfile="GWT-Stuff-PropertyChange-${DSTAMP}.jar">
-            <fileset dir="bin">
-                <include name="org/mcarthur/sandy/gwt/event/property/**/*.class"/>
-            </fileset>
-            <!-- Get everything; source, modules, html files -->
-            <fileset dir="src">
-                <include name="org/mcarthur/sandy/gwt/event/property/**"/>
-            </fileset>
-        </jar>
-    </target>
-
-    <target name="package-table" depends="compile-java" description="Package up the Table module as a jar">
-        <jar destfile="GWT-Stuff-Table-${DSTAMP}.jar">
-            <fileset dir="bin">
-                <include name="org/mcarthur/sandy/gwt/table/**/*.class"/>
-            </fileset>
-            <!-- Get everything; source, modules, html files -->
-            <fileset dir="src">
-                <include name="org/mcarthur/sandy/gwt/table/**"/>
             </fileset>
         </jar>
     </target>
@@ -204,11 +195,21 @@
         </javadoc>
     </target>
 
+    <target name="test" depends="init,clean,compile-test">
+        <gwttestcase testclass="org.mcarthur.sandy.gwt.table.client.ObjectListTableAttachRendererTest"/>
+    </target>
+
+    <target name="test-web" depends="init,clean,compile-test">
+        <mkdir dir="www-test"/>        
+        <gwttestcaseweb testclass="org.mcarthur.sandy.gwt.table.client.ObjectListTableAttachRendererTest"/>
+    </target>
+
     <target name="clean" depends="init" description="Remove generated files.">
         <!-- Delete the bin directory tree -->
         <delete dir="bin"/>
         <delete dir="gen"/>
         <delete dir="www"/>
+        <delete dir="www-test"/>
         <delete>
             <fileset dir="." includes="GWT-Stuff.jar"/>
             <fileset dir="." includes="GWT-Stuff.txt"/>
@@ -220,6 +221,6 @@
         <delete dir="tomcat"/>
     </target>
 
-    <target name="all" depends="package,package-login,package-eventlist,package-propertychange,package-table" description="Build all packages."/>
+    <target name="all" depends="test,package" description="Build all packages."/>
 
 </project>

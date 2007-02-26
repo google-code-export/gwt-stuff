@@ -1,9 +1,10 @@
 <module>
 
+    <inherits name="com.google.gwt.user.User"/>
     <inherits name="org.mcarthur.sandy.gwt.table.Table"/>
     <inherits name="org.mcarthur.sandy.gwt.event.property.PropertyChange"/>
     <inherits name="org.mcarthur.sandy.gwt.event.list.property.PropertyChangeEventList"/>
 
-    <entry-point class="org.mcarthur.sandy.gwt.table.client.TestTable"/>
+    <entry-point class='org.mcarthur.sandy.gwt.table.olt.client.TestObjectListTable'/>
 
 </module>
