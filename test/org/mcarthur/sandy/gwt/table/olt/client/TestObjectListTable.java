@@ -14,7 +14,7 @@
  * the License.
  */
 
-package org.mcarthur.sandy.gwt.table.client;
+package org.mcarthur.sandy.gwt.table.olt.client;
 
 import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.user.client.Command;
@@ -48,6 +48,14 @@ import org.mcarthur.sandy.gwt.event.list.client.RangedEventList;
 import org.mcarthur.sandy.gwt.event.list.client.SortedEventList;
 import org.mcarthur.sandy.gwt.event.list.property.client.ObservingEventList;
 import org.mcarthur.sandy.gwt.event.property.client.PropertyChangeSource;
+import org.mcarthur.sandy.gwt.table.client.ObjectListTable;
+import org.mcarthur.sandy.gwt.table.client.TableBodyGroup;
+import org.mcarthur.sandy.gwt.table.client.TableCell;
+import org.mcarthur.sandy.gwt.table.client.TableFooterGroup;
+import org.mcarthur.sandy.gwt.table.client.TableHeaderCell;
+import org.mcarthur.sandy.gwt.table.client.TableHeaderGroup;
+import org.mcarthur.sandy.gwt.table.client.TableRow;
+import org.mcarthur.sandy.gwt.table.client.TableRowGroup;
 
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
@@ -61,7 +69,7 @@ import java.util.List;
  *
  * @author Sandy McArthur
  */
-public class TestTable implements EntryPoint {
+public class TestObjectListTable implements EntryPoint {
     private static VerticalPanel vp = new VerticalPanel();
 
     private ObjectListTable ot;
@@ -297,7 +305,7 @@ public class TestTable implements EntryPoint {
             r1.setTitle("Removes first element of deepest EventList");
             r1.addClickListener(new ClickListener() {
                 public void onClick(final Widget sender) {
-                    List el = TestTable.this.el;
+                    List el = TestObjectListTable.this.el;
                     if (el.size() > 0) {
                         el.remove(0);
                     }
