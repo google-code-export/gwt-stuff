@@ -27,7 +27,10 @@ table {
   border-collapse: collapse;
 }
 
-tbody.mouseOver td, tbody.mouseOver th {
+tbody td.gwtstuff-TableCell, tbody th.gwtstuff-TableCell {
+    border: thin white solid;
+}
+tbody.mouseOver td.gwtstuff-TableCell, tbody.mouseOver th.gwtstuff-TableCell {
     border: thin orangered solid;
 }
 tbody.mouseOver {
