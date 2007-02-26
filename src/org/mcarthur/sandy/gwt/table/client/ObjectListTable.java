@@ -108,21 +108,29 @@ public class ObjectListTable extends Panel implements SourcesMouseEvents {
     }
 
     TableFooterGroup getTfoot() {
+        //createTfoot();
+        return tfoot;
+    }
+
+    TableHeaderGroup getThead() {
+        //createThead();
+        return thead;
+    }
+
+    private void createTfoot() {
         if (tfoot == null) {
             final ObjectListTableFooterGroup footerGroup = new ObjectListTableFooterGroup();
             model.renderFooter(footerGroup);
             attach(footerGroup); // TODO: Does this do the right thing?
         }
-        return tfoot;
     }
 
-    TableHeaderGroup getThead() {
+    private void createThead() {
         if (thead == null) {
             final ObjectListTableHeaderGroup headerGroup = new ObjectListTableHeaderGroup();
             model.renderHeader(headerGroup);
             attach(headerGroup); // TODO: Does this do the right thing?
         }
-        return thead;
     }
 
     /**
@@ -255,6 +263,10 @@ public class ObjectListTable extends Panel implements SourcesMouseEvents {
         impl.add(this, rowGroup, beforeGroup, beforeIndex);
         // TODO? add to widgets before or after impl.add?
         addWidgets(rowGroup);
+        if (isAttached() && model instanceof AttachRenderer) {
+            final AttachRenderer attachRenderer = (AttachRenderer)model;
+            attachRenderer.onAttach(rowGroup.getObject(), rowGroup);
+        }
     }
 
     private void addWidgets(final TableRowGroup rowGroup) {
@@ -284,6 +296,10 @@ public class ObjectListTable extends Panel implements SourcesMouseEvents {
     }
 
     private void detach(final ObjectListTableRowGroup rowGroup) {
+        if (isAttached() && model instanceof AttachRenderer) {
+            final AttachRenderer attachRenderer = (AttachRenderer)model;
+            attachRenderer.onDetach(rowGroup.getObject(), rowGroup);
+        }
         DOM.removeChild(getElement(), rowGroup.getElement());
         tbodies.remove(rowGroup);
     }
@@ -485,12 +501,18 @@ public class ObjectListTable extends Panel implements SourcesMouseEvents {
 
 
     protected void onAttach() {
+        // Create the header and footers if they haven't been created yet.
+        createThead();
+        createTfoot();
+
         super.onAttach();
 
         if (model instanceof AttachRenderer) {
             final AttachRenderer attachRenderer = (AttachRenderer)model;
 
-            attachRenderer.onAttach(getThead());
+            final TableHeaderGroup thead = getThead();
+            assert thead != null;
+            attachRenderer.onAttach(thead);
 
             final List tbodies = getTbodies();
             final Iterator iter=tbodies.iterator();
@@ -499,7 +521,9 @@ public class ObjectListTable extends Panel implements SourcesMouseEvents {
                 attachRenderer.onAttach(tbody.getObject(), tbody);
             }
 
-            attachRenderer.onAttach(getTfoot());
+            final TableFooterGroup tfoot = getTfoot();
+            assert tfoot != null;
+            attachRenderer.onAttach(tfoot);
         }
     }
 
@@ -509,16 +533,21 @@ public class ObjectListTable extends Panel implements SourcesMouseEvents {
         if (model instanceof AttachRenderer) {
             final AttachRenderer attachRenderer = (AttachRenderer)model;
 
-            attachRenderer.onDetach(getThead());
+            final TableHeaderGroup thead = getThead();
+            assert thead != null;
+            attachRenderer.onDetach(thead);
 
             final List tbodies = getTbodies();
             final Iterator iter=tbodies.iterator();
             while (iter.hasNext()) {
                 final ObjectListTableRowGroup tbody = (ObjectListTableRowGroup)iter.next();
+                assert tbody != null;
                 attachRenderer.onDetach(tbody.getObject(), tbody);
             }
 
-            attachRenderer.onDetach(getTfoot());
+            final TableFooterGroup tfoot = getTfoot();
+            assert tfoot != null;
+            attachRenderer.onDetach(tfoot);
         }
     }
 
@@ -567,6 +596,9 @@ public class ObjectListTable extends Panel implements SourcesMouseEvents {
     public void removeMouseListener(final MouseListener listener) {
         if (mouseListeners != null) {
             mouseListeners.remove(listener);
+            if (mouseListeners.isEmpty()) {
+                mouseListeners = null;
+            }
         }
     }
 }
