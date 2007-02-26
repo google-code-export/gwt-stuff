@@ -18,7 +18,6 @@ package org.mcarthur.sandy.gwt.table.client;
 
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Element;
-import com.google.gwt.user.client.Window;
 
 /**
  * Native implementation associated with {@link org.mcarthur.sandy.gwt.table.client.ObjectListTable}.
@@ -49,10 +48,23 @@ class ObjectListTableImpl {
         }
     }
 
+    /**
+     * Attach the TableHeaderGroup to the ObjectListTable's element.
+     *
+     * @param olt the current ObjectListTable.
+     * @param headerGroup the thead to attach to <code>olt</code>'s element.
+     */
     void attach(final ObjectListTable olt, final TableHeaderGroup headerGroup) {
-        DOM.appendChild(olt.getElement(), headerGroup.getElement());
+        //DOM.appendChild(olt.getElement(), headerGroup.getElement());
+        DOM.insertChild(olt.getElement(), headerGroup.getElement(), 0);
     }
 
+    /**
+     * Attach the TableFooterGroup to the ObjectListTable's element.
+     *
+     * @param olt the current ObjectListTable.
+     * @param headerGroup the tfoot to attach to <code>olt</code>'s element.
+     */
     void attach(final ObjectListTable olt, final TableFooterGroup footerGroup) {
         DOM.appendChild(olt.getElement(), footerGroup.getElement());
     }
