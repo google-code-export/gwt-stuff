@@ -554,18 +554,35 @@ public class ObjectListTable extends Panel implements SourcesMouseEvents {
     public void onBrowserEvent(final Event event) {
         super.onBrowserEvent(event);
 
+        final Element tableElement = getElement();
         Element target = DOM.eventGetTarget(event);
-        // this will speed up the isOrHasChild below on large tables
-        while (target != null && !DOM.compare(DOM.getParent(target), getElement())) {
-            target = DOM.getParent(target);
-        }
 
-        final Iterator iter = tbodies.iterator();
-        while (iter.hasNext()) {
-            final ObjectListTableRowGroup rowGroup = (ObjectListTableRowGroup)iter.next();
-            if (DOM.isOrHasChild(rowGroup.getElement(), target)) {
-                rowGroup.onBrowserEvent(event);
-                break;
+        // if the event is on the table element don't search table row groups.
+        if (!DOM.compare(tableElement, target)) {
+
+            // find the parent of the event target that is a row group.
+            Element targetParent = DOM.getParent(target);
+            while (target != null && !DOM.compare(tableElement, targetParent)) {
+                target = targetParent;
+                targetParent = DOM.getParent(target);
+            }
+
+            // fire the onBrowserEvent for the row group that the event came from.
+            if (DOM.compare(target, getThead().getElement())) {
+                getThead().onBrowserEvent(event);
+
+            } else if (DOM.compare(target, getTfoot().getElement())) {
+                getTfoot().onBrowserEvent(event);
+
+            } else {
+                final Iterator iter = tbodies.iterator();
+                while (iter.hasNext()) {
+                    final ObjectListTableRowGroup rowGroup = (ObjectListTableRowGroup)iter.next();
+                    if (DOM.compare(target, rowGroup.getElement())) {
+                        rowGroup.onBrowserEvent(event);
+                        break;
+                    }
+                }
             }
         }
 
