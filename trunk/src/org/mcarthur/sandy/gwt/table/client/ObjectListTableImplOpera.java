@@ -27,11 +27,13 @@ import com.google.gwt.user.client.Element;
 class ObjectListTableImplOpera extends ObjectListTableImpl {
 
     /*
+     * 2006-02-27: Couldn't reproduce this problem in Opera 9.10
+     *
      * Opera seems to need the thead/tfoot elements to be kept at the start/end of the table's
      * child elements. The ordering doesn't seem to matter in HTML source, only when updating
      * the DOM.
      */
-    void add(final ObjectListTable olt, final ObjectListTable.ObjectListTableRowGroup rowGroup, final ObjectListTable.ObjectListTableRowGroup beforeGroup, final int beforeIndex) {
+    private void Xadd(final ObjectListTable olt, final ObjectListTable.ObjectListTableRowGroup rowGroup, final ObjectListTable.ObjectListTableRowGroup beforeGroup, final int beforeIndex) {
         Element beforeElement = null;
         if (beforeGroup != null) {
             beforeElement = beforeGroup.getElement();
@@ -43,7 +45,8 @@ class ObjectListTableImplOpera extends ObjectListTableImpl {
         insertBefore(olt.getElement(), rowGroup.getElement(), beforeElement);
     }
 
-    void attach(final ObjectListTable olt, final TableHeaderGroup headerGroup) {
+    // XXX: Same as the parent implementaion
+    void Xattach(final ObjectListTable olt, final TableHeaderGroup headerGroup) {
         DOM.insertChild(olt.getElement(), headerGroup.getElement(), 0);
     }
 

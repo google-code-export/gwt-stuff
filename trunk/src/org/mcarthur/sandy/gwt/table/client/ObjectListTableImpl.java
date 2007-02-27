@@ -63,10 +63,12 @@ class ObjectListTableImpl {
      * Attach the TableFooterGroup to the ObjectListTable's element.
      *
      * @param olt the current ObjectListTable.
-     * @param headerGroup the tfoot to attach to <code>olt</code>'s element.
+     * @param footerGroup the tfoot to attach to <code>olt</code>'s element.
      */
     void attach(final ObjectListTable olt, final TableFooterGroup footerGroup) {
-        DOM.appendChild(olt.getElement(), footerGroup.getElement());
+        //DOM.appendChild(olt.getElement(), footerGroup.getElement());
+        assert olt.getThead() != null;
+        DOM.insertChild(olt.getElement(), footerGroup.getElement(), 1);
     }
 
 }

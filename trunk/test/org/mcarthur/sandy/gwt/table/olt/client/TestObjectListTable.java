@@ -62,6 +62,7 @@ import java.beans.PropertyChangeSupport;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.Date;
+import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -239,7 +240,7 @@ public class TestObjectListTable implements EntryPoint {
             maxSize.setWidth("3em");
             maxSize.setText(Integer.toString(rel.getMaxSize()));
             rel.addListEventListener(new ListEventListener() {
-                public void listChanged(ListEvent listEvent) {
+                public void listChanged(final ListEvent listEvent) {
                     maxSize.setText(Integer.toString(rel.getMaxSize()));
                 }
             });
@@ -267,7 +268,7 @@ public class TestObjectListTable implements EntryPoint {
             start.setWidth("3em");
             start.setText(Integer.toString(rel.getStart()));
             rel.addListEventListener(new ListEventListener() {
-                public void listChanged(ListEvent listEvent) {
+                public void listChanged(final ListEvent listEvent) {
                     start.setText(Integer.toString(rel.getStart()));
                 }
             });
@@ -294,8 +295,8 @@ public class TestObjectListTable implements EntryPoint {
             final Button nextPage = new Button("Next Page");
             nextPage.addClickListener(new ClickListener() {
                 public void onClick(final Widget sender) {
-                    int m = Integer.parseInt(maxSize.getText());
-                    int s = Integer.parseInt(start.getText()) + m;
+                    final int m = Integer.parseInt(maxSize.getText());
+                    final int s = Integer.parseInt(start.getText()) + m;
                     start.setText("" + s);
                     setStart.click();
                 }
@@ -305,7 +306,7 @@ public class TestObjectListTable implements EntryPoint {
             r1.setTitle("Removes first element of deepest EventList");
             r1.addClickListener(new ClickListener() {
                 public void onClick(final Widget sender) {
-                    List el = TestObjectListTable.this.el;
+                    final List el = TestObjectListTable.this.el;
                     if (el.size() > 0) {
                         el.remove(0);
                     }
@@ -327,7 +328,7 @@ public class TestObjectListTable implements EntryPoint {
 
     }
 
-    private class OLTR implements ObjectListTable.Renderer {
+    private class OLTR implements ObjectListTable.AttachRenderer {
 
         public void render(final Object obj, final TableBodyGroup rowGroup) {
             final Person person = (Person)obj;
@@ -364,7 +365,7 @@ public class TestObjectListTable implements EntryPoint {
                 }
             });
             tb.addFocusListener(new FocusListenerAdapter() {
-                public void onFocus(Widget sender) {
+                public void onFocus(final Widget sender) {
                     tb.setSelectionRange(0, tb.getText().length());
                 }
             });
@@ -389,7 +390,6 @@ public class TestObjectListTable implements EntryPoint {
             removeCell.add(button);
             tr.add(removeCell);
 
-            tr.addMouseListener(rml);
             rowGroup.add(tr);
 
             final TableRow tr2 = rowGroup.newTableRow();
@@ -400,10 +400,7 @@ public class TestObjectListTable implements EntryPoint {
 
             tc2.setAxis("summary");
             tr2.add(tc2);
-            tr2.addMouseListener(rml);
             rowGroup.add(tr2);
-
-            rowGroup.addMouseListener(rgml);
         }
 
         public void renderHeader(final TableHeaderGroup headerGroup) {
@@ -521,11 +518,40 @@ public class TestObjectListTable implements EntryPoint {
             rowGroup.add(tr);
         }
 
+        public void onAttach(final Object obj, final TableBodyGroup rowGroup) {
+            rowGroup.addMouseListener(rgml);
+            final Iterator iter = rowGroup.getRows().iterator();
+            while (iter.hasNext()) {
+                final TableRow tr = (TableRow)iter.next();
+                tr.addMouseListener(rml);
+            }
+        }
+
+        public void onAttach(final TableHeaderGroup rowGroup) {
+        }
+
+        public void onAttach(final TableFooterGroup rowGroup) {
+        }
+
+        public void onDetach(final Object obj, final TableBodyGroup rowGroup) {
+            rowGroup.removeMouseListener(rgml);
+            final Iterator iter = rowGroup.getRows().iterator();
+            while (iter.hasNext()) {
+                final TableRow tr = (TableRow)iter.next();
+                tr.removeMouseListener(rml);
+            }
+        }
+
+        public void onDetach(final TableHeaderGroup rowGroup) {
+        }
+
+        public void onDetach(final TableFooterGroup rowGroup) {
+        }
+
         private RowGroupMouseListener rgml = new RowGroupMouseListener();
 
         private class RowGroupMouseListener implements TableRowGroup.MouseListener {
             public void onMouseDown(final TableRowGroup rowGroup, final Event event) {
-                //To change body of implemented methods use File | Settings | File Templates.
             }
 
             public void onMouseOver(final TableRowGroup rowGroup, final Event event) {
@@ -537,19 +563,15 @@ public class TestObjectListTable implements EntryPoint {
             }
 
             public void onMouseMove(final TableRowGroup rowGroup, final Event event) {
-                //To change body of implemented methods use File | Settings | File Templates.
             }
 
             public void onMouseUp(final TableRowGroup rowGroup, final Event event) {
-                //To change body of implemented methods use File | Settings | File Templates.
             }
 
             public void onClick(final TableRowGroup rowGroup, final Event event) {
-                //To change body of implemented methods use File | Settings | File Templates.
             }
 
             public void onDblClick(final TableRowGroup rowGroup, final Event event) {
-                //To change body of implemented methods use File | Settings | File Templates.
             }
         }
 
@@ -557,7 +579,6 @@ public class TestObjectListTable implements EntryPoint {
 
         private class RowMouseListener implements TableRow.MouseListener {
             public void onMouseDown(final TableRow row, final Event event) {
-                //To change body of implemented methods use File | Settings | File Templates.
             }
 
             public void onMouseOver(final TableRow row, final Event event) {
@@ -569,40 +590,22 @@ public class TestObjectListTable implements EntryPoint {
             }
 
             public void onMouseMove(final TableRow row, final Event event) {
-                //To change body of implemented methods use File | Settings | File Templates.
             }
 
             public void onMouseUp(final TableRow row, final Event event) {
-                //To change body of implemented methods use File | Settings | File Templates.
             }
 
             public void onClick(final TableRow row, final Event event) {
-                //To change body of implemented methods use File | Settings | File Templates.
             }
 
             public void onDblClick(final TableRow row, final Event event) {
-                //To change body of implemented methods use File | Settings | File Templates.
             }
         }
     }
 
     private static class AgeLabel extends Label {
-        private final int age;
         public AgeLabel(final int age) {
             super(Integer.toString(age));
-            this.age = age;
-        }
-
-        protected void onAttach() {
-            super.onAttach();
-        }
-
-        protected void onDetach() {
-            super.onDetach();
-        }
-
-        public void removeFromParent() {
-            super.removeFromParent();
         }
     }
 
