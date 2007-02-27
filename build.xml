@@ -85,7 +85,7 @@
                 <java classname="junit.textui.TestRunner" failonerror="true" fork="true">
                     <jvmarg value="${gwt.jvmarg}"/>
                     <jvmarg value="-Dgwt.args=-out www-test"/>
-                    <arg value="@{testclass}"/>
+                    <arg line="@{testclass}"/>
                     <classpath path="src"/>
                     <classpath path="test"/>
                     <classpath path="bin"/>
@@ -196,12 +196,12 @@
     </target>
 
     <target name="test" depends="init,clean,compile-test">
-        <gwttestcase testclass="org.mcarthur.sandy.gwt.table.client.ObjectListTableAttachRendererTest"/>
+        <gwttestcase testclass="org.mcarthur.sandy.gwt.TestAll"/>
     </target>
 
     <target name="test-web" depends="init,clean,compile-test">
         <mkdir dir="www-test"/>        
-        <gwttestcaseweb testclass="org.mcarthur.sandy.gwt.table.client.ObjectListTableAttachRendererTest"/>
+        <gwttestcaseweb testclass="org.mcarthur.sandy.gwt.TestAll"/>
     </target>
 
     <target name="clean" depends="init" description="Remove generated files.">
@@ -221,6 +221,6 @@
         <delete dir="tomcat"/>
     </target>
 
-    <target name="all" depends="test,package" description="Build all packages."/>
+    <target name="all" depends="test,javadoc,package" description="Build all packages."/>
 
 </project>
