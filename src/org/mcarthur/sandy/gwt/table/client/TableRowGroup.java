@@ -92,21 +92,36 @@ public abstract class TableRowGroup extends UIObject implements EventListener {
     }
 
     public final void onBrowserEvent(final Event event) {
-        final Iterator iter = rows.iterator();
-        final Element target = DOM.eventGetTarget(event);
-        while (iter.hasNext()) {
-            final TableRow row = (TableRow)iter.next();
-            if (DOM.isOrHasChild(row.getElement(), target)) {
-                row.onBrowserEvent(event);
-                break;
+        final Element rowGroupElement = getElement();
+        Element target = DOM.eventGetTarget(event);
+
+        // if the event is on the row group element don't search for table cells.
+        if (!DOM.compare(rowGroupElement, target)) {
+
+            // find the parent of the event target that is a row.
+            Element targetParent = DOM.getParent(target);
+            while (target != null && !DOM.compare(rowGroupElement, targetParent)) {
+                target = targetParent;
+                targetParent = DOM.getParent(target);
+            }
+
+            // fire the onBrowserEvent for the row that the event came from.
+            final Iterator iter = rows.iterator();
+            while (iter.hasNext()) {
+                final TableRow row = (TableRow)iter.next();
+                if (DOM.compare(target, row.getElement())) {
+                    row.onBrowserEvent(event);
+                    break;
+                }
             }
         }
 
+
         if (mouseListeners != null) {
             final Iterator mlIter = mouseListeners.iterator();
+            final int eventType = DOM.eventGetType(event);
             while (mlIter.hasNext()) {
                 final MouseListener listener = (MouseListener)mlIter.next();
-                final int eventType = DOM.eventGetType(event);
                 switch (eventType) {
                     case Event.ONMOUSEDOWN: {
                         listener.onMouseDown(this, event);

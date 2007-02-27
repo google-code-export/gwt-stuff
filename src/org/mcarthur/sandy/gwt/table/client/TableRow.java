@@ -138,10 +138,10 @@ public abstract class TableRow extends UIObject implements HasWidgets, EventList
 
     public final void onBrowserEvent(final Event event) {
         if (mouseListeners != null) {
+            final int eventType = DOM.eventGetType(event);
             final Iterator mlIter = mouseListeners.iterator();
             while (mlIter.hasNext()) {
                 final MouseListener listener = (MouseListener)mlIter.next();
-                final int eventType = DOM.eventGetType(event);
                 switch (eventType) {
                     case Event.ONMOUSEDOWN: {
                         listener.onMouseDown(this, event);
