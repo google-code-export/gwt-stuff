@@ -263,7 +263,8 @@ public class ObjectListTable extends Panel implements SourcesMouseEvents {
         impl.add(this, rowGroup, beforeGroup, beforeIndex);
         // TODO? add to widgets before or after impl.add?
         addWidgets(rowGroup);
-        if (isAttached() && model instanceof AttachRenderer) {
+        // 2007-02-26: GWTCompiler can optimize this out if the instanceof is first
+        if (model instanceof AttachRenderer && isAttached()) {
             final AttachRenderer attachRenderer = (AttachRenderer)model;
             attachRenderer.onAttach(rowGroup.getObject(), rowGroup);
         }
@@ -296,7 +297,8 @@ public class ObjectListTable extends Panel implements SourcesMouseEvents {
     }
 
     private void detach(final ObjectListTableRowGroup rowGroup) {
-        if (isAttached() && model instanceof AttachRenderer) {
+        // 2007-02-26: GWTCompiler can optimize this out if the instanceof is first
+        if (model instanceof AttachRenderer && isAttached()) {
             final AttachRenderer attachRenderer = (AttachRenderer)model;
             attachRenderer.onDetach(rowGroup.getObject(), rowGroup);
         }
