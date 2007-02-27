@@ -236,7 +236,9 @@ public class ObjectListTable extends Panel implements SourcesMouseEvents {
     }
 
     /**
-     * Removes a child widget.
+     * Do not call this to remove widgets from your table.
+     * You should remove elements from the EventList to cause widgets to be removed from the table.
+     * This method is only public because the HasWidgets interface requires it.
      *
      * @param w the widget to be removed
      * @return <code>true</code> if the widget was present
@@ -261,7 +263,6 @@ public class ObjectListTable extends Panel implements SourcesMouseEvents {
 
     private void add(final ObjectListTableRowGroup rowGroup, final ObjectListTableRowGroup beforeGroup, final int beforeIndex) {
         impl.add(this, rowGroup, beforeGroup, beforeIndex);
-        // TODO? add to widgets before or after impl.add?
         addWidgets(rowGroup);
         // 2007-02-26: GWTCompiler can optimize this out if the instanceof is first
         if (model instanceof AttachRenderer && isAttached()) {
