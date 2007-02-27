@@ -44,7 +44,7 @@ import java.util.List;
  * @see <a href="http://www.w3.org/TR/html4/struct/tables.html#h-11.2.5">HTML Table Row</a>
  */
 public abstract class TableRow extends UIObject implements HasWidgets, EventListener {
-    private final WidgetCollection cells = new WidgetCollection(this);
+    private final WidgetCollection/*<TableCell>*/ cells = new WidgetCollection(this);
     private List mouseListeners = null;
 
     protected TableRow() {

@@ -46,7 +46,7 @@ import java.util.List;
 public abstract class TableRowGroup extends UIObject implements EventListener {
     static final int MOUSEEVENTSALL = Event.MOUSEEVENTS | Event.ONCLICK | Event.ONDBLCLICK;
 
-    private final EventList rows = EventLists.eventList();
+    private final EventList/*<TableRow>*/ rows = EventLists.eventList();
     private List mouseListeners = null;
 
     protected TableRowGroup(final Element element) {
@@ -72,7 +72,7 @@ public abstract class TableRowGroup extends UIObject implements EventListener {
      *
      * @return a List of {@link TableRow}s.
      */
-    public final List getRows() {
+    public final List/*<TableRow>*/ getRows() {
         return rows;
     }
 
@@ -187,7 +187,7 @@ public abstract class TableRowGroup extends UIObject implements EventListener {
                 for (int i = listEvent.getIndexStart(); i < listEvent.getIndexEnd(); i++) {
                     final TableRow row = (TableRow)rows.get(i);
                     // XXX: Do we need to call stuff on the TableRow?
-                    DOM.appendChild(rowGroupElement, row.getElement());
+                    DOM.insertChild(rowGroupElement, row.getElement(), i);
                 }
             } else if (listEvent.isRemoved()) {
                 for (int i = listEvent.getIndexStart(); i < listEvent.getIndexEnd(); i++) {
