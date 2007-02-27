@@ -24,11 +24,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Created by IntelliJ IDEA.
- * User: sandymac
- * Date: Feb 1, 2007
- * Time: 12:33:41 PM
- * To change this template use File | Settings | File Templates.
+ * Tests for {@link org.mcarthur.sandy.gwt.event.list.client.RangedEventList}.
+ *
+ * @author Sandy McArthur
  */
 public class RangedEventListTest extends TransformedEventListTest {
 
