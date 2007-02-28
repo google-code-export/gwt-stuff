@@ -11,11 +11,7 @@ the model changes.
 
 == Property Change Support ==
 
-If your objects are mutable it may be desirable for you objects to notify the EventList
-when their state changes so that SortedEventLists or FilteredEventLists can update
-themselves. The PropertyChangeEventList module combines the EventList module and
-PropertyChange module from GWT-Stuff to provide an EventList implementation that monitors
-the elements in itself.
+If your objects are mutable it may be desirable for you objects to notify the EventList when their state changes so that a SortedEventList, a FilteredEventList, or a RangedEventList can update themselves. The PropertyChangeEventList module combines the EventList module and PropertyChange module from GWT-Stuff to provide an EventList implementation that monitors the elements in itself.
 
 = Inherits =
 
