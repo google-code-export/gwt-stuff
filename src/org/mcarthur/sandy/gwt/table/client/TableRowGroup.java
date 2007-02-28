@@ -1,5 +1,5 @@
 /*
- * Copyright 2006 Sandy McArthur, Jr.
+ * Copyright 2007 Sandy McArthur, Jr.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
@@ -51,7 +51,7 @@ public abstract class TableRowGroup extends UIObject implements EventListener {
 
     protected TableRowGroup(final Element element) {
         setElement(element);
-        addStyleName("gwtstuff-TableRowGroup");
+        addStyleName(Constants.GWTSTUFF + "-TableRowGroup");
         rows.addListEventListener(new TableRowGroupListEventListener());
     }
 

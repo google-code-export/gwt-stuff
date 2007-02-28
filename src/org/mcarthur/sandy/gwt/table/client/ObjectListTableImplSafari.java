@@ -1,5 +1,5 @@
 /*
- * Copyright 2006 Sandy McArthur, Jr.
+ * Copyright 2007 Sandy McArthur, Jr.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
@@ -37,7 +37,7 @@ class ObjectListTableImplSafari extends ObjectListTableImpl {
      * This may not be needed if the inserted element isn't the first one? Need to do more testing.
      */
     private final Element CAPTION = DOM.createElement("caption");
-    void add(final ObjectListTable olt, final ObjectListTable.ObjectListTableRowGroup rowGroup, final ObjectListTable.ObjectListTableRowGroup beforeGroup, final int beforeIndex) {
+    void add(final ObjectListTable olt, final ObjectListTable.ObjectListTableBodyGroup rowGroup, final ObjectListTable.ObjectListTableBodyGroup beforeGroup, final int beforeIndex) {
         super.add(olt, rowGroup, beforeGroup, beforeIndex);
 
         // force table re-layout

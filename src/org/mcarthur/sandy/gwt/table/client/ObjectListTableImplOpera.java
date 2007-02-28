@@ -1,5 +1,5 @@
 /*
- * Copyright 2006 Sandy McArthur, Jr.
+ * Copyright 2007 Sandy McArthur, Jr.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
@@ -33,7 +33,7 @@ class ObjectListTableImplOpera extends ObjectListTableImpl {
      * child elements. The ordering doesn't seem to matter in HTML source, only when updating
      * the DOM.
      */
-    private void Xadd(final ObjectListTable olt, final ObjectListTable.ObjectListTableRowGroup rowGroup, final ObjectListTable.ObjectListTableRowGroup beforeGroup, final int beforeIndex) {
+    private void Xadd(final ObjectListTable olt, final ObjectListTable.ObjectListTableBodyGroup rowGroup, final ObjectListTable.ObjectListTableBodyGroup beforeGroup, final int beforeIndex) {
         Element beforeElement = null;
         if (beforeGroup != null) {
             beforeElement = beforeGroup.getElement();

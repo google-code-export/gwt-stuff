@@ -162,10 +162,16 @@
         <jar destfile="GWT-Stuff-${DSTAMP}.jar">
             <fileset dir="bin">
                 <include name="**/*.class"/>
+                <exclude name="**/test/**"/>
+                <exclude name="**/emul/**"/>
+                <exclude name="**/alpha/**"/>
             </fileset>
             <!-- Get everything; source, modules, html files -->
             <fileset dir="src">
                 <include name="**"/>
+                <exclude name="**/test/**"/>
+                <exclude name="**/emul/**"/>
+                <exclude name="**/alpha/**"/>
             </fileset>
         </jar>
     </target>
@@ -179,6 +185,7 @@
                 <include name="**"/>
                 <exclude name="**/test/**"/>
                 <exclude name="**/emul/**"/>
+                <exclude name="**/alpha/**"/>
             </packageset>
             <doctitle><![CDATA[${ant.project.name}]]></doctitle>
             <header><![CDATA[<a href="http://code.google.com/p/gwt-stuff/">${ant.project.name}</a>]]></header>
