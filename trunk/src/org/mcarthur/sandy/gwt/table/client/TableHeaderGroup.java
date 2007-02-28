@@ -1,5 +1,5 @@
 /*
- * Copyright 2006 Sandy McArthur, Jr.
+ * Copyright 2007 Sandy McArthur, Jr.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
@@ -33,6 +33,6 @@ import com.google.gwt.user.client.DOM;
 public abstract class TableHeaderGroup extends TableRowGroup {
     TableHeaderGroup() {
         super(DOM.createElement("thead"));
-        addStyleName("gwtstuff-TableHeaderGroup");
+        addStyleName(Constants.GWTSTUFF + "-TableHeaderGroup");
     }
 }

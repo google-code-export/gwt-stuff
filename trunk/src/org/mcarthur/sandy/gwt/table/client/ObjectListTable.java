@@ -1,5 +1,5 @@
 /*
- * Copyright 2006 Sandy McArthur, Jr.
+ * Copyright 2007 Sandy McArthur, Jr.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
@@ -38,18 +38,26 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * An event driven table that is backed by an {@link EventList}. Each Object in the list reprsents
- * one {@link TableRowGroup row group}.
+ * An event driven table that is backed by an {@link EventList}. Each Object in the list is
+ * reprsented by one {@link TableRowGroup row group}.
  *
  * <h3>CSS Style Rules</h3>
  * <ul class="css">
- * <li>.gwtstuff-ObjectListTable { }</li>
- * <li>plus style classes by TableRowGroup, TableRow, TableCell, etc...</li>
+ * <li>.gwtstuff-ObjectListTable { /&#042; table element (table) &#042;/ }</li>
+ * <li>.gwtstuff-ObjectListTable-ObjectListTableHeaderGroup { /&#042; table header row group element (thead) &#042;/ }</li>
+ * <li>.gwtstuff-ObjectListTable-ObjectListTableFooterGroup { /&#042; table footer row group element (tfoot) &#042;/ }</li>
+ * <li>.gwtstuff-ObjectListTable-ObjectListTableBodyGroup { /&#042; table body row group element (tbody) &#042;/ }</li>
+ * <li>.gwtstuff-ObjectListTable-ObjectListTableRow { /&#042; table row element (tr) &#042;/ }</li>
+ * <li>.gwtstuff-ObjectListTable-ObjectListTableHeaderCell { /&#042; table header cell element (th) &#042;/ }</li>
+ * <li>.gwtstuff-ObjectListTable-ObjectListTableDataCell { /&#042; table data cell element (td) &#042;/ }</li>
+ * <li>plus style classes inherited by {@link TableRowGroup}, {@link TableRow}, {@link TableCell}, etc...</li>
  * </ul>
 
  * @author Sandy McArthur
  */
 public class ObjectListTable extends Panel implements SourcesMouseEvents {
+
+    private static final String CLASS_GWTSTUFF_OBJECTLISTTABLE = Constants.GWTSTUFF + "-ObjectListTable";
 
     private static ObjectListTableImpl impl;
     static {
@@ -89,7 +97,7 @@ public class ObjectListTable extends Panel implements SourcesMouseEvents {
         this.model = renderer;
         this.objects = objects;
         setElement(DOM.createTable());
-        addStyleName("gwtstuff-ObjectListTable");
+        addStyleName(CLASS_GWTSTUFF_OBJECTLISTTABLE);
 
         objects.addListEventListener(objectsListener);
 
@@ -99,6 +107,11 @@ public class ObjectListTable extends Panel implements SourcesMouseEvents {
         }
     }
 
+    /**
+     * The EventList backing this ObjectListTable.
+     *
+     * @return the EventList backing this ObjectListTable.
+     */
     public EventList getObjects() {
         return objects;
     }
@@ -228,15 +241,14 @@ public class ObjectListTable extends Panel implements SourcesMouseEvents {
     }
 
     /**
-     * Gets an iterator for the contained widgets. This iterator is required to
-     * implement {@link java.util.Iterator#remove()}.
+     * Required by the HasWidgets interface, do not use this in your own code.
      */
     public Iterator iterator() {
         return widgets.iterator();
     }
 
     /**
-     * Do not call this to remove widgets from your table.
+     * Required by the HasWidgets interface, do not use this in your own code.
      * You should remove elements from the EventList to cause widgets to be removed from the table.
      * This method is only public because the HasWidgets interface requires it.
      *
@@ -251,7 +263,7 @@ public class ObjectListTable extends Panel implements SourcesMouseEvents {
         return removed;
     }
 
-    private void add(final ObjectListTableRowGroup rowGroup, final ObjectListTableRowGroup beforeGroup) {
+    private void add(final ObjectListTableBodyGroup rowGroup, final ObjectListTableBodyGroup beforeGroup) {
         final int beforeIndex;
         if (beforeGroup != null) {
             beforeIndex = tbodies.indexOf(beforeGroup);
@@ -261,7 +273,7 @@ public class ObjectListTable extends Panel implements SourcesMouseEvents {
         add(rowGroup, beforeGroup, beforeIndex);
     }
 
-    private void add(final ObjectListTableRowGroup rowGroup, final ObjectListTableRowGroup beforeGroup, final int beforeIndex) {
+    private void add(final ObjectListTableBodyGroup rowGroup, final ObjectListTableBodyGroup beforeGroup, final int beforeIndex) {
         impl.add(this, rowGroup, beforeGroup, beforeIndex);
         addWidgets(rowGroup);
         // 2007-02-26: GWTCompiler can optimize this out if the instanceof is first
@@ -297,7 +309,7 @@ public class ObjectListTable extends Panel implements SourcesMouseEvents {
         addWidgets(footerGroup);
     }
 
-    private void detach(final ObjectListTableRowGroup rowGroup) {
+    private void detach(final ObjectListTableBodyGroup rowGroup) {
         // 2007-02-26: GWTCompiler can optimize this out if the instanceof is first
         if (model instanceof AttachRenderer && isAttached()) {
             final AttachRenderer attachRenderer = (AttachRenderer)model;
@@ -307,7 +319,7 @@ public class ObjectListTable extends Panel implements SourcesMouseEvents {
         tbodies.remove(rowGroup);
     }
 
-    private void remove(final ObjectListTableRowGroup rowGroup) {
+    private void remove(final ObjectListTableBodyGroup rowGroup) {
         final Iterator rit = rowGroup.getRows().iterator();
         while (rit.hasNext()) {
             final TableRow tr = (TableRow)rit.next();
@@ -325,19 +337,19 @@ public class ObjectListTable extends Panel implements SourcesMouseEvents {
             if (listEvent.isAdded()) {
                 for (int i = listEvent.getIndexStart(); i < listEvent.getIndexEnd(); i++) {
                     final Object obj = objects.get(i);
-                    final ObjectListTableRowGroup rowGroup = new ObjectListTableRowGroup(obj);
+                    final ObjectListTableBodyGroup rowGroup = new ObjectListTableBodyGroup(obj);
                     model.render(obj, rowGroup);
                     //add(rowGroup, i);
-                    ObjectListTableRowGroup before = null;
+                    ObjectListTableBodyGroup before = null;
                     if (i < tbodies.size()) {
-                        before = (ObjectListTableRowGroup)tbodies.get(i);
+                        before = (ObjectListTableBodyGroup)tbodies.get(i);
                     }
                     add(rowGroup, before, i);
                 }
 
             } else if (listEvent.isRemoved()) {
                 for (int i = listEvent.getIndexEnd() - 1; i >= listEvent.getIndexStart(); i--) {
-                    final ObjectListTableRowGroup rowGroup = (ObjectListTableRowGroup)tbodies.get(i);
+                    final ObjectListTableBodyGroup rowGroup = (ObjectListTableBodyGroup)tbodies.get(i);
                     detach(rowGroup);
                     remove(rowGroup);
                 }
@@ -346,7 +358,7 @@ public class ObjectListTable extends Panel implements SourcesMouseEvents {
                 if (true) { // unoptimized
                     for (int i = listEvent.getIndexStart(); i < listEvent.getIndexEnd(); i++) {
                         final Object obj = objects.get(i);
-                        ObjectListTableRowGroup rowGroup = (ObjectListTableRowGroup)tbodies.get(i);
+                        ObjectListTableBodyGroup rowGroup = (ObjectListTableBodyGroup)tbodies.get(i);
 
                         // test if really different
                         if (obj != rowGroup.getObject()) {
@@ -357,12 +369,12 @@ public class ObjectListTable extends Panel implements SourcesMouseEvents {
                             remove(rowGroup);
 
                             // insert new
-                            rowGroup = new ObjectListTableRowGroup(obj);
+                            rowGroup = new ObjectListTableBodyGroup(obj);
                             model.render(obj, rowGroup);
 
-                            ObjectListTableRowGroup before = null;
+                            ObjectListTableBodyGroup before = null;
                             if (i < tbodies.size()) {
-                                before = (ObjectListTableRowGroup)tbodies.get(i);
+                                before = (ObjectListTableBodyGroup)tbodies.get(i);
                             }
                             add(rowGroup, before, i);
                         }
@@ -372,20 +384,20 @@ public class ObjectListTable extends Panel implements SourcesMouseEvents {
                     final Map rows = new HashMap(listEvent.getIndexEnd() - listEvent.getIndexStart());
                     int k = listEvent.getIndexStart();
                     for (int i = listEvent.getIndexStart(); i < listEvent.getIndexEnd(); i++) {
-                        ObjectListTableRowGroup rowGroup = (ObjectListTableRowGroup)tbodies.get(k);
+                        ObjectListTableBodyGroup rowGroup = (ObjectListTableBodyGroup)tbodies.get(k);
                         rows.put(rowGroup.getObject(), rowGroup);
                         detach(rowGroup);
                     }
                     for (int i = listEvent.getIndexStart(); i < listEvent.getIndexEnd(); i++) {
                         final Object obj = objects.get(i);
-                        ObjectListTableRowGroup rowGroup = (ObjectListTableRowGroup)rows.remove(obj);
+                        ObjectListTableBodyGroup rowGroup = (ObjectListTableBodyGroup)rows.remove(obj);
                         if (rowGroup == null) {
-                            rowGroup = new ObjectListTableRowGroup(obj);
+                            rowGroup = new ObjectListTableBodyGroup(obj);
                             model.render(obj, rowGroup);
                         }
-                        ObjectListTableRowGroup before = null;
+                        ObjectListTableBodyGroup before = null;
                         if (i < tbodies.size()) {
-                            before = (ObjectListTableRowGroup)tbodies.get(i);
+                            before = (ObjectListTableBodyGroup)tbodies.get(i);
                         }
                         add(rowGroup, before, i);
                     }
@@ -393,7 +405,7 @@ public class ObjectListTable extends Panel implements SourcesMouseEvents {
                     Iterator keyIter = rows.keySet().iterator();
                     while (keyIter.hasNext()) {
                         Object key = keyIter.next();
-                        ObjectListTableRowGroup rowGroup = (ObjectListTableRowGroup)rows.get(key);
+                        ObjectListTableBodyGroup rowGroup = (ObjectListTableBodyGroup)rows.get(key);
                         keyIter.remove();
                         remove(rowGroup);
                     }
@@ -402,12 +414,12 @@ public class ObjectListTable extends Panel implements SourcesMouseEvents {
         }
     }
 
-    class ObjectListTableRowGroup extends TableBodyGroup {
+    class ObjectListTableBodyGroup extends TableBodyGroup {
         private final Object obj;
 
-        ObjectListTableRowGroup(final Object obj) {
+        ObjectListTableBodyGroup(final Object obj) {
             this.obj = obj;
-            addStyleName("gwtstuff-ObjectListTable-ObjectListTableRowGroup");
+            addStyleName(CLASS_GWTSTUFF_OBJECTLISTTABLE + "-ObjectListTableBodyGroup");
         }
 
         public TableRow newTableRow() {
@@ -429,7 +441,7 @@ public class ObjectListTable extends Panel implements SourcesMouseEvents {
 
     private class ObjectListTableHeaderGroup extends TableHeaderGroup {
         ObjectListTableHeaderGroup() {
-            addStyleName("gwtstuff-ObjectListTable-ObjectListTableHeaderGroup");
+            addStyleName(CLASS_GWTSTUFF_OBJECTLISTTABLE + "-ObjectListTableHeaderGroup");
         }
 
         public TableRow newTableRow() {
@@ -447,7 +459,7 @@ public class ObjectListTable extends Panel implements SourcesMouseEvents {
 
     private class ObjectListTableFooterGroup extends TableFooterGroup {
         ObjectListTableFooterGroup() {
-            addStyleName("gwtstuff-ObjectListTable-ObjectListTableFooterGroup");
+            addStyleName(CLASS_GWTSTUFF_OBJECTLISTTABLE + "-ObjectListTableFooterGroup");
         }
 
         public TableRow newTableRow() {
@@ -466,7 +478,7 @@ public class ObjectListTable extends Panel implements SourcesMouseEvents {
     private class ObjectListTableRow extends TableRow {
 
         public ObjectListTableRow() {
-            addStyleName("gwtstuff-ObjectListTable-ObjectListTableRow");
+            addStyleName(CLASS_GWTSTUFF_OBJECTLISTTABLE + "-ObjectListTableRow");
         }
 
         public void add(final TableCell cell) {
@@ -492,13 +504,13 @@ public class ObjectListTable extends Panel implements SourcesMouseEvents {
 
     private class ObjectListTableDataCell extends TableDataCell {
         public ObjectListTableDataCell() {
-            addStyleName("gwtstuff-ObjectListTable-ObjectListTableDataCell");
+            addStyleName(CLASS_GWTSTUFF_OBJECTLISTTABLE + "-ObjectListTableDataCell");
         }
     }
 
     private class ObjectListTableHeaderCell extends TableHeaderCell {
         public ObjectListTableHeaderCell() {
-            addStyleName("gwtstuff-ObjectListTable-ObjectListTableHeaderCell");
+            addStyleName(CLASS_GWTSTUFF_OBJECTLISTTABLE + "-ObjectListTableHeaderCell");
         }
     }
 
@@ -520,7 +532,7 @@ public class ObjectListTable extends Panel implements SourcesMouseEvents {
             final List tbodies = getTbodies();
             final Iterator iter=tbodies.iterator();
             while (iter.hasNext()) {
-                final ObjectListTableRowGroup tbody = (ObjectListTableRowGroup)iter.next();
+                final ObjectListTableBodyGroup tbody = (ObjectListTableBodyGroup)iter.next();
                 attachRenderer.onAttach(tbody.getObject(), tbody);
             }
 
@@ -543,7 +555,7 @@ public class ObjectListTable extends Panel implements SourcesMouseEvents {
             final List tbodies = getTbodies();
             final Iterator iter=tbodies.iterator();
             while (iter.hasNext()) {
-                final ObjectListTableRowGroup tbody = (ObjectListTableRowGroup)iter.next();
+                final ObjectListTableBodyGroup tbody = (ObjectListTableBodyGroup)iter.next();
                 assert tbody != null;
                 attachRenderer.onDetach(tbody.getObject(), tbody);
             }
@@ -580,7 +592,7 @@ public class ObjectListTable extends Panel implements SourcesMouseEvents {
             } else {
                 final Iterator iter = tbodies.iterator();
                 while (iter.hasNext()) {
-                    final ObjectListTableRowGroup rowGroup = (ObjectListTableRowGroup)iter.next();
+                    final ObjectListTableBodyGroup rowGroup = (ObjectListTableBodyGroup)iter.next();
                     if (DOM.compare(target, rowGroup.getElement())) {
                         rowGroup.onBrowserEvent(event);
                         break;

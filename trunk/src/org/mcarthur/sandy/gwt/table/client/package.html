@@ -25,16 +25,19 @@
 <p>
     Currently only {@link org.mcarthur.sandy.gwt.table.client.ObjectListTable} is provided.
     It requries that you manipulate your data model via an {@link org.mcarthur.sandy.gwt.event.list.client.EventList}
-    instance. Because of the structure and automatice nature of {@link org.mcarthur.sandy.gwt.table.client.ObjectListTable}
-    it requires a bit more setup code than using one of the
+    instance. Because of the structure and automatic nature of {@link org.mcarthur.sandy.gwt.table.client.ObjectListTable}
+    it requires a different setup code than using one of the
     <a href="http://code.google.com/webtoolkit/documentation/com.google.gwt.user.client.ui.HTMLTable.html">GWT provided table implementations</a>.
+    Instead of manipulating the table by calling methods on the table, the ObjectListTable asks a
+    {@link org.mcarthur.sandy.gwt.table.client.ObjectListTable.Renderer} you provide for information
+    when it needs it.
 </p>
 
 <h3>Your Object Model</h3>
 <p>
     First you need to have your data contained in an {@link org.mcarthur.sandy.gwt.event.list.client.EventList}.
-    (If you're data is in a {@link java.util.List} see the {@link org.mcarthur.sandy.gwt.event.list.client.EventList}
-    package for how to wrapp a {@link java.util.List} in an {@link org.mcarthur.sandy.gwt.event.list.client.EventList}.)
+    (If you're data is in a {@link java.util.List} see the {@link org.mcarthur.sandy.gwt.event.list.client.EventLists}
+    class for how to wrapp a {@link java.util.List} in an {@link org.mcarthur.sandy.gwt.event.list.client.EventList}.)
 </p>
 <blockquote>
     <pre>
@@ -58,7 +61,7 @@ public class Person {
     </pre>
 </blockquote>
 
-<h3>Table Row Render</h3>
+<h3>Table Row Group Renderer</h3>
 <p>
     {@link org.mcarthur.sandy.gwt.table.client.ObjectListTable} needs you to provide a
     {@link org.mcarthur.sandy.gwt.table.client.ObjectListTable.Renderer} that can assemble the rows
@@ -69,7 +72,7 @@ public class Person {
 </p>
 <blockquote>
     <pre>
-public class PersonRender implements ObjectListTable.Renderer {
+public class PersonRenderer implements ObjectListTable.Renderer {
 
     // Called when the table is attached to the page to build the header row(s)
     public void renderHeader(TableHeaderGroup headerGroup) {
@@ -120,6 +123,21 @@ public class PersonRender implements ObjectListTable.Renderer {
     </pre>
 </blockquote>
 
+<h4>AttachRenderer</h4>
+<p>
+    If you need to modify the any part of the table rows after they have been rendered you'll need
+    to implement the {@link org.mcarthur.sandy.gwt.table.client.ObjectListTable.AttachRenderer}
+    interface. It provides pairs of <code>onAttach</code> and <code>onDetach</code> methods that you
+    can use add and remove event listeners at different points in the TableRowGroup's life cycle.
+</p>
+<p>
+    Do not be tempted to attach event listeners in a <code>Renderer.render</code> method because you
+    will likely create a memory leak unless your table has static contents.
+    Because JavaScript does not support WeakReferences if your model (eg: Person above) has a
+    reference to your view (eg: the TableRowGroups) then each will reference each other potentially
+    pinning each in memory.
+</p>
+
 <h3>Using ObjectListTable</h3>
 <p>
     Now that we have a {@link org.mcarthur.sandy.gwt.event.list.client.EventList} of our objects and
@@ -138,7 +156,7 @@ public class PeopleApp implements EntryPoint {
         // If you don't have a starting list you can use ObjectListTable.getObjects() and populate that.
         EventList people = ...;
 
-        ObjectListTable table = new ObjectListTable(new PersonRender(), people);
+        ObjectListTable table = new ObjectListTable(new PersonRenderer(), people);
         RootPanel.get().add(table);
 
         // Add some people, you could also use people.addAll() if you had a non-EventList from elsewhere such as RPC.

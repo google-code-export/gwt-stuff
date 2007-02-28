@@ -1,5 +1,5 @@
 /*
- * Copyright 2006 Sandy McArthur, Jr.
+ * Copyright 2007 Sandy McArthur, Jr.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
@@ -37,7 +37,7 @@ class ObjectListTableImpl {
         parent.insertBefore(toAdd, before);
     }-*/;
 
-    void add(final ObjectListTable olt, final ObjectListTable.ObjectListTableRowGroup rowGroup, final ObjectListTable.ObjectListTableRowGroup beforeGroup, final int beforeIndex) {
+    void add(final ObjectListTable olt, final ObjectListTable.ObjectListTableBodyGroup rowGroup, final ObjectListTable.ObjectListTableBodyGroup beforeGroup, final int beforeIndex) {
         if (beforeGroup != null) {
             final Element beforeElement = beforeGroup.getElement();
             olt.getTbodies().add(beforeIndex, rowGroup);

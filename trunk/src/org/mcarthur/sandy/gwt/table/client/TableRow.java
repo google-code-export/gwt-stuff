@@ -1,5 +1,5 @@
 /*
- * Copyright 2006 Sandy McArthur, Jr.
+ * Copyright 2007 Sandy McArthur, Jr.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
@@ -49,7 +49,7 @@ public abstract class TableRow extends UIObject implements HasWidgets, EventList
 
     protected TableRow() {
         setElement(DOM.createTR());
-        addStyleName("gwtstuff-TableRow");
+        addStyleName(Constants.GWTSTUFF + "-TableRow");
     }
 
     /**
