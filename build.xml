@@ -11,9 +11,14 @@
         <property name="gwt.basedir" value="C:/gwt-windows-1.3.3/" description="The base directory where you installed GWT."/>
         <property name="gwt.compiler.style" value="OBF" description="GWTCompiler -style option value, defaults to OBF"/>
 
+        <property name="build.dir" value="build"/>
+        <property name="build.classes.dir" value="${build.dir}/classes"/>
+        <property name="build.tests.dir" value="${build.dir}/tests"/>
+
         <!-- Classpath to compile sources -->
         <path id="project.class.path">
             <pathelement path="${basedir}/src"/>
+            <pathelement path="${build.classes.dir}"/>
             <!--<pathelement path="${basedir}/test"/>-->
             <!-- If you have any external GWT modules, add their jars here. -->
             <fileset dir="${basedir}/lib">
@@ -52,7 +57,8 @@
                     <arg value="@{module}/@{page}"/>
                     <classpath path="src"/>
                     <classpath path="test"/>
-                    <classpath path="bin"/>
+                    <classpath path="${build.classes.dir}"/>
+                    <classpath path="${build.tests.dir}"/>
                     <classpath refid="project.class.path"/>
                     <classpath refid="gwt.class.path"/>
                 </java>
@@ -72,7 +78,8 @@
                     <arg value="@{module}"/>
                     <classpath path="src"/>
                     <classpath path="test"/>
-                    <classpath path="bin"/>
+                    <classpath path="${build.classes.dir}"/>
+                    <classpath path="${build.tests.dir}"/>
                     <classpath refid="project.class.path"/>
                     <classpath refid="gwt.class.path"/>
                 </java>
@@ -88,7 +95,8 @@
                     <arg line="@{testclass}"/>
                     <classpath path="src"/>
                     <classpath path="test"/>
-                    <classpath path="bin"/>
+                    <classpath path="${build.classes.dir}"/>
+                    <classpath path="${build.tests.dir}"/>
                     <classpath refid="project.class.path"/>
                     <classpath refid="gwt.class.path"/>
                 </java>
@@ -104,7 +112,8 @@
                     <arg value="@{testclass}"/>
                     <classpath path="src"/>
                     <classpath path="test"/>
-                    <classpath path="bin"/>
+                    <classpath path="${build.classes.dir}"/>
+                    <classpath path="${build.tests.dir}"/>
                     <classpath refid="project.class.path"/>
                     <classpath refid="gwt.class.path"/>
                 </java>
@@ -114,15 +123,15 @@
     </target>
 
     <target name="compile-src" depends="init" description="Compile java source to bin">
-        <mkdir dir="bin"/>
-        <javac srcdir="src" destdir="bin" includes="**" debug="on" optimize="off" source="1.4">
+        <mkdir dir="${build.classes.dir}"/>
+        <javac srcdir="src" destdir="${build.classes.dir}" includes="**" debug="on" optimize="off" source="1.4">
             <classpath refid="project.class.path"/>
         </javac>
     </target>
 
     <target name="compile-test" depends="init,compile-src" description="Compile java source to bin">
-        <mkdir dir="bin"/>
-        <javac srcdir="test" destdir="bin" includes="**" debug="on" optimize="off" source="1.4">
+        <mkdir dir="${build.tests.dir}"/>
+        <javac srcdir="test" destdir="${build.tests.dir}" includes="**" debug="on" optimize="off" source="1.4">
             <classpath refid="project.class.path"/>
             <classpath refid="gwt.class.path"/>
         </javac>
@@ -160,7 +169,7 @@
 
     <target name="package" depends="compile-src" description="Package up the whole project as a jar">
         <jar destfile="GWT-Stuff-${DSTAMP}.jar">
-            <fileset dir="bin">
+            <fileset dir="${build.classes.dir}">
                 <include name="**/*.class"/>
                 <exclude name="**/test/**"/>
                 <exclude name="**/emul/**"/>
@@ -212,8 +221,7 @@
     </target>
 
     <target name="clean" depends="init" description="Remove generated files.">
-        <!-- Delete the bin directory tree -->
-        <delete dir="bin"/>
+        <delete dir="${build.dir}"/>
         <delete dir="gen"/>
         <delete dir="www"/>
         <delete dir="www-test"/>
