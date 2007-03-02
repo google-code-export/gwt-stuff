@@ -162,6 +162,15 @@ public abstract class TableRowGroup extends UIObject implements EventListener {
         }
     }
 
+    /**
+     * Adds a listener to receive mouse events.
+     * To avoid memory leaks it's best if you only call this method from an <code>onAttach</code>
+     * method.
+     *
+     * @param listener the mouse listener to add.
+     * @see #removeMouseListener(org.mcarthur.sandy.gwt.table.client.TableRowGroup.MouseListener)
+     * @see org.mcarthur.sandy.gwt.table.client.ObjectListTable.AttachRenderer#onAttach(Object, TableBodyGroup)
+     */
     public void addMouseListener(final MouseListener listener) {
         if (mouseListeners == null) {
             sinkEvents(TableRowGroup.MOUSEEVENTSALL);
@@ -170,12 +179,21 @@ public abstract class TableRowGroup extends UIObject implements EventListener {
         mouseListeners.add(listener);
     }
 
+    /**
+     * Removes a previously added mouse listener.
+     * To avoid memory leaks it's best if you remove any listeners added in an <code>onAttach</code>
+     * method in the matching <code>onDetach</code> method.
+     *
+     * @param listener the mouse listener to remove.
+     * @see #addMouseListener(org.mcarthur.sandy.gwt.table.client.TableRowGroup.MouseListener)
+     * @see org.mcarthur.sandy.gwt.table.client.ObjectListTable.AttachRenderer#onDetach(Object, TableBodyGroup)
+     */
     public void removeMouseListener(final MouseListener listener) {
         if (mouseListeners != null) {
             mouseListeners.remove(listener);
             if (mouseListeners.isEmpty()) {
                 unsinkEvents(TableRowGroup.MOUSEEVENTSALL);
-                mouseListeners = null;
+                mouseListeners = null; // this is needed else sinkEvents won't be called onAttach
             }
         }
     }
