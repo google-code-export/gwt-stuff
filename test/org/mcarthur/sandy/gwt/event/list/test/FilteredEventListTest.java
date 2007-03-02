@@ -19,6 +19,11 @@ package org.mcarthur.sandy.gwt.event.list.test;
 import org.mcarthur.sandy.gwt.event.list.client.EventList;
 import org.mcarthur.sandy.gwt.event.list.client.EventLists;
 import org.mcarthur.sandy.gwt.event.list.client.FilteredEventList;
+import org.mcarthur.sandy.gwt.event.list.client.SortedEventList;
+
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
 
 /**
  * Tests for {@link org.mcarthur.sandy.gwt.event.list.client.FilteredEventList}.
@@ -43,5 +48,50 @@ public class FilteredEventListTest extends TransformedEventListTest {
         assertEquals(10, el.size());
         assertEquals(5, fel.size());
         assertEquals(5, fel.toArray().length);
+    }
+
+    public void testFoo() {
+        final EventList el = EventLists.eventList();
+        final SortedEventList sel = EventLists.sortedEventList(el);
+        final FilteredEventList fel = EventLists.filteredEventList(sel);
+
+        el.add(new Integer(25));
+        el.add(new Integer(33));
+        el.add(new Integer(55));
+        el.add(new Integer(49));
+        el.add(new Integer(32));
+        el.add(new Integer(57));
+
+        final Comparator natural = new Comparator() {
+            public int compare(final Object o1, final Object o2) {
+                return ((Comparable)o1).compareTo(o2);
+            }
+        };
+        final Comparator reverse = new Comparator() {
+            public int compare(final Object o1, final Object o2) {
+                return natural.compare(o2, o1);
+            }
+        };
+
+        sel.setComparator(natural);
+
+        final FilteredEventList.Filter filter = new FilteredEventList.Filter() {
+            public boolean accept(final Object element) {
+                final int i = ((Number)element).intValue();
+                return  20 < i && i < 50;
+            }
+        };
+
+        fel.setFilter(filter);
+
+        final List n1 = new ArrayList(fel);
+
+        sel.setComparator(reverse);
+
+        final List r1 = new ArrayList(fel);
+
+        assertEquals(n1.size(), r1.size());
+        assertTrue(n1.containsAll(r1));
+        assertTrue(r1.containsAll(n1));
     }
 }
