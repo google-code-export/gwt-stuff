@@ -1,5 +1,5 @@
 /*
- * Copyright 2006 Sandy McArthur, Jr.
+ * Copyright 2007 Sandy McArthur, Jr.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
@@ -92,8 +92,6 @@ public class TestObjectListTable implements EntryPoint {
 
         final List objects = ot.getObjects();
 
-        RootPanel.get("tableDiv").add(ot);
-
         objects.add(new Person("Sandy", 28));
         objects.add(0, new Person("Keebz", 25));
         objects.add(new Person("Bill", 33));
@@ -109,8 +107,7 @@ public class TestObjectListTable implements EntryPoint {
             objects.remove(1);
         }
 
-        // TODO: when this is uncommented instead of above, the table rows fail to work in Opera.
-        //RootPanel.get("tableDiv").add(ot);
+        RootPanel.get("tableDiv").add(ot);
 
         final FlowPanel fp = new FlowPanel();
         final Button remove2 = new Button("Remove 2");
@@ -350,8 +347,6 @@ public class TestObjectListTable implements EntryPoint {
             tb.addChangeListener(new ChangeListener() {
                 public void onChange(final Widget sender) {
                     final TextBox tb = (TextBox)sender;
-                    // FIXME: BUG: Rows that are added before the table is attached, don't fire events.
-                    //Window.setTitle(tb.getText());
                     person.setName(tb.getText());
                 }
             });
