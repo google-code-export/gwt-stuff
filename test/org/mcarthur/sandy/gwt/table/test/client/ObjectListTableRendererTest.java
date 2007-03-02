@@ -14,24 +14,28 @@
  * the License.
  */
 
-package org.mcarthur.sandy.gwt.table.client;
+package org.mcarthur.sandy.gwt.table.test.client;
 
 import com.google.gwt.junit.client.GWTTestCase;
 import com.google.gwt.user.client.ui.RootPanel;
 import org.mcarthur.sandy.gwt.event.list.client.EventList;
 import org.mcarthur.sandy.gwt.event.list.client.EventLists;
+import org.mcarthur.sandy.gwt.table.client.ObjectListTable;
+import org.mcarthur.sandy.gwt.table.client.TableBodyGroup;
+import org.mcarthur.sandy.gwt.table.client.TableFooterGroup;
+import org.mcarthur.sandy.gwt.table.client.TableHeaderGroup;
 
 import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Tests for {@link org.mcarthur.sandy.gwt.table.client.ObjectListTable.AttachRenderer}.
+ * Tests for {@link org.mcarthur.sandy.gwt.table.client.ObjectListTable.Renderer}.
  *
  * @author Sandy McArthur
  */
-public class ObjectListTableAttachRendererTest extends GWTTestCase {
+public class ObjectListTableRendererTest extends GWTTestCase {
     public String getModuleName() {
-        return "org.mcarthur.sandy.gwt.table.Table";
+        return "org.mcarthur.sandy.gwt.table.test.TestTable";
     }
 
     private EventList people = EventLists.eventList();
@@ -49,12 +53,13 @@ public class ObjectListTableAttachRendererTest extends GWTTestCase {
         super.tearDown();
     }
 
+
     public void testCallbacksCalledWhenAppropriate() {
         final List expected = new ArrayList();
         final ObjectListTable olt;
 
         // Initial items are rendered
-        olt = new ObjectListTable(new AttachPersonRenderer(events), people);
+        olt = new ObjectListTable(new PersonRenderer(events), people);
         expected.add("render");
         assertEquals(expected, events);
 
@@ -62,28 +67,18 @@ public class ObjectListTableAttachRendererTest extends GWTTestCase {
         RootPanel.get().add(olt);
         expected.add("renderHeader");
         expected.add("renderFooter");
-        expected.add("onAttachHeader");
-        expected.add("onAttach");
-        expected.add("onAttachFooter");
         assertEquals(expected, events);
 
-        // adding a element will rendered and attached if the table is attached
+        // adding a element will rendered
         people.add(new Person("Bob"));
         expected.add("render");
-        expected.add("onAttach");
         assertEquals(expected, events);
 
         // removing a person should cause a detch
         people.remove(0);
-        expected.add("onDetach");
-        
 
-
-        // detaching the table causes headers, rows and footer to be detached.
+        // detaching doesn't affect the rows
         RootPanel.get().remove(olt);
-        expected.add("onDetachHeader");
-        expected.add("onDetach");
-        expected.add("onDetachFooter");
         assertEquals(expected, events);
 
         // should just render
@@ -96,33 +91,25 @@ public class ObjectListTableAttachRendererTest extends GWTTestCase {
         assertEquals(expected, events);
     }
 
-    static class AttachPersonRenderer extends ObjectListTableRendererTest.PersonRenderer implements ObjectListTable.AttachRenderer {
-        public AttachPersonRenderer(final List events) {
-            super(events);
+    static class PersonRenderer implements ObjectListTable.Renderer {
+
+        protected final List events;
+
+        public PersonRenderer(final List events) {
+            this.events = events;
         }
 
-        public void onAttach(final Object obj, final TableBodyGroup rowGroup) {
-            events.add("onAttach");
+        public void render(final Object obj, final TableBodyGroup rowGroup) {
+            events.add("render");
         }
 
-        public void onAttach(final TableHeaderGroup rowGroup) {
-            events.add("onAttachHeader");
+        public void renderHeader(final TableHeaderGroup headerGroup) {
+            events.add("renderHeader");
         }
 
-        public void onAttach(final TableFooterGroup rowGroup) {
-            events.add("onAttachFooter");
-        }
-
-        public void onDetach(final Object obj, final TableBodyGroup rowGroup) {
-            events.add("onDetach");
-        }
-
-        public void onDetach(final TableHeaderGroup rowGroup) {
-            events.add("onDetachHeader");
-        }
-
-        public void onDetach(final TableFooterGroup rowGroup) {
-            events.add("onDetachFooter");
+        public void renderFooter(final TableFooterGroup footerGroup) {
+            events.add("renderFooter");
         }
     }
+
 }

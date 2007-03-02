@@ -19,8 +19,8 @@ package org.mcarthur.sandy.gwt.table;
 import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
-import org.mcarthur.sandy.gwt.table.client.ObjectListTableAttachRendererTest;
-import org.mcarthur.sandy.gwt.table.client.ObjectListTableRendererTest;
+import org.mcarthur.sandy.gwt.table.test.client.ObjectListTableAttachRendererTest;
+import org.mcarthur.sandy.gwt.table.test.client.ObjectListTableRendererTest;
 
 /**
  * Run all GWT-Stuff table unit tests.
