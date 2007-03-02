@@ -128,11 +128,13 @@ class FilteredEventListImpl extends TransformedEventList implements FilteredEven
             }
         }
 
-        private void listChangedChanged(final ListEvent listEvent) {
+        private void XlistChangedChanged(final ListEvent listEvent) {
+            // FIXME: this is buggy
             final EventList delegate = getDelegate();
             final List translations = getTranslations();
             for (int i = listEvent.getIndexStart(); i < listEvent.getIndexEnd(); i++) {
-                final boolean accepted = filter.accept(delegate.get(i));
+                final Object delegateElement = delegate.get(i);
+                final boolean accepted = filter.accept(delegateElement);
                 for (int k=0; k < translations.size(); k++) {
                     final Index index = getTranslationIndex(k);
                     if (index.getIndex() == i) {
@@ -152,6 +154,21 @@ class FilteredEventListImpl extends TransformedEventList implements FilteredEven
                     }
                 }
             }
+        }
+
+        private void listChangedChanged(final ListEvent listEvent) {
+            // TODO: optimize me
+            final List delegate = getDelegate();
+            translations.clear();
+            for (int i=0; i < delegate.size(); i++) {
+                final Object o = delegate.get(i);
+                final boolean accepted = filter.accept(o);
+                if (accepted) {
+                    translations.add(new Index(i));
+                }                 
+            }
+            fireListEvent(new ListEvent(FilteredEventListImpl.this, ListEvent.REMOVED, 0, size()));
+            fireListEvent(new ListEvent(FilteredEventListImpl.this, ListEvent.ADDED, 0, size()));
         }
 
         private void listChangedRemoved(final ListEvent listEvent) {
