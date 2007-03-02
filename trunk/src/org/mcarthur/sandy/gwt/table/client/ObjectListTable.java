@@ -65,13 +65,14 @@ public class ObjectListTable extends Panel implements SourcesMouseEvents {
         impl.init();
     }
 
+    private final EventList/*<TableColSpec>*/ colSpec;
     private TableHeaderGroup thead;
     private TableFooterGroup tfoot;
     private List/*<TableBodyGroup>*/ tbodies = new ArrayList();
 
     private final WidgetCollection widgets = new WidgetCollection(this);
 
-    private final Renderer model;
+    private final Renderer renderer;
     private final EventList objects;
     private final ListEventListener objectsListener = new ListTableListEventListener();
 
@@ -94,7 +95,7 @@ public class ObjectListTable extends Panel implements SourcesMouseEvents {
      * @param objects the objects to be displayed by the table.
      */
     public ObjectListTable(final Renderer renderer, final EventList objects) {
-        this.model = renderer;
+        this.renderer = renderer;
         this.objects = objects;
         setElement(DOM.createTable());
         addStyleName(CLASS_GWTSTUFF_OBJECTLISTTABLE);
@@ -104,6 +105,15 @@ public class ObjectListTable extends Panel implements SourcesMouseEvents {
         if (objects.size() > 0) {
             // fake a list changed event to initialize the table rows.
             objectsListener.listChanged(new ListEvent(objects, ListEvent.ADDED, 0, objects.size()));
+        }
+
+        if (renderer instanceof ColSpecRenderer) {
+            final ColSpecRenderer colSpecRenderer = (ColSpecRenderer)renderer;
+            colSpec = EventLists.eventList();
+            colSpec.addListEventListener(new ColSpecListEventListener());
+            colSpec.addAll(colSpecRenderer.getColSpec());
+        } else {
+            colSpec = null;
         }
     }
 
@@ -133,7 +143,7 @@ public class ObjectListTable extends Panel implements SourcesMouseEvents {
     private void createTfoot() {
         if (tfoot == null) {
             final ObjectListTableFooterGroup footerGroup = new ObjectListTableFooterGroup();
-            model.renderFooter(footerGroup);
+            renderer.renderFooter(footerGroup);
             attach(footerGroup); // TODO: Does this do the right thing?
         }
     }
@@ -141,9 +151,13 @@ public class ObjectListTable extends Panel implements SourcesMouseEvents {
     private void createThead() {
         if (thead == null) {
             final ObjectListTableHeaderGroup headerGroup = new ObjectListTableHeaderGroup();
-            model.renderHeader(headerGroup);
+            renderer.renderHeader(headerGroup);
             attach(headerGroup); // TODO: Does this do the right thing?
         }
+    }
+
+    final Renderer getRenderer() {
+        return renderer;
     }
 
     /**
@@ -241,6 +255,37 @@ public class ObjectListTable extends Panel implements SourcesMouseEvents {
     }
 
     /**
+     * ALPHA: A renderer implementing this interface can provide column and column group information
+     * to help control how the browser renders the table.
+     *
+     * <p>
+     * <b>Note:</b> This class is part of an alpha API and is likely to change in incompatible ways
+     * between releases.
+     * </p>
+     *
+     * @see org.mcarthur.sandy.gwt.table.client.TableColGroup
+     * @see org.mcarthur.sandy.gwt.table.client.TableCol
+     */
+    public interface ColSpecRenderer extends Renderer {
+
+        /**
+         * Return the current list of <code>TableColSpec</code> elements for this table.
+         *
+         * <p>
+         * If you do not wish to set column groups for this table <b>do not</b> return <code>null</code>.
+         * Either return an empty list or, preferably, do not implement this interface.
+         * </p>
+         *
+         * @return a List of {@link org.mcarthur.sandy.gwt.table.client.TableColSpec}s.
+         */
+        public List/*<TableColSpec>*/ getColSpec();
+    }
+
+    final List/*<TableColSpec>*/ getColSpec() {
+        return colSpec;
+    }
+
+    /**
      * Required by the HasWidgets interface, do not use this in your own code.
      */
     public Iterator iterator() {
@@ -277,8 +322,8 @@ public class ObjectListTable extends Panel implements SourcesMouseEvents {
         impl.add(this, rowGroup, beforeGroup, beforeIndex);
         addWidgets(rowGroup);
         // 2007-02-26: GWTCompiler can optimize this out if the instanceof is first
-        if (model instanceof AttachRenderer && isAttached()) {
-            final AttachRenderer attachRenderer = (AttachRenderer)model;
+        if (renderer instanceof AttachRenderer && isAttached()) {
+            final AttachRenderer attachRenderer = (AttachRenderer)renderer;
             attachRenderer.onAttach(rowGroup.getObject(), rowGroup);
         }
     }
@@ -311,8 +356,8 @@ public class ObjectListTable extends Panel implements SourcesMouseEvents {
 
     private void detach(final ObjectListTableBodyGroup rowGroup) {
         // 2007-02-26: GWTCompiler can optimize this out if the instanceof is first
-        if (model instanceof AttachRenderer && isAttached()) {
-            final AttachRenderer attachRenderer = (AttachRenderer)model;
+        if (renderer instanceof AttachRenderer && isAttached()) {
+            final AttachRenderer attachRenderer = (AttachRenderer)renderer;
             attachRenderer.onDetach(rowGroup.getObject(), rowGroup);
         }
         DOM.removeChild(getElement(), rowGroup.getElement());
@@ -338,7 +383,7 @@ public class ObjectListTable extends Panel implements SourcesMouseEvents {
                 for (int i = listEvent.getIndexStart(); i < listEvent.getIndexEnd(); i++) {
                     final Object obj = objects.get(i);
                     final ObjectListTableBodyGroup rowGroup = new ObjectListTableBodyGroup(obj);
-                    model.render(obj, rowGroup);
+                    renderer.render(obj, rowGroup);
                     //add(rowGroup, i);
                     ObjectListTableBodyGroup before = null;
                     if (i < tbodies.size()) {
@@ -370,7 +415,7 @@ public class ObjectListTable extends Panel implements SourcesMouseEvents {
 
                             // insert new
                             rowGroup = new ObjectListTableBodyGroup(obj);
-                            model.render(obj, rowGroup);
+                            renderer.render(obj, rowGroup);
 
                             ObjectListTableBodyGroup before = null;
                             if (i < tbodies.size()) {
@@ -393,7 +438,7 @@ public class ObjectListTable extends Panel implements SourcesMouseEvents {
                         ObjectListTableBodyGroup rowGroup = (ObjectListTableBodyGroup)rows.remove(obj);
                         if (rowGroup == null) {
                             rowGroup = new ObjectListTableBodyGroup(obj);
-                            model.render(obj, rowGroup);
+                            renderer.render(obj, rowGroup);
                         }
                         ObjectListTableBodyGroup before = null;
                         if (i < tbodies.size()) {
@@ -522,8 +567,8 @@ public class ObjectListTable extends Panel implements SourcesMouseEvents {
 
         super.onAttach();
 
-        if (model instanceof AttachRenderer) {
-            final AttachRenderer attachRenderer = (AttachRenderer)model;
+        if (renderer instanceof AttachRenderer) {
+            final AttachRenderer attachRenderer = (AttachRenderer)renderer;
 
             final TableHeaderGroup thead = getThead();
             assert thead != null;
@@ -545,8 +590,8 @@ public class ObjectListTable extends Panel implements SourcesMouseEvents {
     protected void onDetach() {
         super.onDetach();
 
-        if (model instanceof AttachRenderer) {
-            final AttachRenderer attachRenderer = (AttachRenderer)model;
+        if (renderer instanceof AttachRenderer) {
+            final AttachRenderer attachRenderer = (AttachRenderer)renderer;
 
             final TableHeaderGroup thead = getThead();
             assert thead != null;
@@ -630,6 +675,32 @@ public class ObjectListTable extends Panel implements SourcesMouseEvents {
             mouseListeners.remove(listener);
             if (mouseListeners.isEmpty()) {
                 mouseListeners = null;
+            }
+        }
+    }
+
+    private class ColSpecListEventListener implements ListEventListener {
+        public void listChanged(final ListEvent listEvent) {
+            final List colSpec = listEvent.getSourceList();
+            if (listEvent.isAdded()) {
+                for (int i = listEvent.getIndexStart(); i < listEvent.getIndexEnd(); i++) {
+                    final TableColSpec col = (TableColSpec)colSpec.get(i);
+                    DOM.insertChild(getElement(), col.getElement(), i);
+                }
+            } else if (listEvent.isChanged()) {
+                for (int i = listEvent.getIndexStart(); i < listEvent.getIndexEnd(); i++) {
+                    final TableColSpec col = (TableCol)colSpec.get(i);
+                    final Element oldChild = DOM.getChild(getElement(), i);
+                    if (!DOM.compare(oldChild, col.getElement())) {
+                        DOM.removeChild(getElement(), oldChild);
+                        DOM.insertChild(getElement(), col.getElement(), i);
+                    }
+                }
+            } else if (listEvent.isRemoved()) {
+                for (int i = listEvent.getIndexEnd()-1; i >= listEvent.getIndexStart(); i--) {
+                    final Element oldChild = DOM.getChild(getElement(), i);
+                    DOM.removeChild(getElement(), oldChild);
+                }
             }
         }
     }
