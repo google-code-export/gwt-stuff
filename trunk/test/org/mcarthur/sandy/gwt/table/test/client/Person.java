@@ -14,7 +14,7 @@
  * the License.
  */
 
-package org.mcarthur.sandy.gwt.table.client;
+package org.mcarthur.sandy.gwt.table.test.client;
 
 /**
  * A Person object used for testing.
