@@ -139,31 +139,37 @@
 
     <target name="gwtcompile-TestLoginPanel" depends="init">
         <mkdir dir="www"/>
+        <delete dir="www/org.mcarthur.sandy.gwt.login.TestLoginPanel"/>
         <gwtcompile module="org.mcarthur.sandy.gwt.login.TestLoginPanel"/>
     </target>
 
     <target name="gwtshell-TestLoginPanel" depends="init">
         <mkdir dir="www"/>
+        <delete dir="www/org.mcarthur.sandy.gwt.login.TestLoginPanel"/>
         <gwtshell module="org.mcarthur.sandy.gwt.login.TestLoginPanel" page="TestLoginPanel.html"/>
     </target>
 
     <target name="gwtcompile-TestEventList" depends="init">
         <mkdir dir="www"/>
+        <delete dir="www/org.mcarthur.sandy.gwt.event.list.TestEventList"/>
         <gwtcompile module="org.mcarthur.sandy.gwt.event.list.TestEventList"/>
     </target>
 
     <target name="gwtshell-TestEventList" depends="init">
         <mkdir dir="www"/>
+        <delete dir="www/org.mcarthur.sandy.gwt.event.list.TestEventList"/>
         <gwtshell module="org.mcarthur.sandy.gwt.event.list.TestEventList" page="TestEventList.html"/>
     </target>
 
     <target name="gwtcompile-TestObjectListTable" depends="init">
         <mkdir dir="www"/>
+        <delete dir="www/org.mcarthur.sandy.gwt.table.olt.TestObjectListTable"/>
         <gwtcompile module="org.mcarthur.sandy.gwt.table.olt.TestObjectListTable"/>
     </target>
 
     <target name="gwtshell-TestObjectListTable" depends="init">
         <mkdir dir="www"/>
+        <delete dir="www/org.mcarthur.sandy.gwt.table.olt.TestObjectListTable"/>
         <gwtshell module="org.mcarthur.sandy.gwt.table.olt.TestObjectListTable" page="TestObjectListTable.html"/>
     </target>
 
