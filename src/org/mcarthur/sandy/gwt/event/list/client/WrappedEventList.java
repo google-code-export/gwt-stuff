@@ -73,7 +73,9 @@ class WrappedEventList extends AbstractEventList implements EventList {
     public void clear() {
         final int indexEnd = delegate.size();
         delegate.clear();
-        fireListEvent(new ListEvent(this, ListEvent.REMOVED, 0, indexEnd));
+        if (indexEnd > 0) {
+            fireListEvent(new ListEvent(this, ListEvent.REMOVED, 0, indexEnd));
+        }
     }
 
     public boolean contains(final Object element) {

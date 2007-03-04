@@ -16,10 +16,22 @@
 
 package org.mcarthur.sandy.gwt.event.list.test;
 
+import junit.framework.TestCase;
+import org.mcarthur.sandy.gwt.event.list.client.EventList;
+
+import java.util.List;
+
 /**
- * Tests for {@link org.mcarthur.sandy.gwt.event.list.client.TransformedEventList}.
+ * Tests for {@link org.mcarthur.sandy.gwt.event.list.client.EventList}.
  *
  * @author Sandy McArthur
  */
-public abstract class TransformedEventListTest extends EventListTest {
+public abstract class EventListTest extends TestCase {
+
+    protected abstract EventList createEmptyEventLists();
+
+    public void testClearOnEmptyList() {
+        final List l = createEmptyEventLists();
+        l.clear();
+    }
 }
