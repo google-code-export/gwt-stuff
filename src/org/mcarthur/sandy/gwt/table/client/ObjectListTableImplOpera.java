@@ -16,7 +16,6 @@
 
 package org.mcarthur.sandy.gwt.table.client;
 
-import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Element;
 
 /**
@@ -44,10 +43,4 @@ class ObjectListTableImplOpera extends ObjectListTableImpl {
         }
         insertBefore(olt.getElement(), rowGroup.getElement(), beforeElement);
     }
-
-    // XXX: Same as the parent implementaion
-    void Xattach(final ObjectListTable olt, final TableHeaderGroup headerGroup) {
-        DOM.insertChild(olt.getElement(), headerGroup.getElement(), 0);
-    }
-
 }

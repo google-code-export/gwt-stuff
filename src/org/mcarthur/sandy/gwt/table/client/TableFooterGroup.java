@@ -33,6 +33,10 @@ import com.google.gwt.user.client.DOM;
 public abstract class TableFooterGroup extends TableRowGroup {
     TableFooterGroup() {
         super(DOM.createElement("tfoot"));
+    }
+
+    protected void reset() {
+        super.reset();
         addStyleName(Constants.GWTSTUFF + "-TableFooterGroup");
     }
 }

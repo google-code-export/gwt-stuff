@@ -35,7 +35,7 @@ import java.util.List;
 import java.util.Set;
 
 /**
- * TODO: Write Javadoc
+ * Test usage of {@link org.mcarthur.sandy.gwt.table.client.alpha.PropertyTable}.
  *
  * @author Sandy McArthur
  */
@@ -126,11 +126,11 @@ public class TestPropertyTable implements EntryPoint {
     private static List firstNames;
     private static List lastNames;
     static {
-        String[] f = {"Bob", "Joe", "Tom", "Jane", "Jill", "Sally", "Laura", "Sandy", "Alex", "Mary", "Mark", "Zack", "Beth", "Greg"};
+        final String[] f = {"Bob", "Joe", "Tom", "Jane", "Jill", "Sally", "Laura", "Sandy", "Alex", "Mary", "Mark", "Zack", "Beth", "Greg"};
         firstNames = Arrays.asList(f);
         //Collections.shuffle(firstNames);
 
-        String[] l = {"Hacker", "Neal", "Nott", "Palmer", "Pell", "Eddy", "Eton", "Taylor", "Smith", "Dawson", "Lee", "Hung"};
+        final String[] l = {"Hacker", "Neal", "Nott", "Palmer", "Pell", "Eddy", "Eton", "Taylor", "Smith", "Dawson", "Lee", "Hung"};
         lastNames = Arrays.asList(l);
         //Collections.shuffle(lastNames);
     }

@@ -33,6 +33,10 @@ import com.google.gwt.user.client.DOM;
 public abstract class TableBodyGroup extends TableRowGroup {
     protected TableBodyGroup() {
         super(DOM.createTBody());
+    }
+
+    protected void reset() {
+        super.reset();
         addStyleName(Constants.GWTSTUFF + "-TableBodyGroup");
     }
 }

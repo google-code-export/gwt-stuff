@@ -75,7 +75,7 @@ public class PropertyTable extends Composite {
         public void render(final Object obj, final TableBodyGroup rowGroup) {
             final String[] rgs = ptm.getRowGroupSpec().split(" ");
 
-            TableRow tr = rowGroup.newTableRow();
+            final TableRow tr = rowGroup.newTableRow();
             for (int i=0; i < rgs.length; i++) {
                 final PropertyDescriptor pd = (PropertyDescriptor)propertyDescriptorsMap.get(rgs[i]);
                 final TableCell tc = tr.newTableDataCell();
@@ -88,7 +88,7 @@ public class PropertyTable extends Composite {
         public void renderHeader(final TableHeaderGroup headerGroup) {
             final String[] rgs = ptm.getRowGroupSpec().split(" ");
 
-            TableRow tr = headerGroup.newTableRow();
+            final TableRow tr = headerGroup.newTableRow();
             for (int i=0; i < rgs.length; i++) {
                 final PropertyDescriptor pd = (PropertyDescriptor)propertyDescriptorsMap.get(rgs[i]);
                 final TableHeaderCell thc = tr.newTableHeaderCell();

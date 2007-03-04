@@ -22,20 +22,16 @@ import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.ui.MouseListener;
 import com.google.gwt.user.client.ui.MouseListenerCollection;
-import com.google.gwt.user.client.ui.Panel;
 import com.google.gwt.user.client.ui.SourcesMouseEvents;
 import com.google.gwt.user.client.ui.Widget;
-import com.google.gwt.user.client.ui.WidgetCollection;
 import org.mcarthur.sandy.gwt.event.list.client.EventList;
 import org.mcarthur.sandy.gwt.event.list.client.EventLists;
 import org.mcarthur.sandy.gwt.event.list.client.ListEvent;
 import org.mcarthur.sandy.gwt.event.list.client.ListEventListener;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 
 /**
  * An event driven table that is backed by an {@link EventList}. Each Object in the list is
@@ -52,25 +48,34 @@ import java.util.Map;
  * <li>.gwtstuff-ObjectListTable-ObjectListTableDataCell { /&#042; table data cell element (td) &#042;/ }</li>
  * <li>plus style classes inherited by {@link TableRowGroup}, {@link TableRow}, {@link TableCell}, etc...</li>
  * </ul>
-
+ *
+ * <h3>Renderers</h3>
+ * <p>
+ * The {@link org.mcarthur.sandy.gwt.table.client.ObjectListTable.Renderer} interfaces you choose
+ * to implement in your project will have an effect on the size and performance of all uses of the
+ * ObjectListTable in your project. For example if you do not implement
+ * {@link org.mcarthur.sandy.gwt.table.client.ObjectListTable.AttachRenderer} in your project the
+ * size increase and speed overhead assoicated with calling
+ * {@link org.mcarthur.sandy.gwt.table.client.ObjectListTable.AttachRenderer#onAttach(Object, TableBodyGroup)}
+ * or
+ * {@link org.mcarthur.sandy.gwt.table.client.ObjectListTable.AttachRenderer#onDetach(Object, TableBodyGroup)}
+ * will be eliminated by the GWTCompiler. This is why there are a number of Renderer interfaces for
+ * you to pick and choose from and how new functionality can be introduced without a size or
+ * performance impact on existing users of the ObjectListTable widget.
+ * </p>
+ *
  * @author Sandy McArthur
  */
-public class ObjectListTable extends Panel implements SourcesMouseEvents {
+public final class ObjectListTable extends Widget implements SourcesMouseEvents {
 
     private static final String CLASS_GWTSTUFF_OBJECTLISTTABLE = Constants.GWTSTUFF + "-ObjectListTable";
 
-    private static ObjectListTableImpl impl;
-    static {
-        impl = (ObjectListTableImpl)GWT.create(ObjectListTableImpl.class);
-        impl.init();
-    }
+    private ObjectListTableImpl impl = (ObjectListTableImpl)GWT.create(ObjectListTableImpl.class);
 
     private final EventList/*<TableColSpec>*/ colSpec;
     private TableHeaderGroup thead;
     private TableFooterGroup tfoot;
-    private List/*<TableBodyGroup>*/ tbodies = new ArrayList();
-
-    private final WidgetCollection widgets = new WidgetCollection(this);
+    private List/*<ObjectListTableBodyGroup>*/ tbodies = new ArrayList();
 
     private final Renderer renderer;
     private final EventList objects;
@@ -102,6 +107,8 @@ public class ObjectListTable extends Panel implements SourcesMouseEvents {
 
         objects.addListEventListener(objectsListener);
 
+        impl.init(this);
+
         if (objects.size() > 0) {
             // fake a list changed event to initialize the table rows.
             objectsListener.listChanged(new ListEvent(objects, ListEvent.ADDED, 0, objects.size()));
@@ -126,7 +133,10 @@ public class ObjectListTable extends Panel implements SourcesMouseEvents {
         return objects;
     }
 
-    List/*<TableBodyGroup>*/ getTbodies() {
+    /**
+     * @return List of {@link ObjectListTableBodyGroup}
+     */
+    final List/*<ObjectListTableBodyGroup>*/ getTbodies() {
         return tbodies;
     }
 
@@ -144,7 +154,7 @@ public class ObjectListTable extends Panel implements SourcesMouseEvents {
         if (tfoot == null) {
             final ObjectListTableFooterGroup footerGroup = new ObjectListTableFooterGroup();
             renderer.renderFooter(footerGroup);
-            attach(footerGroup); // TODO: Does this do the right thing?
+            adopt(footerGroup);
         }
     }
 
@@ -152,7 +162,7 @@ public class ObjectListTable extends Panel implements SourcesMouseEvents {
         if (thead == null) {
             final ObjectListTableHeaderGroup headerGroup = new ObjectListTableHeaderGroup();
             renderer.renderHeader(headerGroup);
-            attach(headerGroup); // TODO: Does this do the right thing?
+            adopt(headerGroup);
         }
     }
 
@@ -164,7 +174,7 @@ public class ObjectListTable extends Panel implements SourcesMouseEvents {
      * Converts objects into table rows.
      *
      * <p>
-     * <b>Note:</b> Modifying the EventList backing this table from the renderer is not allowed and
+     * <b>Note:</b> Modifying the EventList backing this table from the renderer is not supported and
      * can lead to undefined behavior.
      * </p>
      */
@@ -173,16 +183,18 @@ public class ObjectListTable extends Panel implements SourcesMouseEvents {
         /**
          * Create the table rows and cells for an object.
          *
-         * @param obj      the object these rows as based on.
-         * @param rowGroup the row group to be assoiciated with <code>obj</code>.
+         * @param obj      the object <code>bodyGroup</code> will represent.
+         * @param bodyGroup the row group to be assoiciated with <code>obj</code>.
+         * @see org.mcarthur.sandy.gwt.table.client.ObjectListTable.ConcealRenderer#conceal(Object, TableBodyGroup)
          */
-        public void render(Object obj, TableBodyGroup rowGroup);
+        public void render(Object obj, TableBodyGroup bodyGroup);
 
         /**
          * Create the table rows and cells for the table's header.
          * If you do not want to have a table header then simply do nothing to <code>headerGroup</code>.
          *
-         * @param headerGroup the table header row group.
+         * @param headerGroup the table's header row group.
+         * @see org.mcarthur.sandy.gwt.table.client.ObjectListTable.ConcealRenderer#concealHeader(TableHeaderGroup)
          */
         public void renderHeader(TableHeaderGroup headerGroup);
 
@@ -190,9 +202,77 @@ public class ObjectListTable extends Panel implements SourcesMouseEvents {
          * Create the table rows and cells for the table's footer.
          * If you do not want to have a table footer then simply do nothing to the <code>footerGroup</code>.
          *
-         * @param footerGroup the table footer row group.
+         * @param footerGroup the table's footer row group.
+         * @see org.mcarthur.sandy.gwt.table.client.ObjectListTable.ConcealRenderer#concealFooter(TableFooterGroup)
          */
         public void renderFooter(TableFooterGroup footerGroup);
+    }
+
+    /**
+     * Opposite of the Renderer interface.
+     *
+     * <p>
+     * If you modify the {@link org.mcarthur.sandy.gwt.table.client.TableBodyGroup}s in any way
+     * other than modifying the CSS Style Classes or adding or removeing
+     * {@link org.mcarthur.sandy.gwt.table.client.TableRow}s you <b>must</b> undo the effects of
+     * those changes.
+     * </p>
+     *
+     * <p>
+     * You cannot rely on the methods in this interface for general cleanup.
+     * {@link org.mcarthur.sandy.gwt.table.client.ObjectListTable} currenly uses diferent techniques
+     * to avoid various browser bugs. Currenly only IE recycles
+     * {@link org.mcarthur.sandy.gwt.table.client.TableRowGroup}s because otherwise it will crash.
+     * In the future if other browser benchmark to be faster using the same technique as IE to
+     * manage {@link org.mcarthur.sandy.gwt.table.client.TableRowGroup}s then other browsers may
+     * also make calls back to this interface.
+     * </p>
+     *
+     * <p>
+     *  For example: say you also implement
+     * {@link org.mcarthur.sandy.gwt.table.client.ObjectListTable.AttachRenderer} and while a
+     * {@link org.mcarthur.sandy.gwt.table.client.TableRowGroup} is attached you register a mouse
+     * listener that when a row group is clicked may changes the <code>border-color</code> CSS style
+     * of the row group's elemnt via
+     * {@link com.google.gwt.user.client.DOM#setStyleAttribute(com.google.gwt.user.client.Element, String, String)}.
+     * If this might happen you need to reset the <code>border-color</code> style attribute to it's
+     * default value. If you do not do this then a future row group might be created with an
+     * unexpected initial <code>border-color</code>.
+     * </p>
+     * <p>
+     * If you were to implement the above change via adding a CSS class "clicked" and declaring the
+     * new <code>border-color</code> in a stylesheet then you do not need to take such defensive
+     * steps. Adding and removing CSS class styles is the prefered method of altering a row group's
+     * appearance and that is why it is reset to an initial state for you.
+     * </p>
+     *
+     * @see org.mcarthur.sandy.gwt.table.client.ObjectListTable.Renderer
+     */
+    public interface ConcealRenderer extends Renderer {
+        /**
+         * Remove any modifications to a row group since it was rendered.
+         *
+         * @param obj      the object <code>bodyGroup</code> represented.
+         * @param bodyGroup the row group no longer to be assoiciated with <code>obj</code>.
+         * @see org.mcarthur.sandy.gwt.table.client.ObjectListTable.Renderer#render(Object, TableBodyGroup)
+         */
+        public void conceal(Object obj, TableBodyGroup bodyGroup);
+
+        /**
+         * Remove any modifications to a header row group since it was rendered.
+         *
+         * @param headerGroup the table's former header row group.
+         * @see org.mcarthur.sandy.gwt.table.client.ObjectListTable.Renderer#renderHeader(TableHeaderGroup)
+         */
+        public void concealHeader(TableHeaderGroup headerGroup);
+
+        /**
+         * Remove any modifications to a footer row group since it was rendered.
+         *
+         * @param footerGroup the table's former footer row group.
+         * @see org.mcarthur.sandy.gwt.table.client.ObjectListTable.Renderer#renderFooter(TableFooterGroup)
+         */
+        public void concealFooter(TableFooterGroup footerGroup);
     }
 
     /**
@@ -232,6 +312,8 @@ public class ObjectListTable extends Panel implements SourcesMouseEvents {
 
         /**
          * Invoked when a TableBodyGroup is detached from the browser's document.
+         * This method should undo anything you've done in the
+         * {@link #onAttach(Object, TableBodyGroup)} method.
          * 
          * @param obj the object this row group represents.
          * @param rowGroup the row group representing the object.
@@ -241,6 +323,8 @@ public class ObjectListTable extends Panel implements SourcesMouseEvents {
 
         /**
          * Invoked when a TableHeaderGroup is detached from the browser's document.
+         * This method should undo anything you've done in the
+         * {@link #onAttach(TableHeaderGroup)} method.
          *
          * @param rowGroup the table's header row group.
          */
@@ -248,6 +332,8 @@ public class ObjectListTable extends Panel implements SourcesMouseEvents {
 
         /**
          * Invoked when a TableFooterGroup is detached from the browser's document.
+         * This method should undo anything you've done in the
+         * {@link #onAttach(TableFooterGroup)} method.
          *
          * @param rowGroup the table's footer row group.
          */
@@ -285,187 +371,203 @@ public class ObjectListTable extends Panel implements SourcesMouseEvents {
         return colSpec;
     }
 
-    /**
-     * Required by the HasWidgets interface, do not use this in your own code.
-     */
-    public Iterator iterator() {
-        return widgets.iterator();
-    }
-
-    /**
-     * Required by the HasWidgets interface, do not use this in your own code.
-     * You should remove elements from the EventList to cause widgets to be removed from the table.
-     * This method is only public because the HasWidgets interface requires it.
-     *
-     * @param w the widget to be removed
-     * @return <code>true</code> if the widget was present
-     */
-    public boolean remove(final Widget w) {
-        final boolean removed = widgets.contains(w);
-        if (removed) {
-            widgets.remove(w);
+    private void adopt(final TableHeaderGroup headerGroup) {
+        // check that the headerGroup hasn't been adopted twice
+        assert DOM.getParent(headerGroup.getElement()) == null;
+        if (DOM.getParent(headerGroup.getElement()) != null) {
+            throw new IllegalStateException("headerGroup cannot be adoped twice!");
         }
-        return removed;
-    }
 
-    private void add(final ObjectListTableBodyGroup rowGroup, final ObjectListTableBodyGroup beforeGroup) {
-        final int beforeIndex;
-        if (beforeGroup != null) {
-            beforeIndex = tbodies.indexOf(beforeGroup);
-        } else {
-            beforeIndex = -1;
+        assert thead == null;
+        if (thead != null) { // XXX: remove this block once satisfied with web mode testing
+            throw new IllegalStateException("thead cannot be replaced");
         }
-        add(rowGroup, beforeGroup, beforeIndex);
-    }
 
-    private void add(final ObjectListTableBodyGroup rowGroup, final ObjectListTableBodyGroup beforeGroup, final int beforeIndex) {
-        impl.add(this, rowGroup, beforeGroup, beforeIndex);
-        addWidgets(rowGroup);
-        // 2007-02-26: GWTCompiler can optimize this out if the instanceof is first
-        if (renderer instanceof AttachRenderer && isAttached()) {
-            final AttachRenderer attachRenderer = (AttachRenderer)renderer;
-            attachRenderer.onAttach(rowGroup.getObject(), rowGroup);
+        thead = headerGroup;
+
+        // attach the thead element to the table element
+        int insertIndex = 0;
+        if (renderer instanceof ColSpecRenderer) {
+            insertIndex += colSpec.size();
+        }
+
+        DOM.insertChild(getElement(), headerGroup.getElement(), insertIndex);
+
+        // if the table is attached, attach the row group
+        if (isAttached()) {
+            attach(headerGroup);
         }
     }
 
-    private void addWidgets(final TableRowGroup rowGroup) {
-        final Iterator iter = rowGroup.getRows().iterator();
-        while (iter.hasNext()) {
-            final TableRow tr = (TableRow)iter.next();
-            final Iterator cells = tr.iterator();
-            while (cells.hasNext()) {
-                final Widget cell = (Widget)cells.next();
-                if (!widgets.contains(cell)) {
-                    widgets.add(cell);
-                }
-            }
+    private void adopt(final TableFooterGroup footerGroup) {
+        // check that the footerGroup hasn't been adopted twice
+        assert DOM.getParent(footerGroup.getElement()) == null;
+        if (DOM.getParent(footerGroup.getElement()) != null) {
+            throw new IllegalStateException("footerGroup cannot be adoped twice!");
         }
+
+        assert tfoot == null;
+        if (tfoot != null) { // XXX: remove this block once satisfied with web mode testing
+            throw new IllegalStateException("tfoot cannot be replaced");
+        }
+
+        tfoot = footerGroup;
+
+        // attach the thead element to the table element
+        int insertIndex = 0;
+        if (renderer instanceof ColSpecRenderer) {
+            insertIndex += colSpec.size();
+        }
+        if (getThead() != null) insertIndex++;
+
+        DOM.insertChild(getElement(), footerGroup.getElement(), insertIndex);
+
+        // if the table is attached, attach the row group
+        if (isAttached()) {
+            attach(footerGroup);
+        }
+    }
+
+    private void adopt(final ObjectListTableBodyGroup bodyGroup, final int index) {
+        /*
+        // check that the bodyGroup hasn't been adopted twice
+        assert DOM.getParent(bodyGroup.getElement()) == null;
+        if (DOM.getParent(bodyGroup.getElement()) != null) {
+            throw new IllegalStateException("bodyGroup cannot be adoped twice!");
+        }
+        */
+
+        // attach the tbody element to the table element
+        impl.insert(this, bodyGroup, index);
+
+        getTbodies().add(index, bodyGroup);
+
+        /*
+        int insertIndex = index;
+        if (renderer instanceof ColSpecRenderer) {
+            insertIndex += colSpec.size();
+        }
+        if (getThead() != null) insertIndex++;
+        if (getTfoot() != null) insertIndex++;
+        DOM.insertChild(getElement(), bodyGroup.getElement(), insertIndex);
+        */
+
+        // if the table is attached, attach the row group
+        if (isAttached()) {
+            attach(bodyGroup);
+        }
+    }
+
+    private void disown(final ObjectListTableBodyGroup bodyGroup) {
+        // check that the bodyGroup is owned by this table
+        assert DOM.compare(getElement(), DOM.getParent(bodyGroup.getElement()));
+        if (!DOM.compare(getElement(), DOM.getParent(bodyGroup.getElement()))) {
+            throw new IllegalStateException("bodyGroup is not owned by this table!");
+        }
+
+        // if the table is attached, detach the row group
+        if (isAttached()) {
+            detach(bodyGroup);
+        }
+
+        impl.releaseBodyGroup(this, bodyGroup);
+
+        getTbodies().remove(bodyGroup);
     }
 
     private void attach(final TableHeaderGroup headerGroup) {
-        thead = headerGroup;
-        impl.attach(this, headerGroup);
-        addWidgets(headerGroup);
+        headerGroup.onAttach();
+
+        if (renderer instanceof AttachRenderer) {
+            final AttachRenderer attachRenderer = (AttachRenderer)renderer;
+            attachRenderer.onAttach(headerGroup);
+        }
     }
 
     private void attach(final TableFooterGroup footerGroup) {
-        tfoot = footerGroup;
-        impl.attach(this, footerGroup);
-        addWidgets(footerGroup);
-    }
+        footerGroup.onAttach();
 
-    private void detach(final ObjectListTableBodyGroup rowGroup) {
-        // 2007-02-26: GWTCompiler can optimize this out if the instanceof is first
-        if (renderer instanceof AttachRenderer && isAttached()) {
+        if (renderer instanceof AttachRenderer) {
             final AttachRenderer attachRenderer = (AttachRenderer)renderer;
-            attachRenderer.onDetach(rowGroup.getObject(), rowGroup);
+            attachRenderer.onAttach(footerGroup);
         }
-        DOM.removeChild(getElement(), rowGroup.getElement());
-        tbodies.remove(rowGroup);
     }
 
-    private void remove(final ObjectListTableBodyGroup rowGroup) {
-        final Iterator rit = rowGroup.getRows().iterator();
-        while (rit.hasNext()) {
-            final TableRow tr = (TableRow)rit.next();
-            final Iterator trit = tr.iterator();
-            while (trit.hasNext()) {
-                final TableCell tc = (TableCell)trit.next();
-                disown(tc);
-                widgets.remove(tc);
-            }
+    private void attach(final ObjectListTableBodyGroup bodyGroup) {
+        bodyGroup.onAttach();
+
+        if (renderer instanceof AttachRenderer) {
+            final AttachRenderer attachRenderer = (AttachRenderer)renderer;
+            attachRenderer.onAttach(bodyGroup.getObject(), bodyGroup);
         }
+    }
+
+    private void detach(final TableHeaderGroup headerGroup) {
+        throw new RuntimeException("unfinished method: detach(TableHeaderGroup)");
+    }
+    
+    private void detach(final TableFooterGroup footerGroup) {
+        throw new RuntimeException("unfinished method: detach(TableFooterGroup)");
+    }
+
+    private void detach(final ObjectListTableBodyGroup bodyGroup) {
+        if (renderer instanceof AttachRenderer) {
+            final AttachRenderer attachRenderer = (AttachRenderer)renderer;
+            attachRenderer.onDetach(bodyGroup.getObject(), bodyGroup);
+        }
+
+        bodyGroup.onDetach();
     }
 
     private class ListTableListEventListener implements ListEventListener {
         public void listChanged(final ListEvent listEvent) {
+            final List objects = listEvent.getSourceList();
+            final List tbodies = getTbodies();
+            
             if (listEvent.isAdded()) {
                 for (int i = listEvent.getIndexStart(); i < listEvent.getIndexEnd(); i++) {
                     final Object obj = objects.get(i);
-                    final ObjectListTableBodyGroup rowGroup = new ObjectListTableBodyGroup(obj);
-                    renderer.render(obj, rowGroup);
-                    //add(rowGroup, i);
-                    ObjectListTableBodyGroup before = null;
-                    if (i < tbodies.size()) {
-                        before = (ObjectListTableBodyGroup)tbodies.get(i);
+
+                    final ObjectListTableBodyGroup bodyGroup = impl.takeBodyGroup(ObjectListTable.this);
+                    bodyGroup.setObject(obj);
+                    renderer.render(obj, bodyGroup);
+
+                    adopt(bodyGroup, i);
+                }
+
+            } else if (listEvent.isChanged()) {
+                for (int i = listEvent.getIndexStart(); i < listEvent.getIndexEnd(); i++) {
+                    final Object obj = objects.get(i);
+                    ObjectListTableBodyGroup bodyGroup = (ObjectListTableBodyGroup)tbodies.get(i);
+
+                    // test if really different
+                    if (obj != bodyGroup.getObject()) {
+                        // remove old
+                        disown(bodyGroup);
+
+                        // create new
+                        bodyGroup = impl.takeBodyGroup(ObjectListTable.this);
+                        bodyGroup.setObject(obj);
+                        renderer.render(obj, bodyGroup);
+
+                        adopt(bodyGroup, i);
                     }
-                    add(rowGroup, before, i);
+
                 }
 
             } else if (listEvent.isRemoved()) {
                 for (int i = listEvent.getIndexEnd() - 1; i >= listEvent.getIndexStart(); i--) {
-                    final ObjectListTableBodyGroup rowGroup = (ObjectListTableBodyGroup)tbodies.get(i);
-                    detach(rowGroup);
-                    remove(rowGroup);
+                    final ObjectListTableBodyGroup bodyGroup = (ObjectListTableBodyGroup)tbodies.get(i);
+
+                    disown(bodyGroup);
                 }
 
-            } else if (listEvent.isChanged()) {
-                if (true) { // unoptimized
-                    for (int i = listEvent.getIndexStart(); i < listEvent.getIndexEnd(); i++) {
-                        final Object obj = objects.get(i);
-                        ObjectListTableBodyGroup rowGroup = (ObjectListTableBodyGroup)tbodies.get(i);
-
-                        // test if really different
-                        if (obj != rowGroup.getObject()) {
-                            // XXX: reposition rows instead of just remove/add them
-
-                            // remove old
-                            detach(rowGroup);
-                            remove(rowGroup);
-
-                            // insert new
-                            rowGroup = new ObjectListTableBodyGroup(obj);
-                            renderer.render(obj, rowGroup);
-
-                            ObjectListTableBodyGroup before = null;
-                            if (i < tbodies.size()) {
-                                before = (ObjectListTableBodyGroup)tbodies.get(i);
-                            }
-                            add(rowGroup, before, i);
-                        }
-
-                    }
-                } else { // untested
-                    final Map rows = new HashMap(listEvent.getIndexEnd() - listEvent.getIndexStart());
-                    int k = listEvent.getIndexStart();
-                    for (int i = listEvent.getIndexStart(); i < listEvent.getIndexEnd(); i++) {
-                        ObjectListTableBodyGroup rowGroup = (ObjectListTableBodyGroup)tbodies.get(k);
-                        rows.put(rowGroup.getObject(), rowGroup);
-                        detach(rowGroup);
-                    }
-                    for (int i = listEvent.getIndexStart(); i < listEvent.getIndexEnd(); i++) {
-                        final Object obj = objects.get(i);
-                        ObjectListTableBodyGroup rowGroup = (ObjectListTableBodyGroup)rows.remove(obj);
-                        if (rowGroup == null) {
-                            rowGroup = new ObjectListTableBodyGroup(obj);
-                            renderer.render(obj, rowGroup);
-                        }
-                        ObjectListTableBodyGroup before = null;
-                        if (i < tbodies.size()) {
-                            before = (ObjectListTableBodyGroup)tbodies.get(i);
-                        }
-                        add(rowGroup, before, i);
-                    }
-
-                    Iterator keyIter = rows.keySet().iterator();
-                    while (keyIter.hasNext()) {
-                        Object key = keyIter.next();
-                        ObjectListTableBodyGroup rowGroup = (ObjectListTableBodyGroup)rows.get(key);
-                        keyIter.remove();
-                        remove(rowGroup);
-                    }
-                }
             }
         }
     }
 
-    class ObjectListTableBodyGroup extends TableBodyGroup {
-        private final Object obj;
-
-        ObjectListTableBodyGroup(final Object obj) {
-            this.obj = obj;
-            addStyleName(CLASS_GWTSTUFF_OBJECTLISTTABLE + "-ObjectListTableBodyGroup");
-        }
+    static class ObjectListTableBodyGroup extends TableBodyGroup {
+        private Object obj;
 
         public TableRow newTableRow() {
             return new ObjectListTableRow();
@@ -482,13 +584,18 @@ public class ObjectListTable extends Panel implements SourcesMouseEvents {
         public Object getObject() {
             return obj;
         }
+
+        void setObject(final Object obj) {
+            this.obj = obj;
+        }
+
+        protected void reset() {
+            super.reset();
+            addStyleName(CLASS_GWTSTUFF_OBJECTLISTTABLE + "-ObjectListTableBodyGroup");
+        }
     }
 
     private class ObjectListTableHeaderGroup extends TableHeaderGroup {
-        ObjectListTableHeaderGroup() {
-            addStyleName(CLASS_GWTSTUFF_OBJECTLISTTABLE + "-ObjectListTableHeaderGroup");
-        }
-
         public TableRow newTableRow() {
             return new ObjectListTableRow();
         }
@@ -499,14 +606,15 @@ public class ObjectListTable extends Panel implements SourcesMouseEvents {
             } else {
                 throw new IllegalArgumentException("TableRow instance must be acquired from newTableRow()");
             }
+        }
+
+        protected void reset() {
+            super.reset();
+            addStyleName(CLASS_GWTSTUFF_OBJECTLISTTABLE + "-ObjectListTableHeaderGroup");
         }
     }
 
     private class ObjectListTableFooterGroup extends TableFooterGroup {
-        ObjectListTableFooterGroup() {
-            addStyleName(CLASS_GWTSTUFF_OBJECTLISTTABLE + "-ObjectListTableFooterGroup");
-        }
-
         public TableRow newTableRow() {
             return new ObjectListTableRow();
         }
@@ -518,9 +626,14 @@ public class ObjectListTable extends Panel implements SourcesMouseEvents {
                 throw new IllegalArgumentException("TableRow instance must be acquired from newTableRow()");
             }
         }
+
+        protected void reset() {
+            super.reset();
+            addStyleName(CLASS_GWTSTUFF_OBJECTLISTTABLE + "-ObjectListTableFooterGroup");
+        }
     }
 
-    private class ObjectListTableRow extends TableRow {
+    private static class ObjectListTableRow extends TableRow {
 
         public ObjectListTableRow() {
             addStyleName(CLASS_GWTSTUFF_OBJECTLISTTABLE + "-ObjectListTableRow");
@@ -534,10 +647,6 @@ public class ObjectListTable extends Panel implements SourcesMouseEvents {
             }
         }
 
-        protected void adopt(final Widget w, final Element container) {
-            ObjectListTable.this.adopt(w, container);
-        }
-
         public TableDataCell newTableDataCell() {
             return new ObjectListTableDataCell();
         }
@@ -547,13 +656,13 @@ public class ObjectListTable extends Panel implements SourcesMouseEvents {
         }
     }
 
-    private class ObjectListTableDataCell extends TableDataCell {
+    private static class ObjectListTableDataCell extends TableDataCell {
         public ObjectListTableDataCell() {
             addStyleName(CLASS_GWTSTUFF_OBJECTLISTTABLE + "-ObjectListTableDataCell");
         }
     }
 
-    private class ObjectListTableHeaderCell extends TableHeaderCell {
+    private static class ObjectListTableHeaderCell extends TableHeaderCell {
         public ObjectListTableHeaderCell() {
             addStyleName(CLASS_GWTSTUFF_OBJECTLISTTABLE + "-ObjectListTableHeaderCell");
         }
@@ -567,47 +676,62 @@ public class ObjectListTable extends Panel implements SourcesMouseEvents {
 
         super.onAttach();
 
+        final TableHeaderGroup thead = getThead();
+        assert thead != null;
+        thead.onAttach();
+
+        final TableFooterGroup tfoot = getTfoot();
+        assert tfoot != null;
+        tfoot.onAttach();
+
         if (renderer instanceof AttachRenderer) {
             final AttachRenderer attachRenderer = (AttachRenderer)renderer;
-
-            final TableHeaderGroup thead = getThead();
-            assert thead != null;
             attachRenderer.onAttach(thead);
+            attachRenderer.onAttach(tfoot);
+        }
 
-            final List tbodies = getTbodies();
-            final Iterator iter=tbodies.iterator();
-            while (iter.hasNext()) {
-                final ObjectListTableBodyGroup tbody = (ObjectListTableBodyGroup)iter.next();
+        final Iterator iter = getTbodies().iterator();
+        while (iter.hasNext()) {
+            final ObjectListTableBodyGroup tbody = (ObjectListTableBodyGroup)iter.next();
+            assert tbody != null;
+
+            tbody.onAttach();
+
+            if (renderer instanceof AttachRenderer) {
+                final AttachRenderer attachRenderer = (AttachRenderer)renderer;
                 attachRenderer.onAttach(tbody.getObject(), tbody);
             }
-
-            final TableFooterGroup tfoot = getTfoot();
-            assert tfoot != null;
-            attachRenderer.onAttach(tfoot);
         }
     }
 
     protected void onDetach() {
         super.onDetach();
 
+        final TableHeaderGroup thead = getThead();
+        assert thead != null;
+        thead.onDetach();
+
+        final TableFooterGroup tfoot = getTfoot();
+        assert tfoot != null;
+        tfoot.onDetach();
+
         if (renderer instanceof AttachRenderer) {
             final AttachRenderer attachRenderer = (AttachRenderer)renderer;
-
-            final TableHeaderGroup thead = getThead();
-            assert thead != null;
             attachRenderer.onDetach(thead);
+            attachRenderer.onDetach(tfoot);
+        }
 
-            final List tbodies = getTbodies();
-            final Iterator iter=tbodies.iterator();
-            while (iter.hasNext()) {
-                final ObjectListTableBodyGroup tbody = (ObjectListTableBodyGroup)iter.next();
-                assert tbody != null;
+        final Iterator iter = getTbodies().iterator();
+        while (iter.hasNext()) {
+            final ObjectListTableBodyGroup tbody = (ObjectListTableBodyGroup)iter.next();
+            assert tbody != null;
+
+            tbody.onDetach();
+
+            if (renderer instanceof AttachRenderer) {
+                final AttachRenderer attachRenderer = (AttachRenderer)renderer;
                 attachRenderer.onDetach(tbody.getObject(), tbody);
             }
-
-            final TableFooterGroup tfoot = getTfoot();
-            assert tfoot != null;
-            attachRenderer.onDetach(tfoot);
         }
     }
 
@@ -635,7 +759,7 @@ public class ObjectListTable extends Panel implements SourcesMouseEvents {
                 getTfoot().onBrowserEvent(event);
 
             } else {
-                final Iterator iter = tbodies.iterator();
+                final Iterator iter = getTbodies().iterator();
                 while (iter.hasNext()) {
                     final ObjectListTableBodyGroup rowGroup = (ObjectListTableBodyGroup)iter.next();
                     if (DOM.compare(target, rowGroup.getElement())) {

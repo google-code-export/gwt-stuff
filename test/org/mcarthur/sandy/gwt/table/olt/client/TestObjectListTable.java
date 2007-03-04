@@ -66,7 +66,7 @@ import java.util.Iterator;
 import java.util.List;
 
 /**
- * TODO: Write JavaDoc
+ * Test usage of {@link org.mcarthur.sandy.gwt.table.client.ObjectListTable}.
  *
  * @author Sandy McArthur
  */
@@ -325,7 +325,7 @@ public class TestObjectListTable implements EntryPoint {
 
     }
 
-    private class OLTR implements ObjectListTable.AttachRenderer {
+    private class OLTR implements ObjectListTable.AttachRenderer, ObjectListTable.ConcealRenderer {
 
         public void render(final Object obj, final TableBodyGroup rowGroup) {
             final Person person = (Person)obj;
@@ -511,6 +511,18 @@ public class TestObjectListTable implements EntryPoint {
             tr.add(th);
 
             rowGroup.add(tr);
+        }
+
+        public void conceal(final Object obj, final TableBodyGroup bodyGroup) {
+            bodyGroup.removeStyleName("mouseOver"); // not really needed, just for testing
+        }
+
+        public void concealHeader(final TableHeaderGroup headerGroup) {
+            // nada
+        }
+
+        public void concealFooter(final TableFooterGroup footerGroup) {
+            // nada
         }
 
         public void onAttach(final Object obj, final TableBodyGroup rowGroup) {

@@ -22,7 +22,7 @@ import java.util.Arrays;
 import java.util.List;
 
 /**
- * Base class for an HTML Table Data Cell, th.
+ * Base class for an HTML Table Data Cell, td.
  *
  * <h3>CSS Style Rules</h3>
  * <ul class="css">

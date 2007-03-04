@@ -67,8 +67,8 @@ public class ObjectListTableAttachRendererTest extends GWTTestCase {
         expected.add("renderHeader");
         expected.add("renderFooter");
         expected.add("onAttachHeader");
-        expected.add("onAttach");
         expected.add("onAttachFooter");
+        expected.add("onAttach");
         assertEquals(expected, events);
 
         // adding a element will rendered and attached if the table is attached
@@ -86,8 +86,8 @@ public class ObjectListTableAttachRendererTest extends GWTTestCase {
         // detaching the table causes headers, rows and footer to be detached.
         RootPanel.get().remove(olt);
         expected.add("onDetachHeader");
-        expected.add("onDetach");
         expected.add("onDetachFooter");
+        expected.add("onDetach");
         assertEquals(expected, events);
 
         // should just render

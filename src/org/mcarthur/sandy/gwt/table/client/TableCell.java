@@ -170,6 +170,14 @@ public abstract class TableCell extends SimplePanel {
         DOM.setStyleAttribute(getElement(), "verticalAlign", align.getVerticalAlignString());
     }
 
+    protected void onAttach() {
+        super.onAttach();
+    }
+
+    protected void onDetach() {
+        super.onDetach();
+    }
+
     /**
      * Convert a List into a string.
      *
