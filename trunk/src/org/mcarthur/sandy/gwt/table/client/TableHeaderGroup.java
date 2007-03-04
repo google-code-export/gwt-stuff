@@ -33,6 +33,10 @@ import com.google.gwt.user.client.DOM;
 public abstract class TableHeaderGroup extends TableRowGroup {
     TableHeaderGroup() {
         super(DOM.createElement("thead"));
+    }
+
+    protected void reset() {
+        super.reset();
         addStyleName(Constants.GWTSTUFF + "-TableHeaderGroup");
     }
 }

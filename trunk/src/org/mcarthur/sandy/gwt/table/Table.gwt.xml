@@ -12,10 +12,12 @@
         <when-property-is name="user.agent" value="safari"/>
     </replace-with>
 
+    <!--
     <replace-with class="org.mcarthur.sandy.gwt.table.client.ObjectListTableImplOpera">
         <when-type-is class="org.mcarthur.sandy.gwt.table.client.ObjectListTableImpl"/>
         <when-property-is name="user.agent" value="opera"/>
     </replace-with>
+    -->
 
     <replace-with class="org.mcarthur.sandy.gwt.table.client.ObjectListTableImplIE6">
         <when-type-is class="org.mcarthur.sandy.gwt.table.client.ObjectListTableImpl"/>

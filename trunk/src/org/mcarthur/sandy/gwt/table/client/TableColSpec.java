@@ -28,6 +28,12 @@ import com.google.gwt.user.client.ui.UIObject;
  * between releases.
  * </p>
  *
+ * <p>
+ * While this class and subclasses extend the {@link com.google.gwt.user.client.ui.UIObject}
+ * interface the exact meaning of many of the UIObject properties may not be what you expect and
+ * are likely not the have the same effect across browsers.
+ * </p>
+ *
  * @author Sandy McArthur
  * @see <a href="http://www.w3.org/TR/html4/struct/tables.html#h-11.2.4">HTML Table Column Groups</a>
  */

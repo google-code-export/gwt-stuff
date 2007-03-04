@@ -26,49 +26,37 @@ import com.google.gwt.user.client.Element;
  */
 class ObjectListTableImpl {
 
-    public void init() {
+    /**
+     * Called in the ObjectListTable's constructor.
+     *
+     * @param olt the ObjectListTable in the midst of construction.
+     */
+    protected void init(final ObjectListTable olt) {
         //Window.setTitle("Loaded ObjectListTableImpl");
+    }
+
+    protected ObjectListTable.ObjectListTableBodyGroup takeBodyGroup(final ObjectListTable olt) {
+        return new ObjectListTable.ObjectListTableBodyGroup();
+    }
+
+    protected void releaseBodyGroup(final ObjectListTable olt, final ObjectListTable.ObjectListTableBodyGroup bodyGroup) {
+        DOM.removeChild(olt.getElement(), bodyGroup.getElement());
+    }
+
+    protected void insert(final ObjectListTable olt, final ObjectListTable.ObjectListTableBodyGroup bodyGroup, final int index) {
+        int insertIndex = index;
+        if (olt.getRenderer() instanceof ObjectListTable.ColSpecRenderer) {
+            insertIndex += olt.getColSpec().size();
+        }
+        if (olt.getThead() != null) insertIndex++;
+        if (olt.getTfoot() != null) insertIndex++;
+        DOM.insertChild(olt.getElement(), bodyGroup.getElement(), insertIndex);
     }
 
     /*
      * Replace uses of this with DOM.insertBefore once GWT provies one.
      */
-    native void insertBefore(Element parent, Element toAdd, Element before) /*-{
+    protected final native void insertBefore(Element parent, Element toAdd, Element before) /*-{
         parent.insertBefore(toAdd, before);
     }-*/;
-
-    void add(final ObjectListTable olt, final ObjectListTable.ObjectListTableBodyGroup rowGroup, final ObjectListTable.ObjectListTableBodyGroup beforeGroup, final int beforeIndex) {
-        if (beforeGroup != null) {
-            final Element beforeElement = beforeGroup.getElement();
-            olt.getTbodies().add(beforeIndex, rowGroup);
-            insertBefore(olt.getElement(), rowGroup.getElement(), beforeElement);
-        } else {
-            olt.getTbodies().add(rowGroup);
-            DOM.appendChild(olt.getElement(), rowGroup.getElement());
-        }
-    }
-
-    /**
-     * Attach the TableHeaderGroup to the ObjectListTable's element.
-     *
-     * @param olt the current ObjectListTable.
-     * @param headerGroup the thead to attach to <code>olt</code>'s element.
-     */
-    void attach(final ObjectListTable olt, final TableHeaderGroup headerGroup) {
-        //DOM.appendChild(olt.getElement(), headerGroup.getElement());
-        DOM.insertChild(olt.getElement(), headerGroup.getElement(), 0);
-    }
-
-    /**
-     * Attach the TableFooterGroup to the ObjectListTable's element.
-     *
-     * @param olt the current ObjectListTable.
-     * @param footerGroup the tfoot to attach to <code>olt</code>'s element.
-     */
-    void attach(final ObjectListTable olt, final TableFooterGroup footerGroup) {
-        //DOM.appendChild(olt.getElement(), footerGroup.getElement());
-        assert olt.getThead() != null;
-        DOM.insertChild(olt.getElement(), footerGroup.getElement(), 1);
-    }
-
 }

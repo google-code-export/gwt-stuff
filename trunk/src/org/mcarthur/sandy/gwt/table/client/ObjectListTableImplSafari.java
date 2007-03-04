@@ -33,16 +33,16 @@ class ObjectListTableImplSafari extends ObjectListTableImpl {
      * a tbody as the first tbody child element in the table element. The first fix I found was
      * to add an element (I choose an empty caption) and remove it which I guess triggers a
      * table re-layout.
-     *
-     * This may not be needed if the inserted element isn't the first one? Need to do more testing.
      */
     private final Element CAPTION = DOM.createElement("caption");
-    void add(final ObjectListTable olt, final ObjectListTable.ObjectListTableBodyGroup rowGroup, final ObjectListTable.ObjectListTableBodyGroup beforeGroup, final int beforeIndex) {
-        super.add(olt, rowGroup, beforeGroup, beforeIndex);
 
-        // force table re-layout
-        workaround(olt);
+    protected void insert(final ObjectListTable olt, final ObjectListTable.ObjectListTableBodyGroup bodyGroup, final int index) {
+        super.insert(olt, bodyGroup, index);
 
+        if (index == 0) {
+            // force table re-layout
+            workaround(olt);
+        }
     }
 
     private void workaround(final ObjectListTable olt) {

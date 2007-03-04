@@ -47,12 +47,14 @@ public abstract class TableRowGroup extends UIObject implements EventListener {
     static final int MOUSEEVENTSALL = Event.MOUSEEVENTS | Event.ONCLICK | Event.ONDBLCLICK;
 
     private final EventList/*<TableRow>*/ rows = EventLists.eventList();
-    private List mouseListeners = null;
+    private final List rowsbk = new ArrayList();
+    private List/*<MouseListener>*/ mouseListeners = null;
+    private boolean attached = false;
 
     protected TableRowGroup(final Element element) {
         setElement(element);
-        addStyleName(Constants.GWTSTUFF + "-TableRowGroup");
         rows.addListEventListener(new TableRowGroupListEventListener());
+        reset();
     }
 
     /**
@@ -198,30 +200,105 @@ public abstract class TableRowGroup extends UIObject implements EventListener {
         }
     }
 
+    protected void adopt(final TableRow row, final int index) {
+        // check that the row hasn't been adopted twice
+        assert DOM.getParent(row.getElement()) == null;
+        if (DOM.getParent(row.getElement()) != null) {
+            throw new IllegalStateException("table row cannot be adoped twice!");
+        }
+
+        rowsbk.add(index, row);
+
+        DOM.insertChild(getElement(), row.getElement(), index);
+
+        // if the table is attached, attach the row group
+        if (attached) {
+            row.onAttach();
+        }
+    }
+
+    protected void disown(final TableRow row) {
+        // check that the row is owned by this row group
+        assert DOM.compare(getElement(), DOM.getParent(row.getElement()));
+        if (!DOM.compare(getElement(), DOM.getParent(row.getElement()))) {
+            throw new IllegalStateException("row is not owned by this row group!");
+        }
+
+        if (attached) {
+            row.onDetach();
+        }
+
+        DOM.removeChild(getElement(), row.getElement());
+
+        rowsbk.remove(row);
+    }
+
+    protected void onAttach() {
+        assert !attached;
+        if (attached) { // XXX: remove this block once satisfied with web mode testing
+            throw new RuntimeException("TableRowGroup cannot be attached twice.");
+        }
+
+        attached = true;
+
+        final Iterator/*<TableRow>*/ iter = getRows().iterator();
+        while (iter.hasNext()) {
+            final TableRow row = (TableRow)iter.next();
+            row.onAttach();
+        }
+    }
+
+    protected void onDetach() {
+        assert attached;
+        if (!attached) { // XXX: remove this block once satisfied with web mode testing
+            throw new RuntimeException("TableRowGroup cannot be detached twice.");
+        }
+
+        attached = false;
+
+        final Iterator/*<TableRow>*/ iter = getRows().iterator();
+        while (iter.hasNext()) {
+            final TableRow row = (TableRow)iter.next();
+            row.onDetach();
+        }
+    }
+
+    /**
+     * Clears any associated rows or mouse listeners and
+     * reinitializes the element's CSS classes.
+     */
+    protected void reset() {
+        while (mouseListeners != null) {
+            removeMouseListener((MouseListener)mouseListeners.get(0));
+        }
+        setStyleName(Constants.GWTSTUFF + "-TableRowGroup");
+        rows.clear();
+    }
+
     private class TableRowGroupListEventListener implements ListEventListener {
         public void listChanged(final ListEvent listEvent) {
-            final Element rowGroupElement = getElement();
+            final List/*<TableRow>*/ rows = listEvent.getSourceList();
+
             if (listEvent.isAdded()) {
                 for (int i = listEvent.getIndexStart(); i < listEvent.getIndexEnd(); i++) {
                     final TableRow row = (TableRow)rows.get(i);
-                    // XXX: Do we need to call stuff on the TableRow?
-                    DOM.insertChild(rowGroupElement, row.getElement(), i);
+                    adopt(row, i);
                 }
-            } else if (listEvent.isRemoved()) {
-                for (int i = listEvent.getIndexStart(); i < listEvent.getIndexEnd(); i++) {
-                    final Element e = DOM.getChild(rowGroupElement, i);
-                    // XXX: Do we need to call stuff on the TableRow?
-                    DOM.removeChild(rowGroupElement, e);
-                }
+
             } else if (listEvent.isChanged()) {
                 for (int i = listEvent.getIndexStart(); i < listEvent.getIndexEnd(); i++) {
                     final TableRow row = (TableRow)rows.get(i);
-                    final Element e = DOM.getChild(rowGroupElement, i);
-                    if (row.getElement() != e) {
-                        // XXX: Do we need to call stuff on the TableRow?
-                        DOM.removeChild(rowGroupElement, e);
-                        DOM.insertChild(rowGroupElement, row.getElement(), i);
+                    final TableRow oldRow = (TableRow)rowsbk.get(i);
+                    if (row != oldRow) {
+                        disown(oldRow);
+                        adopt(row, i);
                     }
+                }
+
+            } else if (listEvent.isRemoved()) {
+                for (int i = listEvent.getIndexEnd()-1; i >= listEvent.getIndexStart(); i--) {
+                    final TableRow row = (TableRow)rowsbk.get(i);
+                    disown(row);
                 }
             }
         }

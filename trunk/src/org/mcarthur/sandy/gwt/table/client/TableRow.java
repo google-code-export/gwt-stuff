@@ -17,16 +17,15 @@
 package org.mcarthur.sandy.gwt.table.client;
 
 import com.google.gwt.user.client.DOM;
-import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.EventListener;
 import com.google.gwt.user.client.ui.HasHorizontalAlignment;
 import com.google.gwt.user.client.ui.HasVerticalAlignment;
-import com.google.gwt.user.client.ui.HasWidgets;
-import com.google.gwt.user.client.ui.Panel;
 import com.google.gwt.user.client.ui.UIObject;
-import com.google.gwt.user.client.ui.Widget;
-import com.google.gwt.user.client.ui.WidgetCollection;
+import org.mcarthur.sandy.gwt.event.list.client.EventList;
+import org.mcarthur.sandy.gwt.event.list.client.EventLists;
+import org.mcarthur.sandy.gwt.event.list.client.ListEvent;
+import org.mcarthur.sandy.gwt.event.list.client.ListEventListener;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -43,13 +42,21 @@ import java.util.List;
  * @author Sandy McArthur
  * @see <a href="http://www.w3.org/TR/html4/struct/tables.html#h-11.2.5">HTML Table Row</a>
  */
-public abstract class TableRow extends UIObject implements HasWidgets, EventListener {
-    private final WidgetCollection/*<TableCell>*/ cells = new WidgetCollection(this);
+public abstract class TableRow extends UIObject implements EventListener {
+
+    private final EventList/*<TableCell>*/ cells = EventLists.eventList();
+    private final List/*<TableCell>*/ cellsbk = new ArrayList();
     private List mouseListeners = null;
+    private boolean attached = false;
 
     protected TableRow() {
         setElement(DOM.createTR());
         addStyleName(Constants.GWTSTUFF + "-TableRow");
+        cells.addListEventListener(new TableRowListEventListener());
+    }
+
+    public final List getCells() {
+        return cells;
     }
 
     /**
@@ -62,30 +69,7 @@ public abstract class TableRow extends UIObject implements HasWidgets, EventList
      */
     public void add(final TableCell cell) throws IllegalArgumentException {
         cells.add(cell);
-        adopt(cell, getElement());
     }
-
-    /**
-     * Prefer {@link #add(TableCell)} instead.
-     *
-     * @param w a TableCell to be added.
-     * @throws IllegalArgumentException when <code>w</code> is not an instace of TableCell.
-     * @see #add(TableCell)
-     */
-    public void add(final Widget w) throws IllegalArgumentException {
-        if (w instanceof TableCell) {
-            add((TableCell)w);
-        } else {
-            throw new IllegalArgumentException("Only TableCell widgets allowed.");
-        }
-    }
-
-    /**
-     * Delegate this to {@link Panel#adopt(Widget,Element)}.
-     *
-     * @see com.google.gwt.user.client.ui.Panel#adopt(Widget,Element)
-     */
-    protected abstract void adopt(Widget w, Element container);
 
     /**
      * Creates a new table data cell that this table row will accept.
@@ -102,26 +86,6 @@ public abstract class TableRow extends UIObject implements HasWidgets, EventList
      * @see #add(TableCell)
      */
     public abstract TableHeaderCell newTableHeaderCell();
-
-    public void clear() {
-        final Iterator iter = cells.iterator();
-        while (iter.hasNext()) {
-            iter.next();
-            iter.remove();
-        }
-    }
-
-    public Iterator iterator() {
-        return cells.iterator();
-    }
-
-    public boolean remove(final Widget w) {
-        final boolean removed = cells.contains(w);
-        if (removed) {
-            cells.remove(w);
-        }
-        return removed;
-    }
 
     public void setAlignment(final HasHorizontalAlignment.HorizontalAlignmentConstant hAlign, final HasVerticalAlignment.VerticalAlignmentConstant vAlign) {
         setHorizontalAlignment(hAlign);
@@ -236,4 +200,97 @@ public abstract class TableRow extends UIObject implements HasWidgets, EventList
 
         public void onDblClick(TableRow row, Event event);
     }
+
+    protected void adopt(final TableCell cell, final int index) {
+        // check that the cell hasn't been adopted twice
+        assert DOM.getParent(cell.getElement()) == null;
+        if (DOM.getParent(cell.getElement()) != null) {
+            throw new IllegalStateException("table cell cannot be adoped twice!");
+        }
+
+        cellsbk.add(index, cell);
+
+        DOM.insertChild(getElement(), cell.getElement(), index);
+
+        // if the row is attached, attach the cell
+        if (attached) {
+            cell.onAttach();
+        }
+    }
+
+    protected void disown(final TableCell cell) {
+        // check that the cell is owned by this row
+        assert DOM.compare(getElement(), DOM.getParent(cell.getElement()));
+        if (!DOM.compare(getElement(), DOM.getParent(cell.getElement()))) {
+            throw new IllegalStateException("cell is not owned by this row!");
+        }
+
+        if (attached) {
+            cell.onDetach();
+        }
+
+        DOM.removeChild(getElement(), cell.getElement());
+
+        cellsbk.remove(cell);
+    }
+
+    protected void onAttach() {
+        assert !attached;
+        if (attached) { // XXX: remove this block once satisfied with web mode testing
+            throw new RuntimeException("TableRow cannot be attached twice.");
+        }
+
+        attached = true;
+
+        final Iterator/*<TableCell>*/ iter = getCells().iterator();
+        while (iter.hasNext()) {
+            final TableCell cell = (TableCell)iter.next();
+            cell.onAttach();
+        }
+    }
+
+    protected void onDetach() {
+        assert attached;
+        if (!attached) { // XXX: remove this block once satisfied with web mode testing
+            throw new RuntimeException("TableRow cannot be detached twice.");
+        }
+
+        attached = false;
+
+        final Iterator/*<TableCell>*/ iter = getCells().iterator();
+        while (iter.hasNext()) {
+            final TableCell cell = (TableCell)iter.next();
+            cell.onDetach();
+        }
+    }
+
+    private class TableRowListEventListener implements ListEventListener {
+        public void listChanged(final ListEvent listEvent) {
+            final List/*<TableCell>*/ cells = listEvent.getSourceList();
+
+            if (listEvent.isAdded()) {
+                for (int i = listEvent.getIndexStart(); i < listEvent.getIndexEnd(); i++) {
+                    final TableCell cell = (TableCell)cells.get(i);
+                    adopt(cell, i);
+                }
+
+            } else if (listEvent.isChanged()) {
+                for (int i = listEvent.getIndexStart(); i < listEvent.getIndexEnd(); i++) {
+                    final TableCell cell = (TableCell)cells.get(i);
+                    final TableCell oldCell = (TableCell)cellsbk.get(i);
+                    if (cell != oldCell) {
+                        disown(oldCell);
+                        adopt(cell, i);
+                    }
+                }
+
+            } else if (listEvent.isRemoved()) {
+                for (int i = listEvent.getIndexEnd()-1; i >= listEvent.getIndexStart(); i--) {
+                    final TableCell cell = (TableCell)cellsbk.remove(i);
+                    disown(cell);
+                }
+            }
+        }
+    }
+
 }
