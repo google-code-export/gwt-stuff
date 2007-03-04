@@ -22,6 +22,7 @@ import junit.framework.TestSuite;
 import org.mcarthur.sandy.gwt.event.list.test.FilteredEventListTest;
 import org.mcarthur.sandy.gwt.event.list.test.RangedEventListTest;
 import org.mcarthur.sandy.gwt.event.list.test.SortedEventListTest;
+import org.mcarthur.sandy.gwt.event.list.test.WrappedEventListTest;
 
 /**
  * Run all GWT-Stuff Event List unit tests.
@@ -36,6 +37,7 @@ public class TestAll extends TestCase {
         suite.addTestSuite(FilteredEventListTest.class);
         suite.addTestSuite(RangedEventListTest.class);
         suite.addTestSuite(SortedEventListTest.class);
+        suite.addTestSuite(WrappedEventListTest.class);
 
         return suite;
     }

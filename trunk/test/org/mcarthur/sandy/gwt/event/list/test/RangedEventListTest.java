@@ -30,6 +30,10 @@ import java.util.List;
  */
 public class RangedEventListTest extends TransformedEventListTest {
 
+    protected EventList createEmptyEventLists() {
+        return EventLists.rangedEventList();
+    }
+
     public void testSetStart() {
         EventList el = EventLists.eventList();
         el.add("one");

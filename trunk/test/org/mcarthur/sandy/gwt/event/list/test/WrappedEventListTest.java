@@ -16,10 +16,16 @@
 
 package org.mcarthur.sandy.gwt.event.list.test;
 
+import org.mcarthur.sandy.gwt.event.list.client.EventList;
+import org.mcarthur.sandy.gwt.event.list.client.EventLists;
+
 /**
- * Tests for {@link org.mcarthur.sandy.gwt.event.list.client.TransformedEventList}.
+ * Tests for {@link org.mcarthur.sandy.gwt.event.list.client.WrappedEventList}.
  *
  * @author Sandy McArthur
  */
-public abstract class TransformedEventListTest extends EventListTest {
+public class WrappedEventListTest extends EventListTest {
+    protected EventList createEmptyEventLists() {
+        return EventLists.eventList();
+    }
 }

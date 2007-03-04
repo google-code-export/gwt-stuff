@@ -40,6 +40,10 @@ public class SortedEventListTest extends TransformedEventListTest {
     private final Integer I15 = new Integer(15);
     private final Integer I20 = new Integer(20);
 
+    protected EventList createEmptyEventLists() {
+        return EventLists.sortedEventList();
+    }
+
     public void testAdd() {
         final EventList el = EventLists.eventList();
         el.add(I0);
@@ -179,5 +183,4 @@ public class SortedEventListTest extends TransformedEventListTest {
         //System.err.println("far: " + Arrays.asList(fel.toArray()));
         //System.err.println("sar: " + Arrays.asList(sel.toArray()));
     }
-
 }

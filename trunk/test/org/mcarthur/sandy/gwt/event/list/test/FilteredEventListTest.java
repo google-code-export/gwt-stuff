@@ -32,6 +32,10 @@ import java.util.List;
  */
 public class FilteredEventListTest extends TransformedEventListTest {
 
+    protected EventList createEmptyEventLists() {
+        return EventLists.filteredEventList();
+    }
+
     public void testToArrayRespectsFilters() {
         final EventList el = EventLists.eventList();
         final FilteredEventList fel = EventLists.filteredEventList(el);
