@@ -18,6 +18,7 @@ package org.mcarthur.sandy.gwt.table.olt.client;
 
 import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.user.client.Command;
+import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.DeferredCommand;
 import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.Window;
@@ -51,6 +52,7 @@ import org.mcarthur.sandy.gwt.event.property.client.PropertyChangeSource;
 import org.mcarthur.sandy.gwt.table.client.ObjectListTable;
 import org.mcarthur.sandy.gwt.table.client.TableBodyGroup;
 import org.mcarthur.sandy.gwt.table.client.TableCell;
+import org.mcarthur.sandy.gwt.table.client.TableCol;
 import org.mcarthur.sandy.gwt.table.client.TableFooterGroup;
 import org.mcarthur.sandy.gwt.table.client.TableHeaderCell;
 import org.mcarthur.sandy.gwt.table.client.TableHeaderGroup;
@@ -87,6 +89,7 @@ public class TestObjectListTable implements EntryPoint {
         //rel = EventLists.rangedEventList(el, 4); el = rel;
         rel = EventLists.steadyRangedEventList(el, 4); el = rel;
         ot = new ObjectListTable(new OLTR(), el);
+        ot.setWidth("100%");
         RootPanel.get("log").add(vp);
 
 
@@ -174,6 +177,23 @@ public class TestObjectListTable implements EntryPoint {
             }
         });
         fp.add(oneK);
+
+        final Button attach = new Button("Detach");
+        attach.addClickListener(new ClickListener() {
+            public void onClick(final Widget sender) {
+                final Button attach = (Button)sender;
+                if (ot.isAttached()) {
+                    // detach
+                    RootPanel.get("tableDiv").remove(ot);
+                    attach.setText("Attach");
+                } else {
+                    // attach
+                    RootPanel.get("tableDiv").add(ot);
+                    attach.setText("Detach");
+                }
+            }
+        });
+        fp.add(attach);
 
         if (fel != null) {
             final TextBox lower = new TextBox();
@@ -325,7 +345,7 @@ public class TestObjectListTable implements EntryPoint {
 
     }
 
-    private class OLTR implements ObjectListTable.AttachRenderer, ObjectListTable.ConcealRenderer {
+    private class OLTR implements ObjectListTable.AttachRenderer, ObjectListTable.ConcealRenderer, ObjectListTable.ColSpecRenderer {
 
         public void render(final Object obj, final TableBodyGroup rowGroup) {
             final Person person = (Person)obj;
@@ -343,6 +363,7 @@ public class TestObjectListTable implements EntryPoint {
             tr.add(a);
 
             final TableCell nameCell = tr.newTableDataCell();
+            nameCell.addStyleName("name");
             final TextBox tb = new TextBox();
             tb.addChangeListener(new ChangeListener() {
                 public void onChange(final Widget sender) {
@@ -369,6 +390,7 @@ public class TestObjectListTable implements EntryPoint {
             tr.add(nameCell);
 
             final TableCell ageCell = tr.newTableDataCell();
+            ageCell.addStyleName("age");
             //ageCell.add(new Label(Integer.toString(person.getAge())));
             ageCell.add(new AgeLabel(person.getAge()));
             ageCell.setWidth("5em");
@@ -376,6 +398,7 @@ public class TestObjectListTable implements EntryPoint {
             tr.add(ageCell);
 
             final TableCell removeCell = tr.newTableDataCell();
+            removeCell.addStyleName("remove");
             final Button button = new Button("Remove");
             button.addClickListener(new ClickListener() {
                 public void onClick(final Widget sender) {
@@ -389,6 +412,7 @@ public class TestObjectListTable implements EntryPoint {
 
             final TableRow tr2 = rowGroup.newTableRow();
             final TableCell tc2 = tr2.newTableDataCell();
+            tc2.addStyleName("random");
             tc2.add(new Label("Something " + Math.random()));
             //tc2.add(makeMenuBar());
             tc2.setColSpan(3);
@@ -553,6 +577,34 @@ public class TestObjectListTable implements EntryPoint {
         }
 
         public void onDetach(final TableFooterGroup rowGroup) {
+        }
+
+        public List/*<TableColSpec>*/ getColSpec() {
+            final List l = new ArrayList();
+            TableCol col;
+
+            // rowSpan
+            col = new TableCol();
+            col.setWidth("90px");
+            l.add(col);
+
+            // Name
+            col = new TableCol();
+            //col.setWidth("0*");
+            DOM.setStyleAttribute(col.getElement(), "overflow", "hidden");
+            l.add(col);
+
+            // Age
+            col = new TableCol();
+            col.setWidth("100px");
+            l.add(col);
+
+            // Remove
+            col = new TableCol();
+            col.setWidth("100px");
+            l.add(col);
+
+            return l;
         }
 
         private RowGroupMouseListener rgml = new RowGroupMouseListener();
