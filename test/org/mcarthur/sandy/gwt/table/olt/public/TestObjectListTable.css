@@ -40,3 +40,15 @@ tbody.mouseOver {
 tr.mouseOver {
     background-color: lawngreen;
 }
+
+.gwtstuff-ObjectListTable {
+    table-layout:fixed;
+}
+.name {
+    overflow: hidden;
+}
+.random {
+    width: 100%;
+    white-space:nowrap;
+    overflow: hidden;
+}
