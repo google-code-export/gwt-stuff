@@ -49,4 +49,17 @@ public abstract class AbstractEventList extends AbstractList implements EventLis
             listEventListener.listChanged(listEvent);
         }
     }
+
+    /**
+     * Same as {@link java.util.AbstractList#removeRange(int, int)}.
+     * This is only here because GWT's emulation of AbstractList.removeRange(int,int) is
+     * broken as of GWT 1.3.3. When GWT has a stable release with a fixed removeRange this
+     * method will disapper and use the inherited version instead.
+     */
+    protected void removeRange(final int start, final int end) {
+        // TODO: Remove this method when GWT has a correct AbstractList.removeRange method.
+        for (int i = start; i < end; i++) {
+            remove(start);
+        }
+    }
 }
