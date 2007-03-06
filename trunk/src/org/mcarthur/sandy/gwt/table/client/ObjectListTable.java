@@ -109,11 +109,6 @@ public final class ObjectListTable extends Widget implements SourcesMouseEvents 
 
         impl.init(this);
 
-        if (objects.size() > 0) {
-            // fake a list changed event to initialize the table rows.
-            objectsListener.listChanged(new ListEvent(objects, ListEvent.ADDED, 0, objects.size()));
-        }
-
         if (renderer instanceof ColSpecRenderer) {
             final ColSpecRenderer colSpecRenderer = (ColSpecRenderer)renderer;
             colSpec = EventLists.eventList();
@@ -121,6 +116,11 @@ public final class ObjectListTable extends Widget implements SourcesMouseEvents 
             colSpec.addAll(colSpecRenderer.getColSpec());
         } else {
             colSpec = null;
+        }
+
+        if (objects.size() > 0) {
+            // fake a list changed event to initialize the table rows.
+            objectsListener.listChanged(new ListEvent(objects, ListEvent.ADDED, 0, objects.size()));
         }
     }
 
