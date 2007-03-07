@@ -173,6 +173,12 @@
         <gwtshell module="org.mcarthur.sandy.gwt.table.olt.TestObjectListTable" page="TestObjectListTable.html"/>
     </target>
 
+    <target name="gwtcompile-TestFlash" depends="init">
+        <mkdir dir="www"/>
+        <delete dir="www/org.mcarthur.sandy.gwt.plugin.flash.TestFlash"/>
+        <gwtcompile module="org.mcarthur.sandy.gwt.plugin.flash.TestFlash"/>
+    </target>
+
     <target name="package" depends="compile-src" description="Package up the whole project as a jar">
         <jar destfile="GWT-Stuff-${DSTAMP}.jar">
             <fileset dir="${build.classes.dir}">
@@ -210,6 +216,7 @@
             <group title="Event Lists" packages="org.mcarthur.sandy.gwt.event.list:org.mcarthur.sandy.gwt.event.list.*"/>
             <group title="Property Change Events" packages="org.mcarthur.sandy.gwt.event.property:org.mcarthur.sandy.gwt.event.property.*"/>
             <group title="Login Panel" packages="org.mcarthur.sandy.gwt.login:org.mcarthur.sandy.gwt.login.*"/>
+            <group title="Browser Plugins" packages="org.mcarthur.sandy.gwt.plugin:org.mcarthur.sandy.gwt.plugin.*"/>
             <group title="Tables" packages="org.mcarthur.sandy.gwt.table:org.mcarthur.sandy.gwt.table.*"/>
             <classpath refid="project.class.path"/>
             <classpath refid="gwt.class.path"/>
