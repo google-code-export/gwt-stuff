@@ -25,7 +25,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Flash Plugin widget.
+ * Flash Plugin widget, doesn't work in all browsers yet.
  *
  * <p>
  * While it may be possible to change the exposed properties after they've been set, what exactly
@@ -559,6 +559,12 @@ public class Flash extends Widget {
     public interface Methods {
         public void gotoFrame(int frame);
         public boolean isPlaying();
+
+        /**
+         * How Flash calculates the pan offsets.
+         *
+         * @see org.mcarthur.sandy.gwt.plugin.client.Flash.Methods#pan(int, int, org.mcarthur.sandy.gwt.plugin.client.Flash.Methods.PanMode)
+         */
         public static class PanMode {
             public static final PanMode PIXEL = new PanMode(0);
             public static final PanMode PERCENT = new PanMode(1);
@@ -596,6 +602,12 @@ public class Flash extends Widget {
         public void tCallLabel(String target, String label);
 
         /**
+         * Enum for supported Flash properties.
+         * 
+         * @see org.mcarthur.sandy.gwt.plugin.client.Flash.Methods#tGetProperty(String, org.mcarthur.sandy.gwt.plugin.client.Flash.Methods.Property)
+         * @see org.mcarthur.sandy.gwt.plugin.client.Flash.Methods#tGetPropertyAsNumber(String, org.mcarthur.sandy.gwt.plugin.client.Flash.Methods.Property)
+         * @see org.mcarthur.sandy.gwt.plugin.client.Flash.Methods#tSetProperty(String, org.mcarthur.sandy.gwt.plugin.client.Flash.Methods.Property, String)
+         * @see org.mcarthur.sandy.gwt.plugin.client.Flash.Methods#tSetProperty(String, org.mcarthur.sandy.gwt.plugin.client.Flash.Methods.Property, int)
          * @see <a href="http://www.adobe.com/support/flash/publishexport/scriptingwithflash/scriptingwithflash_04.html#69558">Getting and setting properties</a>
          */
         public static class Property {
@@ -657,7 +669,11 @@ public class Flash extends Widget {
             instance.@org.mcarthur.sandy.gwt.plugin.client.Flash::doFSCommand(Ljava/lang/String;Ljava/lang/String;)(command, args);
         };
     }-*/;
+
     /**
+     * Callback so GWT can receive FSCommand calls from in the Flash movie.
+     * 
+     * @see org.mcarthur.sandy.gwt.plugin.client.Flash#addFSCommandListener(org.mcarthur.sandy.gwt.plugin.client.Flash.FsCommandListener)
      * @see <a href="http://www.adobe.com/support/flash/publishexport/scriptingwithflash/scriptingwithflash_03.html">Flash Events</a>
      */
     public interface FsCommandListener {
