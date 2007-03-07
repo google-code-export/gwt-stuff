@@ -373,15 +373,9 @@ public final class ObjectListTable extends Widget implements SourcesMouseEvents 
 
     private void adopt(final TableHeaderGroup headerGroup) {
         // check that the headerGroup hasn't been adopted twice
-        assert DOM.getParent(headerGroup.getElement()) == null;
-        if (DOM.getParent(headerGroup.getElement()) != null) {
-            throw new IllegalStateException("headerGroup cannot be adoped twice!");
-        }
+        assert DOM.getParent(headerGroup.getElement()) == null : "headerGroup cannot be adoped twice.";
 
-        assert thead == null;
-        if (thead != null) { // XXX: remove this block once satisfied with web mode testing
-            throw new IllegalStateException("thead cannot be replaced");
-        }
+        assert thead == null : "Table Header cannot be replaced. (yet)";
 
         thead = headerGroup;
 
@@ -401,15 +395,9 @@ public final class ObjectListTable extends Widget implements SourcesMouseEvents 
 
     private void adopt(final TableFooterGroup footerGroup) {
         // check that the footerGroup hasn't been adopted twice
-        assert DOM.getParent(footerGroup.getElement()) == null;
-        if (DOM.getParent(footerGroup.getElement()) != null) {
-            throw new IllegalStateException("footerGroup cannot be adoped twice!");
-        }
+        assert DOM.getParent(footerGroup.getElement()) == null : "footerGroup cannot be adoped twice.";
 
-        assert tfoot == null;
-        if (tfoot != null) { // XXX: remove this block once satisfied with web mode testing
-            throw new IllegalStateException("tfoot cannot be replaced");
-        }
+        assert tfoot == null : "Table Footer cannot be replaced. (yet)";
 
         tfoot = footerGroup;
 
@@ -460,10 +448,7 @@ public final class ObjectListTable extends Widget implements SourcesMouseEvents 
 
     private void disown(final ObjectListTableBodyGroup bodyGroup) {
         // check that the bodyGroup is owned by this table
-        assert DOM.compare(getElement(), DOM.getParent(bodyGroup.getElement()));
-        if (!DOM.compare(getElement(), DOM.getParent(bodyGroup.getElement()))) {
-            throw new IllegalStateException("bodyGroup is not owned by this table!");
-        }
+        assert DOM.compare(getElement(), DOM.getParent(bodyGroup.getElement())) : "bodyGroup is not owned by this table.";
 
         // if the table is attached, detach the row group
         if (isAttached()) {
@@ -677,11 +662,11 @@ public final class ObjectListTable extends Widget implements SourcesMouseEvents 
         super.onAttach();
 
         final TableHeaderGroup thead = getThead();
-        assert thead != null;
+        assert thead != null : "Table Headers must be created during onAttach or before onAttach.";
         thead.onAttach();
 
         final TableFooterGroup tfoot = getTfoot();
-        assert tfoot != null;
+        assert tfoot != null : "Table Footers must be created during onAttach or before onAttach.";
         tfoot.onAttach();
 
         if (renderer instanceof AttachRenderer) {
@@ -693,7 +678,7 @@ public final class ObjectListTable extends Widget implements SourcesMouseEvents 
         final Iterator iter = getTbodies().iterator();
         while (iter.hasNext()) {
             final ObjectListTableBodyGroup tbody = (ObjectListTableBodyGroup)iter.next();
-            assert tbody != null;
+            assert tbody != null : "Broken State: A null tbody got into the list of tbodies.";
 
             tbody.onAttach();
 
@@ -705,14 +690,15 @@ public final class ObjectListTable extends Widget implements SourcesMouseEvents 
     }
 
     protected void onDetach() {
+        assert isAttached() : "The ObjectListTable is not current attached. The containing Panel/Widget has broken attach/detach logic and needs to be fixed. Using ObjectListTable in a broken widget can lead to unexpected behavior and is not supported.";
         super.onDetach();
 
         final TableHeaderGroup thead = getThead();
-        assert thead != null;
+        assert thead != null : "Table Header wasn't created when the table was atached to the browser's document.";
         thead.onDetach();
 
         final TableFooterGroup tfoot = getTfoot();
-        assert tfoot != null;
+        assert tfoot != null : "Table Footer wasn't created when the table was atached to the browser's document.";
         tfoot.onDetach();
 
         if (renderer instanceof AttachRenderer) {
@@ -724,7 +710,7 @@ public final class ObjectListTable extends Widget implements SourcesMouseEvents 
         final Iterator iter = getTbodies().iterator();
         while (iter.hasNext()) {
             final ObjectListTableBodyGroup tbody = (ObjectListTableBodyGroup)iter.next();
-            assert tbody != null;
+            assert tbody != null : "Broken State: A null tbody got into the list of tbodies.";
 
             tbody.onDetach();
 

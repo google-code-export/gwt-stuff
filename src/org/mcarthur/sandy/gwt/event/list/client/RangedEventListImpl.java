@@ -179,7 +179,7 @@ class RangedEventListImpl extends TransformedEventList implements RangedEventLis
     }
 
     protected void setStartOffset(final int startOffset) {
-        assert startOffset >= 0;
+        assert startOffset >= 0 : "startOffset must be greater than zero. was: " + startOffset;
         this.startOffset = startOffset;
     }
 

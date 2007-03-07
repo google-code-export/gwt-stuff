@@ -203,10 +203,7 @@ public abstract class TableRow extends UIObject implements EventListener {
 
     protected void adopt(final TableCell cell, final int index) {
         // check that the cell hasn't been adopted twice
-        assert DOM.getParent(cell.getElement()) == null;
-        if (DOM.getParent(cell.getElement()) != null) {
-            throw new IllegalStateException("table cell cannot be adoped twice!");
-        }
+        assert DOM.getParent(cell.getElement()) == null : "table cell cannot be adoped twice. index: " + index;
 
         cellsbk.add(index, cell);
 
@@ -220,10 +217,7 @@ public abstract class TableRow extends UIObject implements EventListener {
 
     protected void disown(final TableCell cell) {
         // check that the cell is owned by this row
-        assert DOM.compare(getElement(), DOM.getParent(cell.getElement()));
-        if (!DOM.compare(getElement(), DOM.getParent(cell.getElement()))) {
-            throw new IllegalStateException("cell is not owned by this row!");
-        }
+        assert DOM.compare(getElement(), DOM.getParent(cell.getElement())) : "table cell is not owned by this row.";
 
         if (attached) {
             cell.onDetach();
@@ -235,10 +229,7 @@ public abstract class TableRow extends UIObject implements EventListener {
     }
 
     protected void onAttach() {
-        assert !attached;
-        if (attached) { // XXX: remove this block once satisfied with web mode testing
-            throw new RuntimeException("TableRow cannot be attached twice.");
-        }
+        assert !attached : "TableRow cannot be attached twice.";
 
         attached = true;
 
@@ -250,10 +241,7 @@ public abstract class TableRow extends UIObject implements EventListener {
     }
 
     protected void onDetach() {
-        assert attached;
-        if (!attached) { // XXX: remove this block once satisfied with web mode testing
-            throw new RuntimeException("TableRow cannot be detached twice.");
-        }
+        assert attached : "TableRow cannot be detached twice.";
 
         attached = false;
 
