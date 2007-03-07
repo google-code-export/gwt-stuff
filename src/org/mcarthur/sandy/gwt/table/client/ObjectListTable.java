@@ -341,7 +341,7 @@ public final class ObjectListTable extends Widget implements SourcesMouseEvents 
     }
 
     /**
-     * ALPHA: A renderer implementing this interface can provide column and column group information
+     * BETA: A renderer implementing this interface can provide column and column group information
      * to help control how the browser renders the table.
      *
      * <p>

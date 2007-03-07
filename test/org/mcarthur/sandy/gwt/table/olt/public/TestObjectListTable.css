@@ -22,6 +22,20 @@ body {
     background-color: #E8EEF7;
 }
 
+.gwt-DialogBox {
+  border: 2px outset;
+  background-color: white;
+}
+
+.gwt-DialogBox .Caption {
+  background-color: #C3D9FF;
+  padding: 3px;
+  margin: 2px;
+  font-weight: bold;
+  cursor: default;
+}
+
+
 /* Remove gaps between cells */
 table {
   border-collapse: collapse;

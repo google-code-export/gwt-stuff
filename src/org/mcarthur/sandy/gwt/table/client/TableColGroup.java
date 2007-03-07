@@ -26,7 +26,7 @@ import org.mcarthur.sandy.gwt.event.list.client.ListEventListener;
 import java.util.List;
 
 /**
- * <b>ALPHA:</b> Base class for a HTML Column Group.
+ * BETA: Base class for a HTML Column Group, colgroup.
  *
  * <p>
  * <b>Note:</b> This class is part of an alpha API and is likely to change in incompatible ways
