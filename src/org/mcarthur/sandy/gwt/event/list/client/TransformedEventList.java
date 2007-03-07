@@ -126,7 +126,7 @@ public abstract class TransformedEventList extends AbstractEventList implements 
 
             public void remove() {
                 if (lastRet == -1) {
-                    throw new IllegalStateException();
+                    throw new IllegalStateException("next() must be called before remove()");
                 }
 
                 TransformedEventList.this.remove(lastRet);
