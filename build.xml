@@ -4,11 +4,25 @@
         Build file for GWT-Stuff modules.
     </description>
 
-    <target name="init">
-        <tstamp/>
+    <target name="find-gwt">
+        <!-- Load the user's host enviroment to try to find the GWT install -->
+        <property environment="env"/>
+        <property name="env.GWT_HOME" value="C:/gwt-windows-1.3.3/"/>
 
         <!-- Configure: either edit there here or specify with -Dname=value when invking Ant -->
-        <property name="gwt.basedir" value="C:/gwt-windows-1.3.3/" description="The base directory where you installed GWT."/>
+        <property name="gwt.homedir" value="${env.GWT_HOME}" description="The base directory where you installed GWT."/>
+        <available property="gwt.user.jar-found" file="${gwt.homedir}/gwt-user.jar"/>
+    </target>
+
+    <target depends="find-gwt" name="gwt-not-found" unless="gwt.user.jar-found">
+        <fail>
+Could not find GWT install directory.
+Please set GWT_HOME in your OS's environment or invoke ant with -Dgwt.homedir="/path/to/gwt-home" .
+        </fail>
+    </target>
+
+    <target name="init" depends="gwt-not-found">
+        <tstamp/>
         <property name="gwt.compiler.style" value="OBF" description="GWTCompiler -style option value, defaults to OBF"/>
 
         <property name="build.dir" value="build"/>
@@ -25,14 +39,14 @@
                 <include name="*.jar"/>
             </fileset>
             <!-- The GWT client libs -->
-            <fileset dir="${gwt.basedir}">
+            <fileset dir="${gwt.homedir}">
                 <include name="gwt-user.jar"/>
             </fileset>
         </path>
 
         <!-- Classpath to launch GWTShell and GWTCompilter -->
         <path id="gwt.class.path">
-            <fileset dir="${gwt.basedir}">
+            <fileset dir="${gwt.homedir}">
                 <include name="gwt-dev-*.jar"/>
             </fileset>
         </path>
