@@ -560,7 +560,7 @@ public class Flash extends Widget {
         public void gotoFrame(int frame);
         public boolean isPlaying();
         public static class PanMode {
-            public static final PanMode PIXELS = new PanMode(0);
+            public static final PanMode PIXEL = new PanMode(0);
             public static final PanMode PERCENT = new PanMode(1);
 
             private final int mode;

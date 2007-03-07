@@ -24,7 +24,7 @@ import com.google.gwt.user.client.Element;
  *
  * @author Sandy McArthur
  */
-public class FlashImplIE6 extends FlashImpl {
+class FlashImplIE6 extends FlashImpl {
 
     public Element createPluginElement() {
         base = DOM.createElement("object");
