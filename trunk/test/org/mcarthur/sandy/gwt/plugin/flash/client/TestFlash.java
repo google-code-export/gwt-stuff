@@ -41,11 +41,13 @@ public class TestFlash implements EntryPoint {
     public void onModuleLoad() {
         //flash.setLoop(true);
         //flash.setPlay(false);
-        //flash.setSwLiveConnect(true);
+        flash.setSwLiveConnect(true);
         flash.setWidth("160");
         flash.setHeight("120");
         RootPanel.get("flash").add(flash);
         RootPanel.get("log").add(log);
+
+        log.add(new Label(flash.toString()));
 
         flash.addFSCommandListener(new Flash.FsCommandListener() {
             public void fsCommand(final String command, final String args) {
