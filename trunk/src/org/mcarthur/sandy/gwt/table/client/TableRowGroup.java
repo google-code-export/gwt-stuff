@@ -202,10 +202,7 @@ public abstract class TableRowGroup extends UIObject implements EventListener {
 
     protected void adopt(final TableRow row, final int index) {
         // check that the row hasn't been adopted twice
-        assert DOM.getParent(row.getElement()) == null;
-        if (DOM.getParent(row.getElement()) != null) {
-            throw new IllegalStateException("table row cannot be adoped twice!");
-        }
+        assert DOM.getParent(row.getElement()) == null : "TableRow cannot be adoped twice. index: " + index;
 
         rowsbk.add(index, row);
 
@@ -219,10 +216,7 @@ public abstract class TableRowGroup extends UIObject implements EventListener {
 
     protected void disown(final TableRow row) {
         // check that the row is owned by this row group
-        assert DOM.compare(getElement(), DOM.getParent(row.getElement()));
-        if (!DOM.compare(getElement(), DOM.getParent(row.getElement()))) {
-            throw new IllegalStateException("row is not owned by this row group!");
-        }
+        assert DOM.compare(getElement(), DOM.getParent(row.getElement())) : "TableRow is not owned by this row group.";
 
         if (attached) {
             row.onDetach();
@@ -234,10 +228,7 @@ public abstract class TableRowGroup extends UIObject implements EventListener {
     }
 
     protected void onAttach() {
-        assert !attached;
-        if (attached) { // XXX: remove this block once satisfied with web mode testing
-            throw new RuntimeException("TableRowGroup cannot be attached twice.");
-        }
+        assert !attached : "TableRowGroup cannot be attached twice.";
 
         attached = true;
 
@@ -249,10 +240,7 @@ public abstract class TableRowGroup extends UIObject implements EventListener {
     }
 
     protected void onDetach() {
-        assert attached;
-        if (!attached) { // XXX: remove this block once satisfied with web mode testing
-            throw new RuntimeException("TableRowGroup cannot be detached twice.");
-        }
+        assert attached : "TableRowGroup cannot be detached twice.";
 
         attached = false;
 

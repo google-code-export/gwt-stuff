@@ -221,7 +221,8 @@ class FlashImplIE6 extends FlashImpl {
     }
 
     private static Element createParam(final String name) {
-        assert name != null;
+        assert name != null: "Param name must not be null." ;
+        assert name.length() > 0: "Param name must not be an empty string." ;
         final Element param = DOM.createElement("param");
         setAttribute(param, "name", name);
         return param;

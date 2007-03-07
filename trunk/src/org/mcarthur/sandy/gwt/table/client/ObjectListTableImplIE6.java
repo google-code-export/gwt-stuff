@@ -33,7 +33,7 @@ class ObjectListTableImplIE6 extends ObjectListTableImpl {
         } else {
             final ObjectListTable.ObjectListTableBodyGroup bodyGroup =
                     (ObjectListTable.ObjectListTableBodyGroup)unusedTbodies.remove(0);
-            assert bodyGroup.getObject() == null;
+            assert bodyGroup.getObject() == null : "recycled bodyGroup had an associated object: " + bodyGroup.getObject();
             bodyGroup.setVisible(true);
             return bodyGroup;
         }
