@@ -132,7 +132,7 @@ public class TestFlash implements EntryPoint {
         panL.setTitle("Pan Left");
         panL.addClickListener(new ClickListener() {
             public void onClick(final Widget sender) {
-                flash.getMethods().pan(-25, 0, Flash.Methods.PanMode.PIXELS);
+                flash.getMethods().pan(-25, 0, Flash.Methods.PanMode.PIXEL);
             }
         });
         fp.add(panL);
@@ -141,7 +141,7 @@ public class TestFlash implements EntryPoint {
         panU.setTitle("Pan Up");
         panU.addClickListener(new ClickListener() {
             public void onClick(final Widget sender) {
-                flash.getMethods().pan(0, -25, Flash.Methods.PanMode.PIXELS);
+                flash.getMethods().pan(0, -25, Flash.Methods.PanMode.PIXEL);
             }
         });
         fp.add(panU);
@@ -150,7 +150,7 @@ public class TestFlash implements EntryPoint {
         panR.setTitle("Pan Right");
         panR.addClickListener(new ClickListener() {
             public void onClick(final Widget sender) {
-                flash.getMethods().pan(25, 0, Flash.Methods.PanMode.PIXELS);
+                flash.getMethods().pan(25, 0, Flash.Methods.PanMode.PIXEL);
             }
         });
         fp.add(panR);
@@ -159,7 +159,7 @@ public class TestFlash implements EntryPoint {
         panD.setTitle("Pan Down");
         panD.addClickListener(new ClickListener() {
             public void onClick(final Widget sender) {
-                flash.getMethods().pan(0, 25, Flash.Methods.PanMode.PIXELS);
+                flash.getMethods().pan(0, 25, Flash.Methods.PanMode.PIXEL);
             }
         });
         fp.add(panD);
