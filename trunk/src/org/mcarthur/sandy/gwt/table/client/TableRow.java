@@ -32,7 +32,7 @@ import java.util.Iterator;
 import java.util.List;
 
 /**
- * Base class for an HTML Table Row.
+ * Base class for an HTML Table Row, tr.
  *
  * <h3>CSS Style Rules</h3>
  * <ul class="css">

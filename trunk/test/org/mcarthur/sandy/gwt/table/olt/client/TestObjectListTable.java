@@ -26,8 +26,10 @@ import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.ChangeListener;
 import com.google.gwt.user.client.ui.CheckBox;
 import com.google.gwt.user.client.ui.ClickListener;
+import com.google.gwt.user.client.ui.DialogBox;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.FocusListenerAdapter;
+import com.google.gwt.user.client.ui.HTMLTable;
 import com.google.gwt.user.client.ui.HasHorizontalAlignment;
 import com.google.gwt.user.client.ui.HasVerticalAlignment;
 import com.google.gwt.user.client.ui.HorizontalPanel;
@@ -82,6 +84,8 @@ public class TestObjectListTable implements EntryPoint {
     private RangedEventList rel;
     private int pCount = 0;
 
+    private DialogBox db = new DialogBox(true);
+
     public void onModuleLoad() {
         EventList el = new ObservingEventList(); this.el = el;
         sel = EventLists.sortedEventList(el); el = sel;
@@ -92,6 +96,8 @@ public class TestObjectListTable implements EntryPoint {
         ot.setWidth("100%");
         RootPanel.get("log").add(vp);
 
+        db.setText("ObjectListTable in a DialogBox");
+        db.setPopupPosition(100, 100);
 
         final List objects = ot.getObjects();
 
@@ -178,6 +184,15 @@ public class TestObjectListTable implements EntryPoint {
         });
         fp.add(oneK);
 
+        final Button clear = new Button("Clear");
+        clear.setTitle("Calls clear() on the backing EventList.");
+        clear.addClickListener(new ClickListener() {
+            public void onClick(final Widget sender) {
+                ot.getObjects().clear();
+            }
+        });
+        fp.add(clear);
+
         final Button attach = new Button("Detach");
         attach.addClickListener(new ClickListener() {
             public void onClick(final Widget sender) {
@@ -194,6 +209,22 @@ public class TestObjectListTable implements EntryPoint {
             }
         });
         fp.add(attach);
+
+        final Button dbb = new Button("DialogBox");
+        dbb.addClickListener(new ClickListener() {
+            public void onClick(final Widget sender) {
+                Widget w = db.getWidget();
+                if (w instanceof HTMLTable) {
+                    w = ((HTMLTable)w).getWidget(1,0);
+                }
+                if (w == null) {
+                    db.setWidget(new ObjectListTable(new OLTR(), ot.getObjects()));
+                }
+
+                db.show();
+            }
+        });
+        fp.add(dbb);
 
         if (fel != null) {
             final TextBox lower = new TextBox();

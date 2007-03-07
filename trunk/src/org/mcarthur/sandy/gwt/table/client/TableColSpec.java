@@ -21,7 +21,7 @@ import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.ui.UIObject;
 
 /**
- * <b>ALPHA:</b> Base class for a HTML Column Groups.
+ * BETA: Base class for a HTML Column Groups.
  *
  * <p>
  * <b>Note:</b> This class is part of an alpha API and is likely to change in incompatible ways

@@ -19,7 +19,7 @@ package org.mcarthur.sandy.gwt.table.client;
 import com.google.gwt.user.client.DOM;
 
 /**
- * <b>ALPHA:</b> Base class for a HTML Column.
+ * BETA: Base class for a HTML Column, col.
  * 
  * <p>
  * <b>Note:</b> This class is part of an alpha API and is likely to change in incompatible ways
