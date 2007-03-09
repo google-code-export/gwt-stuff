@@ -65,6 +65,34 @@ img {
     border: 0pt none;
 }
 
+.nooverflow {
+    overflow:hidden;
+}
+
+.w2ex {
+    width: 2ex;
+}
+
+.w9p5ex {
+    width: 9.5ex;
+}
+
+.w17px {
+    width: 17px;
+}
+
+.w20px {
+    width: 20px;
+}
+
+.w27ex {
+    width: 27ex;
+}
+
+.w31px {
+    width: 31px;
+}
+
 /* Evetything below here is from GWT's KitchSink demo. */
 /*
 .gwt-Tree {
