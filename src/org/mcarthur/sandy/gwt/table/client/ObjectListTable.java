@@ -690,7 +690,11 @@ public final class ObjectListTable extends Widget implements SourcesMouseEvents 
     }
 
     protected void onDetach() {
-        assert isAttached() : "The ObjectListTable is not current attached. The containing Panel/Widget has broken attach/detach logic and needs to be fixed. Using ObjectListTable in a broken widget can lead to unexpected behavior and is not supported.";
+        // XXX: http://code.google.com/p/google-web-toolkit/issues/detail?id=792
+        if (!isAttached()) {
+            return;
+        }
+        //assert isAttached() : "The ObjectListTable is not current attached. The containing Panel/Widget has broken attach/detach logic and needs to be fixed. Using ObjectListTable in a broken widget can lead to unexpected behavior and is not supported.";
         super.onDetach();
 
         final TableHeaderGroup thead = getThead();
