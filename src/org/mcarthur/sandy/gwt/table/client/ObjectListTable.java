@@ -442,6 +442,8 @@ public final class ObjectListTable extends Widget implements SourcesMouseEvents 
 
         // if the table is attached, attach the row group
         if (isAttached()) {
+            renderer.render(bodyGroup.getObject(), bodyGroup);
+            bodyGroup.setRendered(true);
             attach(bodyGroup);
         }
     }
@@ -515,7 +517,6 @@ public final class ObjectListTable extends Widget implements SourcesMouseEvents 
 
                     final ObjectListTableBodyGroup bodyGroup = impl.takeBodyGroup(ObjectListTable.this);
                     bodyGroup.setObject(obj);
-                    renderer.render(obj, bodyGroup);
 
                     adopt(bodyGroup, i);
                 }
@@ -533,7 +534,6 @@ public final class ObjectListTable extends Widget implements SourcesMouseEvents 
                         // create new
                         bodyGroup = impl.takeBodyGroup(ObjectListTable.this);
                         bodyGroup.setObject(obj);
-                        renderer.render(obj, bodyGroup);
 
                         adopt(bodyGroup, i);
                     }
@@ -553,6 +553,7 @@ public final class ObjectListTable extends Widget implements SourcesMouseEvents 
 
     static class ObjectListTableBodyGroup extends TableBodyGroup {
         private Object obj;
+        private boolean rendered;
 
         public TableRow newTableRow() {
             return new ObjectListTableRow();
@@ -574,9 +575,18 @@ public final class ObjectListTable extends Widget implements SourcesMouseEvents 
             this.obj = obj;
         }
 
+        boolean isRendered() {
+            return rendered;
+        }
+
+        void setRendered(final boolean rendered) {
+            this.rendered = rendered;
+        }
+
         protected void reset() {
             super.reset();
             addStyleName(CLASS_GWTSTUFF_OBJECTLISTTABLE + "-ObjectListTableBodyGroup");
+            setRendered(false);
         }
     }
 
@@ -680,6 +690,10 @@ public final class ObjectListTable extends Widget implements SourcesMouseEvents 
             final ObjectListTableBodyGroup tbody = (ObjectListTableBodyGroup)iter.next();
             assert tbody != null : "Broken State: A null tbody got into the list of tbodies.";
 
+            if (!tbody.isRendered()) {
+                renderer.render(tbody.getObject(), tbody);
+                tbody.setRendered(true);
+            }
             tbody.onAttach();
 
             if (renderer instanceof AttachRenderer) {
