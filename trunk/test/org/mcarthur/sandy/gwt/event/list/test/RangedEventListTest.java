@@ -18,9 +18,14 @@ package org.mcarthur.sandy.gwt.event.list.test;
 
 import org.mcarthur.sandy.gwt.event.list.client.EventList;
 import org.mcarthur.sandy.gwt.event.list.client.EventLists;
+import org.mcarthur.sandy.gwt.event.list.client.FilteredEventList;
+import org.mcarthur.sandy.gwt.event.list.client.ListEvent;
+import org.mcarthur.sandy.gwt.event.list.client.ListEventListener;
 import org.mcarthur.sandy.gwt.event.list.client.RangedEventList;
+import org.mcarthur.sandy.gwt.event.list.client.SortedEventList;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 
 /**
@@ -32,6 +37,10 @@ public class RangedEventListTest extends TransformedEventListTest {
 
     protected EventList createEmptyEventLists() {
         return EventLists.rangedEventList();
+    }
+
+    protected RangedEventList createBackedEventList(final EventList el) {
+        return EventLists.rangedEventList(el);
     }
 
     public void testSetStart() {
@@ -176,5 +185,40 @@ public class RangedEventListTest extends TransformedEventListTest {
 
         assertEquals(1, rel.size());
         assertEquals(all.size(), el.size());
+    }
+
+    public void testClearOfDeeperList() {
+        final EventList el = EventLists.eventList();
+        final SortedEventList sel = EventLists.sortedEventList(el);
+        // keep a reverse sort
+        sel.setComparator(new Comparator() {
+            public int compare(final Object o1, final Object o2) {
+                final Comparable c1 = (Comparable)o1;
+                final Comparable c2 = (Comparable)o2;
+                return c2.compareTo(c1);
+            }
+        });
+        final FilteredEventList fel = EventLists.filteredEventList(sel);
+        final RangedEventList rel = createBackedEventList(fel);
+        rel.setMaxSize(4);
+
+        // don't change the order
+        el.add(new Integer(25));
+        el.add(new Integer(33));
+        el.add(new Integer(55));
+        el.add(new Integer(7));
+        el.add(new Integer(93));
+
+        rel.addListEventListener(new ListEventListener() {
+            public void listChanged(final ListEvent listEvent) {
+                if (listEvent.isChanged()) {
+                    for (int i = listEvent.getIndexStart(); i < listEvent.getIndexEnd();i ++) {
+                        listEvent.getSourceList().get(i);
+                    }
+                }
+            }
+        });
+
+        el.clear();
     }
 }
