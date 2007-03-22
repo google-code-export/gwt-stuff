@@ -29,14 +29,29 @@ class SteadyRangedEventListImpl extends RangedEventListImpl implements RangedEve
 
     protected ListEventListener getListEventListener() {
         return new SteadyPaginatedListEventListener();
+        //return new SteadyRangedListEventListener();
     }
 
+    private class SteadyRangedListEventListener extends RangedListEventListener {
+
+        protected void listChangedRemoved(final int indexStart, final int indexEnd) {
+            if (indexEnd <= getStart()) {
+                // if the removal didn't affect any visible elements
+                final int removedSize = indexEnd - indexStart;
+                setStartOffset(getStart() - removedSize);
+                fireListEvent(new ListEvent(SteadyRangedEventListImpl.this));
+
+            } else {
+                super.listChangedRemoved(indexStart, indexEnd);
+            }
+        }
+    }
     private class SteadyPaginatedListEventListener implements ListEventListener {
         public void listChanged(final ListEvent listEvent) {
             // XXX: lots of room for event fireng optimizations here
             final int indexStart = listEvent.getIndexStart();
             final int indexEnd = listEvent.getIndexEnd();
-            final int maxEnd = getStart() + getMaxSize();
+            final int maxEnd = getStart() + getMaxSize(); // FIXME: check for overflow
 
             if (listEvent.isAdded()) {
                 final int addedSize = indexEnd - indexStart;

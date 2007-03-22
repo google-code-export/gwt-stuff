@@ -41,10 +41,10 @@ class RangedEventListImpl extends TransformedEventList implements RangedEventLis
     }
 
     protected ListEventListener getListEventListener() {
-        return new PaginatedListEventListener();
+        return new RangedListEventListener();
     }
 
-    private class PaginatedListEventListener implements ListEventListener {
+    class RangedListEventListener implements ListEventListener {
         public void listChanged(final ListEvent listEvent) {
             // XXX: lots of room for event fireng optimizations here
             final int indexStart = listEvent.getIndexStart();
@@ -56,7 +56,6 @@ class RangedEventListImpl extends TransformedEventList implements RangedEventLis
             } else if (listEvent.isChanged()) {
                 listChangedChanged(indexStart, indexEnd);
 
-
             } else if (listEvent.isRemoved()) {
                 listChangedRemoved(indexStart, indexEnd);
 
@@ -65,10 +64,10 @@ class RangedEventListImpl extends TransformedEventList implements RangedEventLis
             }
         }
 
-        private void listChangedAdded(final int indexStart, final int indexEnd) {
+        protected void listChangedAdded(final int indexStart, final int indexEnd) {
             final int start = getStart();
             final int maxSize = getMaxSize();
-            final int maxEnd = start + maxSize;
+            final int maxEnd = start + maxSize; // FIXME: check for overflow
             if (indexStart < maxEnd) {
                 final int addedSize = indexEnd - indexStart;
                 final int oldTotal = getTotal() - addedSize;
@@ -92,10 +91,10 @@ class RangedEventListImpl extends TransformedEventList implements RangedEventLis
             }
         }
 
-        private void listChangedChanged(final int indexStart, final int indexEnd) {
+        protected void listChangedChanged(final int indexStart, final int indexEnd) {
             final int start = getStart();
             final int maxSize = getMaxSize();
-            final int maxEnd = start + maxSize;
+            final int maxEnd = start + maxSize; // FIXME: check for overflow
             // does the event affect our range?
             if (start < indexEnd && indexStart < maxEnd) {
                 // clamp to current page range
@@ -107,10 +106,10 @@ class RangedEventListImpl extends TransformedEventList implements RangedEventLis
             }
         }
 
-        private void listChangedRemoved(final int indexStart, final int indexEnd) {
+        protected void listChangedRemoved(final int indexStart, final int indexEnd) {
             final int start = getStart();
             final int maxSize = getMaxSize();
-            final int maxEnd = start + maxSize;
+            final int maxEnd = start + maxSize; // FIXME: check for overflow
             if (indexStart < maxEnd) {
                 final int removedSize = indexEnd - indexStart;
                 final int removedStart = Math.max(0, indexStart - start);
