@@ -44,10 +44,10 @@ public class RangedEventListTest extends TransformedEventListTest {
     }
 
     public void testSetStart() {
-        EventList el = EventLists.eventList();
+        final EventList el = EventLists.eventList();
         el.add("one");
         el.add("two");
-        RangedEventList rel = EventLists.rangedEventList(el);
+        final RangedEventList rel = EventLists.rangedEventList(el);
 
         assertEquals(2, el.size());
         assertEquals(2, rel.size());
@@ -66,10 +66,10 @@ public class RangedEventListTest extends TransformedEventListTest {
     }
 
     public void testAdd() {
-        EventList el = EventLists.eventList();
+        final EventList el = EventLists.eventList();
         el.add("one");
         el.add("two");
-        RangedEventList rel = EventLists.rangedEventList(el);
+        final RangedEventList rel = EventLists.rangedEventList(el);
 
         rel.setMaxSize(2);
 
@@ -84,10 +84,10 @@ public class RangedEventListTest extends TransformedEventListTest {
     }
 
     public void testContains() {
-        EventList el = EventLists.eventList();
+        final EventList el = EventLists.eventList();
         el.add("one");
         el.add("two");
-        RangedEventList rel = EventLists.rangedEventList(el);
+        final RangedEventList rel = EventLists.rangedEventList(el);
 
         assertTrue(el.contains("one"));
         assertTrue(el.contains("two"));
@@ -110,13 +110,13 @@ public class RangedEventListTest extends TransformedEventListTest {
     }
 
     public void testContainsAll() {
-        List all = new ArrayList();
+        final List all = new ArrayList();
         all.add("one");
         all.add("two");
 
-        EventList el = EventLists.eventList();
+        final EventList el = EventLists.eventList();
         el.addAll(all);
-        RangedEventList rel = EventLists.rangedEventList(el);
+        final RangedEventList rel = EventLists.rangedEventList(el);
 
         assertTrue(rel.containsAll(all));
         
@@ -138,9 +138,9 @@ public class RangedEventListTest extends TransformedEventListTest {
         all.add("one");
         all.add("two");
 
-        EventList el = EventLists.eventList();
+        final EventList el = EventLists.eventList();
         el.addAll(all);
-        RangedEventList rel = EventLists.rangedEventList(el);
+        final RangedEventList rel = EventLists.rangedEventList(el);
 
 
         assertEquals(0, el.indexOf("one"));
@@ -156,9 +156,9 @@ public class RangedEventListTest extends TransformedEventListTest {
         all.add("one");
         all.add("two");
 
-        EventList el = EventLists.eventList();
+        final EventList el = EventLists.eventList();
         el.addAll(all);
-        RangedEventList rel = EventLists.rangedEventList(el);
+        final RangedEventList rel = EventLists.rangedEventList(el);
 
         rel.setStart(1);
         rel.removeAll(all);
@@ -172,13 +172,13 @@ public class RangedEventListTest extends TransformedEventListTest {
         all.add("one");
         all.add("two");
 
-        EventList el = EventLists.eventList();
+        final EventList el = EventLists.eventList();
         el.addAll(all);
-        RangedEventList rel = EventLists.rangedEventList(el);
+        final RangedEventList rel = EventLists.rangedEventList(el);
 
         rel.setStart(1);
 
-        List two = new ArrayList();
+        final List two = new ArrayList();
         two.add("two");
 
         rel.retainAll(two);
@@ -220,5 +220,58 @@ public class RangedEventListTest extends TransformedEventListTest {
         });
 
         el.clear();
+    }
+
+    public void testSizePlusMaxSizeDontOverflow() {
+        final EventList el = EventLists.eventList();
+
+        for (int i=0; i < 10; i++) {
+            el.add(new Integer(i));
+        }
+
+        final RangedEventList rel = createBackedEventList(el); // maxSize set to Integer.MAX_VALUE
+
+        rel.setStart(3);
+
+        final ListEventListener addedListener = new ListEventListener() {
+            public void listChanged(final ListEvent listEvent) {
+                if (!listEvent.isAdded()) {
+                    fail("Expecting an ADDED event. got: " + listEvent);
+                }
+            }
+        };
+        rel.addListEventListener(addedListener);
+
+        el.add("one");
+
+        rel.removeListEventListener(addedListener);
+
+        final ListEventListener changedListener = new ListEventListener() {
+            public void listChanged(final ListEvent listEvent) {
+                if (!listEvent.isChanged()) {
+                    fail("Expecting an CHANGED event. got: " + listEvent);
+                }
+            }
+        };
+
+        rel.addListEventListener(changedListener);
+
+        el.set(el.indexOf("one"), "two");
+
+        rel.removeListEventListener(changedListener);
+
+        final ListEventListener removedListener = new ListEventListener() {
+            public void listChanged(final ListEvent listEvent) {
+                if (!listEvent.isRemoved()) {
+                    fail("Expecting an REMOVED event. got: " + listEvent);
+                }
+            }
+        };
+
+        rel.addListEventListener(removedListener);
+
+        el.remove("two");
+
+        rel.removeListEventListener(removedListener);
     }
 }
