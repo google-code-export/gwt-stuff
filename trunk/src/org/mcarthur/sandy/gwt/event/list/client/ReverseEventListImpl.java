@@ -37,12 +37,12 @@ class ReverseEventListImpl extends AbstractEventList implements EventList {
 
     private int invertIndex(final int index) {
         //return -index + size();
-        return size() - index - 1;
+        return size() - index;
     }
 
     public Object get(final int index) {
         try {
-            return delegate.get(invertIndex(index));
+            return delegate.get(invertIndex(index)-1);
         } catch (IndexOutOfBoundsException iobe) {
             final IndexOutOfBoundsException e = new IndexOutOfBoundsException("Index: " + index + ", Size: " + size());
             e.initCause(iobe);
@@ -93,15 +93,15 @@ class ReverseEventListImpl extends AbstractEventList implements EventList {
                 reverse = listEvent.resource(ReverseEventListImpl.this);
             } else if (listEvent.isAdded()) {
                 size += sizeDelta;
-                final int revStart = invertIndex(listEvent.getIndexStart());
+                final int revStart = invertIndex(listEvent.getIndexEnd());
                 reverse = new ListEvent(ReverseEventListImpl.this, listEvent.getType(), revStart, revStart + sizeDelta);
 
             } else if (listEvent.isChanged()) {
-                final int revStart = invertIndex(listEvent.getIndexStart());
+                final int revStart = invertIndex(listEvent.getIndexEnd());
                 reverse = new ListEvent(ReverseEventListImpl.this, listEvent.getType(), revStart, revStart + sizeDelta);
 
             } else if (listEvent.isRemoved()) {
-                final int revStart = invertIndex(listEvent.getIndexStart());
+                final int revStart = invertIndex(listEvent.getIndexEnd());
                 reverse = new ListEvent(ReverseEventListImpl.this, listEvent.getType(), revStart, revStart + sizeDelta);
                 size -= sizeDelta;
 

@@ -6,6 +6,7 @@ import org.mcarthur.sandy.gwt.event.list.client.ListEvent;
 import org.mcarthur.sandy.gwt.event.list.client.ListEventListener;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -44,7 +45,7 @@ public class ReverseEventListTest extends EventListTest {
         assertEquals(el.get(2), rel.get(0));
     }
 
-    public void testEventsReversed() {
+    public void testEventsAreReversed() {
         final EventList el = EventLists.eventList();
         prefill(el, 3);
         final EventList rel = createBackedEventList(el);
@@ -75,10 +76,51 @@ public class ReverseEventListTest extends EventListTest {
             }
         });
 
-        el.add("one");
-        el.add(0, "two");
+        el.add("one"); // 0
+        el.add(0, "two"); // 1
 
-        el.remove("one");
-        el.remove("two");
+        el.remove("one"); // 2
+        el.remove("two"); // 3
+    }
+
+    public void testAddAll() {
+        final EventList el = EventLists.eventList();
+        final EventList rel = createBackedEventList(el);
+
+        rel.addListEventListener(new ListEventListener() {
+            private int count = 0;
+            public void listChanged(final ListEvent listEvent) {
+                switch (count++) {
+                    case 0:
+                        assertEquals(new ListEvent(rel,ListEvent.ADDED, 0, 3), listEvent);
+                        final List l = new ArrayList();
+                        prefill(l, 3);
+                        Collections.reverse(l);
+                        assertEquals(l, listEvent.getSourceList());
+                        break;
+                    default:
+                        fail(listEvent.toString() + ", count: " + (count-1));
+                        break;
+                }
+            }
+        });
+
+        final List l = new ArrayList();
+        prefill(l, 3);
+
+        assertEquals(0, el.size());
+        el.addAll(l);
+    }
+
+    public void testGet() {
+        fail("Implement me.");
+    }
+
+    public void testSet() {
+        fail("Implement me.");
+    }
+
+    public void testRemove() {
+        fail("Implement me.");
     }
 }
