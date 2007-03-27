@@ -19,6 +19,7 @@ package org.mcarthur.sandy.gwt.event.list.test;
 import junit.framework.TestCase;
 import org.mcarthur.sandy.gwt.event.list.client.EventList;
 
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -33,5 +34,12 @@ public abstract class EventListTest extends TestCase {
     public void testClearOnEmptyList() {
         final List l = createEmptyEventLists();
         l.clear();
+    }
+
+    public void testAddAllWithEmptyList() {
+        final EventList el = createEmptyEventLists();
+        el.addAll(Collections.EMPTY_LIST);
+        el.add(new Object());
+        el.addAll(0, Collections.EMPTY_LIST);
     }
 }
