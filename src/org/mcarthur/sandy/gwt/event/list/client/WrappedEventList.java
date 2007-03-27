@@ -40,9 +40,11 @@ class WrappedEventList extends AbstractEventList implements EventList {
     public boolean add(final Object element) throws NullPointerException {
         checkNotNull(element);
         final int index = delegate.size();
-        final boolean b = delegate.add(element);
-        fireListEvent(new ListEvent(this, ListEvent.ADDED, index));
-        return b;
+        final boolean changed = delegate.add(element);
+        if (changed) {
+            fireListEvent(new ListEvent(this, ListEvent.ADDED, index));
+        }
+        return changed;
     }
 
     public void add(final int index, final Object element) throws NullPointerException {
@@ -55,19 +57,21 @@ class WrappedEventList extends AbstractEventList implements EventList {
         checkNoneNull(c);
 
         final int indexStart = delegate.size();
-        final boolean b = delegate.addAll(c);
-        if (c.size() > 0) {
+        final boolean changed = delegate.addAll(c);
+        if (changed) {
             fireListEvent(new ListEvent(this, ListEvent.ADDED, indexStart, delegate.size()));
         }
-        return b;
+        return changed;
     }
 
     public boolean addAll(final int index, final Collection c) throws NullPointerException {
         checkNoneNull(c);
 
-        final boolean b = delegate.addAll(index, c);
-        fireListEvent(new ListEvent(this, ListEvent.ADDED, index, c.size()));
-        return b;
+        final boolean changed = delegate.addAll(index, c);
+        if (changed) {
+            fireListEvent(new ListEvent(this, ListEvent.ADDED, index, c.size()));
+        }
+        return changed;
     }
 
     public void clear() {
