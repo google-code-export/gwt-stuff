@@ -20,6 +20,7 @@ import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
 import org.mcarthur.sandy.gwt.event.list.test.FilteredEventListTest;
+import org.mcarthur.sandy.gwt.event.list.test.ListEventTest;
 import org.mcarthur.sandy.gwt.event.list.test.RangedEventListTest;
 import org.mcarthur.sandy.gwt.event.list.test.SortedEventListTest;
 import org.mcarthur.sandy.gwt.event.list.test.SteadyRangedEventListTest;
@@ -34,6 +35,8 @@ public class TestAll extends TestCase {
 
     public static Test suite() {
         final TestSuite suite = new TestSuite();
+
+        suite.addTestSuite(ListEventTest.class);
 
         suite.addTestSuite(FilteredEventListTest.class);
         suite.addTestSuite(RangedEventListTest.class);
