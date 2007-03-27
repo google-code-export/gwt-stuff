@@ -39,8 +39,12 @@ public class RangedEventListTest extends TransformedEventListTest {
         return EventLists.rangedEventList();
     }
 
-    protected RangedEventList createBackedEventList(final EventList el) {
+    protected EventList createBackedEventList(final EventList el) {
         return EventLists.rangedEventList(el);
+    }
+
+    protected RangedEventList createBackedRangedEventList(final EventList el) {
+        return (RangedEventList)createBackedEventList(el);
     }
 
     public void testSetStart() {
@@ -199,7 +203,7 @@ public class RangedEventListTest extends TransformedEventListTest {
             }
         });
         final FilteredEventList fel = EventLists.filteredEventList(sel);
-        final RangedEventList rel = createBackedEventList(fel);
+        final RangedEventList rel = createBackedRangedEventList(fel);
         rel.setMaxSize(4);
 
         // don't change the order
@@ -229,7 +233,7 @@ public class RangedEventListTest extends TransformedEventListTest {
             el.add(new Integer(i));
         }
 
-        final RangedEventList rel = createBackedEventList(el); // maxSize set to Integer.MAX_VALUE
+        final RangedEventList rel = createBackedRangedEventList(el); // maxSize set to Integer.MAX_VALUE
 
         rel.setStart(3);
 
@@ -280,7 +284,7 @@ public class RangedEventListTest extends TransformedEventListTest {
         final EventList el = EventLists.eventList();
         prefill(el, 100);
 
-        final RangedEventList rel = createBackedEventList(el);
+        final RangedEventList rel = createBackedRangedEventList(el);
         rel.setStart(10);
         rel.setMaxSize(10);
 
@@ -327,7 +331,7 @@ public class RangedEventListTest extends TransformedEventListTest {
         final EventList el = EventLists.eventList();
         prefill(el, 100);
 
-        final RangedEventList rel = createBackedEventList(el);
+        final RangedEventList rel = createBackedRangedEventList(el);
         rel.setStart(10);
         rel.setMaxSize(10);
 
@@ -343,7 +347,7 @@ public class RangedEventListTest extends TransformedEventListTest {
         final EventList el = EventLists.eventList();
         prefill(el, 100);
 
-        final RangedEventList rel = createBackedEventList(el);
+        final RangedEventList rel = createBackedRangedEventList(el);
         rel.setStart(10);
         rel.setMaxSize(10);
 
@@ -359,7 +363,7 @@ public class RangedEventListTest extends TransformedEventListTest {
         final EventList el = EventLists.eventList();
         prefill(el, 100);
 
-        final RangedEventList rel = createBackedEventList(el);
+        final RangedEventList rel = createBackedRangedEventList(el);
         rel.setStart(10);
         rel.setMaxSize(10);
 

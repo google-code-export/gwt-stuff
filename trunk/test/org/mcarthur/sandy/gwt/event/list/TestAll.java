@@ -22,6 +22,7 @@ import junit.framework.TestSuite;
 import org.mcarthur.sandy.gwt.event.list.test.FilteredEventListTest;
 import org.mcarthur.sandy.gwt.event.list.test.ListEventTest;
 import org.mcarthur.sandy.gwt.event.list.test.RangedEventListTest;
+import org.mcarthur.sandy.gwt.event.list.test.ReverseEventListTest;
 import org.mcarthur.sandy.gwt.event.list.test.SortedEventListTest;
 import org.mcarthur.sandy.gwt.event.list.test.SteadyRangedEventListTest;
 import org.mcarthur.sandy.gwt.event.list.test.WrappedEventListTest;
@@ -40,6 +41,7 @@ public class TestAll extends TestCase {
 
         suite.addTestSuite(FilteredEventListTest.class);
         suite.addTestSuite(RangedEventListTest.class);
+        suite.addTestSuite(ReverseEventListTest.class);
         suite.addTestSuite(SteadyRangedEventListTest.class);
         suite.addTestSuite(SortedEventListTest.class);
         suite.addTestSuite(WrappedEventListTest.class);

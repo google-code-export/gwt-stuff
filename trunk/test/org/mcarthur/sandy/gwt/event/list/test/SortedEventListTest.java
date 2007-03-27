@@ -44,6 +44,10 @@ public class SortedEventListTest extends TransformedEventListTest {
         return EventLists.sortedEventList();
     }
 
+    protected EventList createBackedEventList(final EventList el) {
+        return EventLists.sortedEventList(el);
+    }
+
     public void testAdd() {
         final EventList el = EventLists.eventList();
         el.add(I0);

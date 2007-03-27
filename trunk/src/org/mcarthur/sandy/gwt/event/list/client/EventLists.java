@@ -117,6 +117,19 @@ public class EventLists {
     }
 
     /**
+     * Presents a view of another EventList where the elements are in reverse order.
+     * This could also be done with a SortedEventList but because this only supports
+     * one type of transformation this should give better performance.
+     *
+     * @param eventList the EventList to present the elements in reverse order.
+     * @return a reverse ordering or another EventList.
+     * @see #sortedEventList(EventList)
+     */
+    public static EventList reverseEventList(final EventList eventList) {
+        return new ReverseEventListImpl(eventList);
+    }
+
+    /**
      * Create a <code>SortedEventList</code> that defaults to natural ordering.
      *
      * @return a <code>SortedEventList</code>.

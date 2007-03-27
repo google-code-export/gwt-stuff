@@ -36,6 +36,10 @@ public class FilteredEventListTest extends TransformedEventListTest {
         return EventLists.filteredEventList();
     }
 
+    protected EventList createBackedEventList(final EventList el) {
+        return EventLists.filteredEventList(el);
+    }
+
     public void testToArrayRespectsFilters() {
         final EventList el = EventLists.eventList();
         final FilteredEventList fel = EventLists.filteredEventList(el);

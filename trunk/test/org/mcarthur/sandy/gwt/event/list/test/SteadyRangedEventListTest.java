@@ -33,11 +33,10 @@ import java.util.List;
 public class SteadyRangedEventListTest extends RangedEventListTest {
 
     protected EventList createEmptyEventLists() {
-        return EventLists.steadyRangedEventList(EventLists.eventList());
+        return createBackedEventList(EventLists.eventList());
     }
 
-
-    protected RangedEventList createBackedEventList(final EventList el) {
+    protected EventList createBackedEventList(final EventList el) {
         return EventLists.steadyRangedEventList(el);
     }
 
@@ -47,7 +46,7 @@ public class SteadyRangedEventListTest extends RangedEventListTest {
         final EventList el = EventLists.eventList();
         prefill(el, 100);
 
-        final RangedEventList rel = createBackedEventList(el);
+        final RangedEventList rel = createBackedRangedEventList(el);
         rel.setStart(10);
         rel.setMaxSize(10);
 
@@ -70,7 +69,7 @@ public class SteadyRangedEventListTest extends RangedEventListTest {
 
     public void testRemoveBeforeStartOfRange() {
         final EventList el = EventLists.eventList();
-        final RangedEventList rel = createBackedEventList(el);
+        final RangedEventList rel = createBackedRangedEventList(el);
 
         for (int i=0; i < 10; i++) {
             el.add(new Integer(i));
@@ -87,7 +86,7 @@ public class SteadyRangedEventListTest extends RangedEventListTest {
 
     public void testRemoveRangeSpanningStartOfRange() {
         final EventList el = EventLists.eventList();
-        final RangedEventList rel = createBackedEventList(el);
+        final RangedEventList rel = createBackedRangedEventList(el);
 
         for (int i=0; i < 10; i++) {
             el.add(new Integer(i));
@@ -108,7 +107,7 @@ public class SteadyRangedEventListTest extends RangedEventListTest {
 
     public void testRemoveAfterStartOfRange() {
         final EventList el = EventLists.eventList();
-        final RangedEventList rel = createBackedEventList(el);
+        final RangedEventList rel = createBackedRangedEventList(el);
 
         for (int i=0; i < 10; i++) {
             el.add(new Integer(i));
