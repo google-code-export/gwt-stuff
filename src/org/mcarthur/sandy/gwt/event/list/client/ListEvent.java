@@ -94,7 +94,7 @@ public final class ListEvent extends EventObject {
      */
     public ListEvent(final EventList source, final Type type, final int indexStart, final int indexEnd) throws IllegalArgumentException {
         super(source);
-        assert indexStart != indexEnd : "indexStart and indexEnd must not be the same value.";
+        assert OTHER.equals(type) || indexStart != indexEnd : "indexStart and indexEnd must not be the same value.";
         assert type != null : "type must not be null";
         this.type = type;
         if (indexStart < indexEnd) {
