@@ -222,7 +222,7 @@ public class RangedEventListTest extends TransformedEventListTest {
         el.clear();
     }
 
-    public void testSizePlusMaxSizeDontOverflow() {
+    public void testSizePlusMaxSizeDoesNotOverflow() {
         final EventList el = EventLists.eventList();
 
         for (int i=0; i < 10; i++) {
@@ -273,5 +273,119 @@ public class RangedEventListTest extends TransformedEventListTest {
         el.remove("two");
 
         rel.removeListEventListener(removedListener);
+    }
+
+    public void testInsertBeforeRangeStart() {
+        // all elements are shifted down one
+        final EventList el = EventLists.eventList();
+        prefill(el, 100);
+
+        final RangedEventList rel = createBackedEventList(el);
+        rel.setStart(10);
+        rel.setMaxSize(10);
+
+        // if the max size is in effect, the last element(s) is removed and the first is added
+        ListEventListener lel = new ListEventListener() {
+            private int count = 0;
+            public void listChanged(final ListEvent listEvent) {
+                switch (count++) {
+                    case 0:
+                        assertEquals(new ListEvent(rel, ListEvent.REMOVED, 9), listEvent);
+                        break;
+                    case 1:
+                        assertEquals(new ListEvent(rel, ListEvent.ADDED, 0), listEvent);
+                        break;
+                    default:
+                        fail("Unexpected: " + listEvent);
+                }
+            }
+        };
+        rel.addListEventListener(lel);
+        el.add(0, "one");
+        rel.removeListEventListener(lel);
+
+        // if max size doesn't have an effect then element(s) are added to the start
+        rel.setMaxSize(Integer.MAX_VALUE);
+        lel = new ListEventListener() {
+            private int count = 0;
+            public void listChanged(final ListEvent listEvent) {
+                switch (count++) {
+                    case 0:
+                        assertEquals(new ListEvent(rel, ListEvent.ADDED, 0), listEvent);
+                        break;
+                    default:
+                        fail("Unexpected: " + listEvent);
+                }
+            }
+        };
+        rel.addListEventListener(lel);
+        el.add(0, "two");
+        rel.removeListEventListener(lel);
+    }
+
+    public void testInsertAtRangeStartViaDeeperList() {
+        final EventList el = EventLists.eventList();
+        prefill(el, 100);
+
+        final RangedEventList rel = createBackedEventList(el);
+        rel.setStart(10);
+        rel.setMaxSize(10);
+
+        el.add(10, "one"); // should have same effect as testInsertBeforeRangeStart()
+
+        rel.setMaxSize(Integer.MAX_VALUE);
+        el.add(10, "two"); // should have same effect as testInsertBeforeRangeStart()
+
+        fail("Test not implemented.");
+    }
+
+    public void testInsertAtRangeStart() {
+        final EventList el = EventLists.eventList();
+        prefill(el, 100);
+
+        final RangedEventList rel = createBackedEventList(el);
+        rel.setStart(10);
+        rel.setMaxSize(10);
+
+        rel.add("one");
+
+        rel.setMaxSize(Integer.MAX_VALUE);
+        rel.add("two");
+
+        fail("Test not implemented.");
+    }
+    
+    public void testInsertAcrossRangeStart() {
+        final EventList el = EventLists.eventList();
+        prefill(el, 100);
+
+        final RangedEventList rel = createBackedEventList(el);
+        rel.setStart(10);
+        rel.setMaxSize(10);
+
+        final List few = new ArrayList();
+        prefill(few, 3);
+
+        el.add(9, few);
+
+        fail("Test not implemented.");
+    }
+
+    public void testInsertInRange() {
+        // test insert with max size
+        // test insert with out max size
+        fail("Test not implemented.");
+    }
+
+    public void testInsertAcrossMaxRange() {
+        fail("Test not implemented.");
+    }
+
+    public void testAddOverflowingMaxRange() {
+        fail("Test not implemented.");
+    }
+
+    public void testInsertAfterMaxRange() {
+        fail("Test not implemented.");
     }
 }

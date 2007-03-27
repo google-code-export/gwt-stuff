@@ -18,6 +18,8 @@ package org.mcarthur.sandy.gwt.event.list.test;
 
 import org.mcarthur.sandy.gwt.event.list.client.EventList;
 import org.mcarthur.sandy.gwt.event.list.client.EventLists;
+import org.mcarthur.sandy.gwt.event.list.client.ListEvent;
+import org.mcarthur.sandy.gwt.event.list.client.ListEventListener;
 import org.mcarthur.sandy.gwt.event.list.client.RangedEventList;
 
 import java.util.ArrayList;
@@ -37,6 +39,33 @@ public class SteadyRangedEventListTest extends RangedEventListTest {
 
     protected RangedEventList createBackedEventList(final EventList el) {
         return EventLists.steadyRangedEventList(el);
+    }
+
+
+    public void testInsertBeforeRangeStart() {
+        // Insert before start doesn't affect visible elements
+        final EventList el = EventLists.eventList();
+        prefill(el, 100);
+
+        final RangedEventList rel = createBackedEventList(el);
+        rel.setStart(10);
+        rel.setMaxSize(10);
+
+        ListEventListener lel = new ListEventListener() {
+            private int count = 0;
+            public void listChanged(final ListEvent listEvent) {
+                switch (count++) {
+                    case 0:
+                        assertEquals(new ListEvent(rel), listEvent);
+                        break;
+                    default:
+                        fail("Unexpected: " + listEvent);
+                }
+            }
+        };
+        rel.addListEventListener(lel);
+        el.add(0, "one");
+        rel.removeListEventListener(lel);
     }
 
     public void testRemoveBeforeStartOfRange() {

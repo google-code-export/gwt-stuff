@@ -42,4 +42,10 @@ public abstract class EventListTest extends TestCase {
         el.add(new Object());
         el.addAll(0, Collections.EMPTY_LIST);
     }
+
+    protected void prefill(final List list, final int count) {
+        for (int i=0; i < count; i++) {
+            list.add(Integer.valueOf(i));
+        }
+    }
 }

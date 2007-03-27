@@ -23,7 +23,7 @@ import java.util.EventObject;
  *
  * @author Sandy McArthur
  */
-public class ListEvent extends EventObject {
+public final class ListEvent extends EventObject {
 
     /**
      * Identifies one or more elements were added.
@@ -186,6 +186,24 @@ public class ListEvent extends EventObject {
         } else {
             return "ListEvent[" + type + " (" + getIndexStart() + "," + getIndexEnd() + ")]";
         }
+    }
+
+    public boolean equals(final Object o) {
+        if (this == o) return true;
+        if (!(o instanceof ListEvent)) return false;
+        //if (o == null || getClass() != o.getClass()) return false;
+
+        final ListEvent event = (ListEvent)o;
+
+        return indexEnd == event.indexEnd && indexStart == event.indexStart && type.equals(event.type);
+    }
+
+    public int hashCode() {
+        int result;
+        result = type.hashCode();
+        result = 31 * result + indexStart;
+        result = 31 * result + indexEnd;
+        return result;
     }
 
     /**
