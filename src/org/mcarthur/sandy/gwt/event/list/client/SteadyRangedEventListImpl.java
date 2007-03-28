@@ -46,12 +46,13 @@ class SteadyRangedEventListImpl extends RangedEventListImpl implements RangedEve
             }
         }
     }
+
     private class SteadyPaginatedListEventListener implements ListEventListener {
         public void listChanged(final ListEvent listEvent) {
             // XXX: lots of room for event fireng optimizations here
             final int indexStart = listEvent.getIndexStart();
             final int indexEnd = listEvent.getIndexEnd();
-            final int maxEnd = getStart() + getMaxSize(); // FIXME: check for overflow
+            final int maxEnd = sumWithoutOverflow(getStart(), getMaxSize());
 
             if (listEvent.isAdded()) {
                 final int addedSize = indexEnd - indexStart;
@@ -115,6 +116,10 @@ class SteadyRangedEventListImpl extends RangedEventListImpl implements RangedEve
             } else {
                 fireListEvent(listEvent.resource(SteadyRangedEventListImpl.this));
             }
+        }
+
+        private int sumWithoutOverflow(final int start, final int maxSize) {
+            return (Integer.MAX_VALUE - maxSize > start) ? start + maxSize : Integer.MAX_VALUE;
         }
     }
 

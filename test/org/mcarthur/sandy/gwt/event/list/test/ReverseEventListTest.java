@@ -1,3 +1,19 @@
+/*
+ * Copyright 2007 Sandy McArthur, Jr.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not
+ * use this file except in compliance with the License. You may obtain a copy of
+ * the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations under
+ * the License.
+ */
+
 package org.mcarthur.sandy.gwt.event.list.test;
 
 import org.mcarthur.sandy.gwt.event.list.client.EventList;
@@ -113,14 +129,84 @@ public class ReverseEventListTest extends EventListTest {
     }
 
     public void testGet() {
-        fail("Implement me.");
+        final EventList el = EventLists.eventList();
+        prefill(el, 3);
+        final EventList rel = createBackedEventList(el);
+
+
+        assertEquals(el.get(0), rel.get(2));
+        assertEquals(el.get(1), rel.get(1));
+        assertEquals(el.get(2), rel.get(0));
+
+        try {
+            rel.get(3);
+            fail("Expected IndexOutOfBoundsException");
+        } catch (IndexOutOfBoundsException iobe) {
+            // expected
+        }
+        try {
+            rel.get(-1);
+            fail("Expected IndexOutOfBoundsException");
+        } catch (IndexOutOfBoundsException iobe) {
+            // expected
+        }
     }
 
     public void testSet() {
-        fail("Implement me.");
+        final EventList el = EventLists.eventList();
+        prefill(el, 3);
+        final EventList rel = createBackedEventList(el);
+
+        assertEquals(3, rel.size());
+
+        rel.set(2, "two");
+        assertEquals("two", el.get(0));
+        assertFalse(el.contains(Integer.valueOf(0)));
+
+        rel.set(0, "zero");
+        assertEquals("zero", el.get(2));
+        assertFalse(el.contains(Integer.valueOf(2)));
+
+        assertEquals(3, el.size());
+        assertEquals(3, rel.size());
+
+        try {
+            rel.set(-1, Integer.valueOf(-1));
+            fail("Expected IndexOutOfBoundsException.");
+        } catch (IndexOutOfBoundsException iobe) {
+            // expected
+        }
+        assertFalse(el.contains(Integer.valueOf(-1)));
+
+        try {
+            rel.set(3, Integer.valueOf(3));
+            fail("Expected IndexOutOfBoundsException.");
+        } catch (IndexOutOfBoundsException iobe) {
+            // expected
+        }
+        assertFalse(el.contains(Integer.valueOf(3)));
     }
 
     public void testRemove() {
-        fail("Implement me.");
+        final EventList el = EventLists.eventList();
+        prefill(el, 3);
+        final EventList rel = createBackedEventList(el);
+
+        assertEquals(Integer.valueOf(0), rel.remove(2));
+        assertEquals(Integer.valueOf(2), rel.remove(0));
+
+        try {
+            rel.remove(-1);
+            fail("Expected IndexOutOfBoundsException.");
+        } catch (IndexOutOfBoundsException iobe) {
+            // expected
+        }
+
+        try {
+            rel.remove(rel.size());
+            fail("Expected IndexOutOfBoundsException.");
+        } catch (IndexOutOfBoundsException iobe) {
+            // expected
+        }
     }
 }

@@ -67,7 +67,7 @@ class RangedEventListImpl extends TransformedEventList implements RangedEventLis
         protected void listChangedAdded(final int indexStart, final int indexEnd) {
             final int start = getStart();
             final int maxSize = getMaxSize();
-            final int maxEnd = start + maxSize; // FIXME: check for overflow
+            final int maxEnd = sumWithoutOverflow(start, maxSize);
             if (indexStart < maxEnd) {
                 final int addedSize = indexEnd - indexStart;
                 final int oldTotal = getTotal() - addedSize;
@@ -94,7 +94,7 @@ class RangedEventListImpl extends TransformedEventList implements RangedEventLis
         protected void listChangedChanged(final int indexStart, final int indexEnd) {
             final int start = getStart();
             final int maxSize = getMaxSize();
-            final int maxEnd = start + maxSize; // FIXME: check for overflow
+            final int maxEnd = sumWithoutOverflow(start, maxSize);
             // does the event affect our range?
             if (start < indexEnd && indexStart < maxEnd) {
                 // clamp to current page range
@@ -109,7 +109,7 @@ class RangedEventListImpl extends TransformedEventList implements RangedEventLis
         protected void listChangedRemoved(final int indexStart, final int indexEnd) {
             final int start = getStart();
             final int maxSize = getMaxSize();
-            final int maxEnd = start + maxSize; // FIXME: check for overflow
+            final int maxEnd = sumWithoutOverflow(start, maxSize);
             if (indexStart < maxEnd) {
                 final int removedSize = indexEnd - indexStart;
                 final int removedStart = Math.max(0, indexStart - start);
@@ -126,6 +126,10 @@ class RangedEventListImpl extends TransformedEventList implements RangedEventLis
             } else {
                 fireListEvent(new ListEvent(RangedEventListImpl.this));
             }
+        }
+        
+        private int sumWithoutOverflow(final int start, final int maxSize) {
+            return (Integer.MAX_VALUE - maxSize > start) ? start + maxSize : Integer.MAX_VALUE;
         }
     }
 
