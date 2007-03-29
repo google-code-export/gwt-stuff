@@ -149,6 +149,9 @@ class RangedEventListImpl extends TransformedEventList implements RangedEventLis
         }
     }
 
+    /**
+     * @deprecated Use {@link #getSourceIndex(int)} instead.
+     */
     private List getTranslations() {
         return translationList;
     }

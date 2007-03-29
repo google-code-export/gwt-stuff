@@ -279,6 +279,40 @@ public class RangedEventListTest extends TransformedEventListTest {
         rel.removeListEventListener(removedListener);
     }
 
+    public void testAddFromDeeperListPastMaxSize() {
+        final EventList el = EventLists.eventList();
+        final RangedEventList rel = createBackedRangedEventList(el);
+        //rel.setStart(10);
+        rel.setMaxSize(2);
+
+        ListEventListener lel = new ListEventListener() {
+            private int count = 0;
+            public void listChanged(final ListEvent listEvent) {
+                switch (count++) {
+                    case 0:
+                    case 1:
+                        assertEquals(new ListEvent(rel, ListEvent.ADDED, count - 1), listEvent);
+                        break;
+                    case 2:
+                        assertEquals(new ListEvent(rel), listEvent);
+                        break;
+                    case 3:
+                        assertNull(listEvent);
+                        break;
+                    default:
+                        fail("Unexpected: " + listEvent);
+                }
+            }
+        };
+        rel.addListEventListener(lel);
+        el.add("zero");
+        el.add("one"); // FIXME: currently fails
+        el.add("two");
+        lel.listChanged(null);
+        rel.removeListEventListener(lel);
+
+    }
+
     public void testAddBeforeRangeStart() {
         // all elements are shifted down one
         final EventList el = EventLists.eventList();
