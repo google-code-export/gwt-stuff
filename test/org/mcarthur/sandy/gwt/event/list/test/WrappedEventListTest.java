@@ -18,6 +18,11 @@ package org.mcarthur.sandy.gwt.event.list.test;
 
 import org.mcarthur.sandy.gwt.event.list.client.EventList;
 import org.mcarthur.sandy.gwt.event.list.client.EventLists;
+import org.mcarthur.sandy.gwt.event.list.client.ListEvent;
+import org.mcarthur.sandy.gwt.event.list.client.ListEventListener;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Tests for {@link org.mcarthur.sandy.gwt.event.list.client.WrappedEventList}.
@@ -27,5 +32,53 @@ import org.mcarthur.sandy.gwt.event.list.client.EventLists;
 public class WrappedEventListTest extends EventListTest {
     protected EventList createEmptyEventLists() {
         return EventLists.eventList();
+    }
+
+    public void testAddAll() {
+        final EventList el = createEmptyEventLists();
+        prefill(el, 3);
+
+        final List l = new ArrayList();
+        prefill(l, 3);
+
+        ListEventListener lel = new ListEventListener() {
+            private int count = 0;
+            public void listChanged(final ListEvent listEvent) {
+                switch (count++) {
+                    case 0:
+                        assertEquals(new ListEvent(el, ListEvent.ADDED, 3, 6), listEvent);
+                        break;
+                    case 1:
+                        assertNull(listEvent);
+                        break;
+                    default:
+                        fail("Unexpected: " + listEvent);
+                }
+            }
+        };
+        el.addListEventListener(lel);
+        el.addAll(l);
+        lel.listChanged(null);
+        el.removeListEventListener(lel);
+
+        lel = new ListEventListener() {
+            private int count = 0;
+            public void listChanged(final ListEvent listEvent) {
+                switch (count++) {
+                    case 0:
+                        assertEquals(new ListEvent(el, ListEvent.ADDED, 4, 7), listEvent);
+                        break;
+                    case 1:
+                        assertNull(listEvent);
+                        break;
+                    default:
+                        fail("Unexpected: " + listEvent);
+                }
+            }
+        };
+        el.addListEventListener(lel);
+        el.addAll(4, l);
+        lel.listChanged(null);
+        el.removeListEventListener(lel);
     }
 }

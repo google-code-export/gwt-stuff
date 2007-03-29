@@ -59,7 +59,7 @@ class WrappedEventList extends AbstractEventList implements EventList {
         final int indexStart = delegate.size();
         final boolean changed = delegate.addAll(c);
         if (changed) {
-            fireListEvent(new ListEvent(this, ListEvent.ADDED, indexStart, delegate.size()));
+            fireListEvent(new ListEvent(this, ListEvent.ADDED, indexStart, indexStart + c.size()));
         }
         return changed;
     }
@@ -69,7 +69,7 @@ class WrappedEventList extends AbstractEventList implements EventList {
 
         final boolean changed = delegate.addAll(index, c);
         if (changed) {
-            fireListEvent(new ListEvent(this, ListEvent.ADDED, index, c.size()));
+            fireListEvent(new ListEvent(this, ListEvent.ADDED, index, index + c.size()));
         }
         return changed;
     }
