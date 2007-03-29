@@ -475,11 +475,86 @@ public class RangedEventListTest extends TransformedEventListTest {
     }
 
     public void testSetAtRangeStartViaDeeperList() {
-        fail("implement test.");
+        final EventList el = EventLists.eventList();
+        prefill(el, 100);
+
+        final RangedEventList rel = createBackedRangedEventList(el);
+        rel.setStart(10);
+        rel.setMaxSize(10);
+
+        ListEventListener lel = new ListEventListener() {
+            private int count = 0;
+            public void listChanged(final ListEvent listEvent) {
+                switch (count++) {
+                    case 0:
+                        assertEquals(new ListEvent(rel, ListEvent.CHANGED, 0), listEvent);
+                        break;
+                    case 1:
+                        assertNull(listEvent);
+                        break;
+                    default:
+                        fail("Unexpected: " + listEvent);
+                }
+            }
+        };
+        rel.addListEventListener(lel);
+        el.set(10, "one");
+        lel.listChanged(null);
+        rel.removeListEventListener(lel);
     }
 
     public void testRemoveAtRangeStartViaDeeperList() {
-        fail("implement test.");
+        final EventList el = EventLists.eventList();
+        prefill(el, 100);
+
+        final RangedEventList rel = createBackedRangedEventList(el);
+        rel.setStart(10);
+        rel.setMaxSize(10);
+
+        ListEventListener lel = new ListEventListener() {
+            private int count = 0;
+            public void listChanged(final ListEvent listEvent) {
+                switch (count++) {
+                    case 0:
+                        assertEquals(new ListEvent(rel, ListEvent.REMOVED, 0), listEvent);
+                        break;
+                    case 1:
+                        assertEquals(new ListEvent(rel, ListEvent.ADDED, 9), listEvent);
+                        break;
+                    case 2:
+                        assertNull(listEvent);
+                        break;
+                    default:
+                        fail("Unexpected: " + listEvent);
+                }
+            }
+        };
+        rel.addListEventListener(lel);
+        el.remove(10);
+        lel.listChanged(null);
+        rel.removeListEventListener(lel);
+
+        rel.setMaxSize(Integer.MAX_VALUE);
+
+        lel = new ListEventListener() {
+            private int count = 0;
+            public void listChanged(final ListEvent listEvent) {
+                switch (count++) {
+                    case 0:
+                        assertEquals(new ListEvent(rel, ListEvent.REMOVED, 0), listEvent);
+                        break;
+                    case 1:
+                        assertNull(listEvent);
+                        break;
+                    default:
+                        fail("Unexpected: " + listEvent);
+                }
+            }
+        };
+        rel.addListEventListener(lel);
+        el.remove(10);
+        lel.listChanged(null);
+        rel.removeListEventListener(lel);
     }
 
     public void testAddAtRangeStart() {
@@ -537,11 +612,86 @@ public class RangedEventListTest extends TransformedEventListTest {
     }
 
     public void testSetAtRangeStart() {
-        fail("implement test.");
+        final EventList el = EventLists.eventList();
+        prefill(el, 100);
+
+        final RangedEventList rel = createBackedRangedEventList(el);
+        rel.setStart(10);
+        rel.setMaxSize(10);
+
+        ListEventListener lel = new ListEventListener() {
+            private int count = 0;
+            public void listChanged(final ListEvent listEvent) {
+                switch (count++) {
+                    case 0:
+                        assertEquals(new ListEvent(rel, ListEvent.CHANGED, 0), listEvent);
+                        break;
+                    case 1:
+                        assertNull(listEvent);
+                        break;
+                    default:
+                        fail("Unexpected: " + listEvent);
+                }
+            }
+        };
+        rel.addListEventListener(lel);
+        rel.set(0, "one");
+        lel.listChanged(null);
+        rel.removeListEventListener(lel);
     }
 
     public void testRemoveAtRangeStart() {
-        fail("implement test.");
+        final EventList el = EventLists.eventList();
+        prefill(el, 100);
+
+        final RangedEventList rel = createBackedRangedEventList(el);
+        rel.setStart(10);
+        rel.setMaxSize(10);
+
+        ListEventListener lel = new ListEventListener() {
+            private int count = 0;
+            public void listChanged(final ListEvent listEvent) {
+                switch (count++) {
+                    case 0:
+                        assertEquals(new ListEvent(rel, ListEvent.REMOVED, 0), listEvent);
+                        break;
+                    case 1:
+                        assertEquals(new ListEvent(rel, ListEvent.ADDED, 9), listEvent);
+                        break;
+                    case 2:
+                        assertNull(listEvent);
+                        break;
+                    default:
+                        fail("Unexpected: " + listEvent);
+                }
+            }
+        };
+        rel.addListEventListener(lel);
+        rel.remove(0);
+        lel.listChanged(null);
+        rel.removeListEventListener(lel);
+
+        rel.setMaxSize(Integer.MAX_VALUE);
+
+        lel = new ListEventListener() {
+            private int count = 0;
+            public void listChanged(final ListEvent listEvent) {
+                switch (count++) {
+                    case 0:
+                        assertEquals(new ListEvent(rel, ListEvent.REMOVED, 0), listEvent);
+                        break;
+                    case 1:
+                        assertNull(listEvent);
+                        break;
+                    default:
+                        fail("Unexpected: " + listEvent);
+                }
+            }
+        };
+        rel.addListEventListener(lel);
+        rel.remove(0);
+        lel.listChanged(null);
+        rel.removeListEventListener(lel);
     }
 
     public void testAddAcrossRangeStart() {
@@ -600,11 +750,67 @@ public class RangedEventListTest extends TransformedEventListTest {
         el.addAll(8, few);
         lel.listChanged(null);
         rel.removeListEventListener(lel);
-
     }
 
     public void testRemoveAcrossRangeStart() {
-        fail("implement test.");
+        final EventList el = EventLists.eventList();
+        prefill(el, 100);
+
+        final RangedEventList rel = createBackedRangedEventList(el);
+        rel.setStart(10);
+        rel.setMaxSize(10);
+
+        final List few = new ArrayList();
+        few.addAll(el.subList(9,12));
+        assertEquals(3, few.size());
+
+        ListEventListener lel = new ListEventListener() {
+            private int count = 0;
+            public void listChanged(final ListEvent listEvent) {
+                switch (count++) {
+                    case 0:
+                        assertEquals(new ListEvent(rel, ListEvent.REMOVED, 0, 3), listEvent);
+                        break;
+                    case 1:
+                        assertEquals(new ListEvent(rel, ListEvent.ADDED, 7, 10), listEvent);
+                        break;
+                    case 2:
+                        assertNull(listEvent);
+                        break;
+                    default:
+                        fail("Unexpected: " + listEvent);
+                }
+            }
+        };
+        rel.addListEventListener(lel);
+        el.removeAll(few);
+        lel.listChanged(null);
+        rel.removeListEventListener(lel);
+
+        rel.setMaxSize(Integer.MAX_VALUE);
+        few.clear();
+        few.addAll(el.subList(9,12));
+        assertEquals(3, few.size());
+
+        lel = new ListEventListener() {
+            private int count = 0;
+            public void listChanged(final ListEvent listEvent) {
+                switch (count++) {
+                    case 0:
+                        assertEquals(new ListEvent(rel, ListEvent.REMOVED, 0, 3), listEvent);
+                        break;
+                    case 1:
+                        assertNull(listEvent);
+                        break;
+                    default:
+                        fail("Unexpected: " + listEvent);
+                }
+            }
+        };
+        rel.addListEventListener(lel);
+        el.removeAll(few);
+        lel.listChanged(null);
+        rel.removeListEventListener(lel);
     }
 
     public void testAddInRange() {
@@ -667,11 +873,86 @@ public class RangedEventListTest extends TransformedEventListTest {
     }
 
     public void testSetInRange() {
-        fail("implement test.");
+        final EventList el = EventLists.eventList();
+        prefill(el, 100);
+
+        final RangedEventList rel = createBackedRangedEventList(el);
+        rel.setStart(10);
+        rel.setMaxSize(10);
+
+        ListEventListener lel = new ListEventListener() {
+            private int count = 0;
+            public void listChanged(final ListEvent listEvent) {
+                switch (count++) {
+                    case 0:
+                        assertEquals(new ListEvent(rel, ListEvent.CHANGED, 5), listEvent);
+                        break;
+                    case 1:
+                        assertNull(listEvent);
+                        break;
+                    default:
+                        fail("Unexpected: " + listEvent);
+                }
+            }
+        };
+        rel.addListEventListener(lel);
+        rel.set(5, "one");
+        lel.listChanged(null);
+        rel.removeListEventListener(lel);
     }
 
     public void testRemoveInRange() {
-        fail("implement test.");
+        final EventList el = EventLists.eventList();
+        prefill(el, 100);
+
+        final RangedEventList rel = createBackedRangedEventList(el);
+        rel.setStart(10);
+        rel.setMaxSize(10);
+
+        ListEventListener lel = new ListEventListener() {
+            private int count = 0;
+            public void listChanged(final ListEvent listEvent) {
+                switch (count++) {
+                    case 0:
+                        assertEquals(new ListEvent(rel, ListEvent.REMOVED, 4), listEvent);
+                        break;
+                    case 1:
+                        assertEquals(new ListEvent(rel, ListEvent.ADDED, 9), listEvent);
+                        break;
+                    case 2:
+                        assertNull(listEvent);
+                        break;
+                    default:
+                        fail("Unexpected: " + listEvent);
+                }
+            }
+        };
+        rel.addListEventListener(lel);
+        rel.remove(4);
+        lel.listChanged(null);
+        rel.removeListEventListener(lel);
+
+        rel.setMaxSize(Integer.MAX_VALUE);
+
+        lel = new ListEventListener() {
+            private int count = 0;
+            public void listChanged(final ListEvent listEvent) {
+                switch (count++) {
+                    case 0:
+                        assertEquals(new ListEvent(rel, ListEvent.REMOVED, 6), listEvent);
+                        break;
+                    case 1:
+                        assertNull(listEvent);
+                        break;
+                    default:
+                        fail("Unexpected: " + listEvent);
+                }
+            }
+        };
+        rel.addListEventListener(lel);
+        rel.remove(6);
+        lel.listChanged(null);
+        rel.removeListEventListener(lel);
     }
 
     public void testAddAcrossMaxRange() {
@@ -711,7 +992,39 @@ public class RangedEventListTest extends TransformedEventListTest {
     }
 
     public void testRemoveAcrossMaxRange() {
-        fail("implement test.");
+        final EventList el = EventLists.eventList();
+        prefill(el, 100);
+
+        final RangedEventList rel = createBackedRangedEventList(el);
+        rel.setStart(10);
+        rel.setMaxSize(10);
+
+        final List few = new ArrayList();
+        few.addAll(el.subList(19, 22));
+        assertEquals(3, few.size());
+
+        ListEventListener lel = new ListEventListener() {
+            private int count = 0;
+            public void listChanged(final ListEvent listEvent) {
+                switch (count++) {
+                    case 0:
+                        assertEquals(new ListEvent(rel, ListEvent.REMOVED, 9), listEvent);
+                        break;
+                    case 1:
+                        assertEquals(new ListEvent(rel, ListEvent.ADDED, 9), listEvent);
+                        break;
+                    case 2:
+                        assertNull(listEvent);
+                        break;
+                    default:
+                        fail("Unexpected: " + listEvent);
+                }
+            }
+        };
+        rel.addListEventListener(lel);
+        el.addAll(19, few);
+        lel.listChanged(null);
+        rel.removeListEventListener(lel);
     }
 
     public void testAddAfterMaxRange() {
@@ -748,10 +1061,60 @@ public class RangedEventListTest extends TransformedEventListTest {
     }
 
     public void testSetAfterMaxRange() {
-        fail("implement test.");
+        final EventList el = EventLists.eventList();
+        prefill(el, 100);
+
+        final RangedEventList rel = createBackedRangedEventList(el);
+        rel.setStart(10);
+        rel.setMaxSize(10);
+
+        ListEventListener lel = new ListEventListener() {
+            private int count = 0;
+            public void listChanged(final ListEvent listEvent) {
+                switch (count++) {
+                    case 0:
+                        assertEquals(new ListEvent(rel), listEvent);
+                        break;
+                    case 1:
+                        assertNull(listEvent);
+                        break;
+                    default:
+                        fail("Unexpected: " + listEvent);
+                }
+            }
+        };
+        rel.addListEventListener(lel);
+        el.set(50, "one");
+        lel.listChanged(null);
+        rel.removeListEventListener(lel);
     }
 
     public void testRemoveAfterMaxRange() {
-        fail("implement test.");
+        final EventList el = EventLists.eventList();
+        prefill(el, 100);
+
+        final RangedEventList rel = createBackedRangedEventList(el);
+        rel.setStart(10);
+        rel.setMaxSize(10);
+
+        ListEventListener lel = new ListEventListener() {
+            private int count = 0;
+            public void listChanged(final ListEvent listEvent) {
+                switch (count++) {
+                    case 0:
+                        assertEquals(new ListEvent(rel), listEvent);
+                        break;
+                    case 1:
+                        assertNull(listEvent);
+                        break;
+                    default:
+                        fail("Unexpected: " + listEvent);
+                }
+            }
+        };
+        rel.addListEventListener(lel);
+        el.remove(50);
+        lel.listChanged(null);
+        rel.removeListEventListener(lel);
     }
 }
