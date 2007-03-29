@@ -44,9 +44,8 @@ class RangedEventListImpl extends TransformedEventList implements RangedEventLis
         return new RangedListEventListener();
     }
 
-    class RangedListEventListener implements ListEventListener {
+    protected class RangedListEventListener implements ListEventListener {
         public void listChanged(final ListEvent listEvent) {
-            // XXX: lots of room for event fireng optimizations here
             final int indexStart = listEvent.getIndexStart();
             final int indexEnd = listEvent.getIndexEnd();
 
@@ -66,27 +65,21 @@ class RangedEventListImpl extends TransformedEventList implements RangedEventLis
 
         protected void listChangedAdded(final int indexStart, final int indexEnd) {
             final int start = getStart();
+            final int size = size();
             final int maxSize = getMaxSize();
-            final int maxEnd = sumWithoutOverflow(start, maxSize);
-            if (indexStart < maxEnd) {
-                final int addedSize = indexEnd - indexStart;
-                final int oldTotal = getTotal() - addedSize;
-                // if the old size was less than the max size
-                if (oldTotal < maxEnd) {
-                    // we need to add to increase size() to maxSize and update for the rest
-                    final int visableAddedSize = Math.min(maxEnd - indexStart, addedSize);
-                    final int addStart = Math.max(0, indexStart - start);
-                    final int addEnd = addStart + visableAddedSize;
-                    if (size() > 0) {
-                        fireListEvent(new ListEvent(RangedEventListImpl.this, ListEvent.ADDED, addStart, addEnd));
-                        if (addEnd != size()) {
-                            fireListEvent(new ListEvent(RangedEventListImpl.this, ListEvent.CHANGED, addEnd, size()));
-                        }
-                    }
-                } else {
-                    fireListEvent(new ListEvent(RangedEventListImpl.this, ListEvent.CHANGED, 0, maxSize));
-                }
+            final int end = sumWithoutOverflow(start, maxSize);
+
+            final int rangeSize = Math.min(indexEnd - indexStart, Math.min(maxSize, end - indexStart));
+            final int removeSize = Math.min(size - (maxSize - rangeSize), start + maxSize - indexStart);
+            final int insertStart = Math.max(0, indexStart - start);
+
+            if (removeSize > 0) {
+                fireListEvent(new ListEvent(RangedEventListImpl.this, ListEvent.REMOVED, size - removeSize, size));
+            }
+            if (insertStart < maxSize) {
+                fireListEvent(new ListEvent(RangedEventListImpl.this, ListEvent.ADDED, insertStart, insertStart + rangeSize));
             } else {
+                // the event was after our range, let them know something changed.
                 fireListEvent(new ListEvent(RangedEventListImpl.this));
             }
         }
@@ -94,19 +87,42 @@ class RangedEventListImpl extends TransformedEventList implements RangedEventLis
         protected void listChangedChanged(final int indexStart, final int indexEnd) {
             final int start = getStart();
             final int maxSize = getMaxSize();
-            final int maxEnd = sumWithoutOverflow(start, maxSize);
+            final int end = sumWithoutOverflow(start, maxSize);
             // does the event affect our range?
-            if (start < indexEnd && indexStart < maxEnd) {
+            if (start < indexEnd && indexStart < end) {
                 // clamp to current page range
                 final int changedStart = Math.max(0, indexStart - start);
                 final int changedEnd = Math.min(maxSize, indexEnd - start);
                 fireListEvent(new ListEvent(RangedEventListImpl.this, ListEvent.CHANGED, changedStart, changedEnd));
             } else {
+                // Something changed but it didn't directly affect us.
                 fireListEvent(new ListEvent(RangedEventListImpl.this));
             }
         }
 
         protected void listChangedRemoved(final int indexStart, final int indexEnd) {
+            final int start = getStart();
+            final int size = size();
+            final int maxSize = getMaxSize();
+            final int end = sumWithoutOverflow(start, maxSize);
+
+            final int rangeSize = Math.min(indexEnd - indexStart, Math.min(maxSize, end - indexStart));
+            final int addedSize = Math.min(size - (maxSize - rangeSize), start + maxSize - indexStart);
+            final int removeStart = Math.max(0, indexStart - start);
+
+            if (removeStart < maxSize) {
+                fireListEvent(new ListEvent(RangedEventListImpl.this, ListEvent.REMOVED, removeStart, removeStart + rangeSize));
+
+                if (addedSize > 0) {
+                    fireListEvent(new ListEvent(RangedEventListImpl.this, ListEvent.ADDED, size - addedSize, size));
+                }
+            } else {
+                // the event was after our range, let them know something changed.
+                fireListEvent(new ListEvent(RangedEventListImpl.this));
+            }
+        }
+
+        private void XlistChangedRemoved(final int indexStart, final int indexEnd) {
             final int start = getStart();
             final int maxSize = getMaxSize();
             final int maxEnd = sumWithoutOverflow(start, maxSize);
