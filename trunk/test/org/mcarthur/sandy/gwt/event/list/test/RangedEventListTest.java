@@ -488,20 +488,32 @@ public class RangedEventListTest extends TransformedEventListTest {
     }
 
     public void testClearOfDeeperList() {
-        final EventList el = EventLists.eventList();
-        final SortedEventList sel = EventLists.sortedEventList(el);
-        // keep a reverse sort
-        sel.setComparator(new Comparator() {
-            public int compare(final Object o1, final Object o2) {
-                final Comparable c1 = (Comparable)o1;
-                final Comparable c2 = (Comparable)o2;
-                return c2.compareTo(c1);
-            }
-        });
-        final FilteredEventList fel = EventLists.filteredEventList(sel);
-        final RangedEventList rel = createBackedRangedEventList(fel);
-        rel.setMaxSize(4);
-
+        EventList e;
+        final EventList el = EventLists.eventList(); e = el;
+        if (true) {
+            final SortedEventList sel = EventLists.sortedEventList(e);
+            // keep a reverse sort
+            sel.setComparator(new Comparator() {
+                public int compare(final Object o1, final Object o2) {
+                    final Comparable c1 = (Comparable)o1;
+                    final Comparable c2 = (Comparable)o2;
+                    return c2.compareTo(c1);
+                }
+            });
+            e = sel;
+        }
+        if (true) {
+            final FilteredEventList fel = EventLists.filteredEventList(e);
+            e = fel;
+        }
+        final RangedEventList rel;
+        if (true) {
+            rel = createBackedRangedEventList(e);
+            rel.setMaxSize(4);
+            e = rel;
+        } else {
+            rel = null;
+        }
         // don't change the order
         el.add(new Integer(25));
         el.add(new Integer(33));

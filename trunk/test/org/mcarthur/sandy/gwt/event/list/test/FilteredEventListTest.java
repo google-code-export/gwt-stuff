@@ -19,6 +19,8 @@ package org.mcarthur.sandy.gwt.event.list.test;
 import org.mcarthur.sandy.gwt.event.list.client.EventList;
 import org.mcarthur.sandy.gwt.event.list.client.EventLists;
 import org.mcarthur.sandy.gwt.event.list.client.FilteredEventList;
+import org.mcarthur.sandy.gwt.event.list.client.ListEvent;
+import org.mcarthur.sandy.gwt.event.list.client.ListEventListener;
 import org.mcarthur.sandy.gwt.event.list.client.SortedEventList;
 
 import java.util.ArrayList;
@@ -147,6 +149,20 @@ public class FilteredEventListTest extends TransformedEventListTest {
         assertEquals(4, fel.size());
         assertTrue(fel.containsAll(even));
         assertTrue(fel.containsAll(odd));
+
+        fel.setFilter(null);
+        assertNull(fel.getFilter());
+
+        final FilteredEventList.Filter noneFilter = new FilteredEventList.Filter() {
+            public boolean accept(final Object element) {
+                return false;
+            }
+        };
+        fel.setFilter(noneFilter);
+        assertEquals(noneFilter, fel.getFilter());
+
+        fel.setFilter(null);
+        assertNull(fel.getFilter());
     }
 
     public void testAdd() {
@@ -183,7 +199,7 @@ public class FilteredEventListTest extends TransformedEventListTest {
         final FilteredEventList.Filter oddFilter = new FilteredEventList.Filter() {
             public boolean accept(final Object element) {
                 final Integer i = (Integer)element;
-                return i.intValue() % 2 == 1;
+                return i.intValue() % 2 != 0;
             }
         };
         fel.setFilter(oddFilter);
@@ -199,5 +215,62 @@ public class FilteredEventListTest extends TransformedEventListTest {
 
     public void testSet() {
         //super.testSet(); // TODO: uncomment when FilteredEventListImpl is optimized
+    }
+
+    public void testSetViaDeeperList() {
+        final EventList el = EventLists.eventList();
+        prefillWithIntegers(el, 6);
+
+        final FilteredEventList fel = createBackedFilteredEventList(el);
+
+        final FilteredEventList.Filter evenFilter = new FilteredEventList.Filter() {
+            public boolean accept(final Object element) {
+                final Integer i = (Integer)element;
+                return i.intValue() % 2 == 0;
+            }
+        };
+        fel.setFilter(evenFilter);
+
+        ListEventListener lel = new ListEventListener() {
+            private int count = 0;
+            public void listChanged(final ListEvent listEvent) {
+                switch (count++) {
+                    case 0:
+                        assertNull("listEvent: " + listEvent, listEvent);
+                        break;
+                    default:
+                        fail("Unexpected: " + listEvent);
+                }
+            }
+        };
+        fel.addListEventListener(lel);
+        assertFalse(evenFilter.accept(Integer.valueOf(-1)));
+        el.set(1, Integer.valueOf(-1));
+        lel.listChanged(null);
+        fel.removeListEventListener(lel);
+
+        lel = new ListEventListener() {
+            private int count = 0;
+            public void listChanged(final ListEvent listEvent) {
+                switch (count++) {
+                    case 0:
+                        assertEquals(new ListEvent(fel, ListEvent.REMOVED, 1), listEvent);
+                        break;
+                    case 1:
+                        assertEquals(new ListEvent(fel, ListEvent.ADDED, 1), listEvent);
+                        break;
+                    case 2:
+                        assertNull("listEvent: " + listEvent, listEvent);
+                        break;
+                    default:
+                        fail("Unexpected: " + listEvent);
+                }
+            }
+        };
+        fel.addListEventListener(lel);
+        assertTrue(evenFilter.accept(Integer.valueOf(-2)));
+        el.set(2, Integer.valueOf(-2));
+        lel.listChanged(null);
+        fel.removeListEventListener(lel);
     }
 }

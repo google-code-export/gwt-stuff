@@ -31,28 +31,14 @@ class ReverseEventListImpl extends AbstractEventList implements EventList {
         this.delegate = delegate;
         delegate.addListEventListener(listEventListener);
 
-        // fake an add all to initialize this list.
         size = delegate.size();
-        //listEventListener.listChanged(new ListEvent(delegate, ListEvent.ADDED, 0, delegate.size()));
     }
 
     protected int getSourceIndex(final int mutationIndex) {
         return invertIndex(mutationIndex);
-        /*
-        final int size = size();
-        if (mutationIndex > size) {
-            return mutationIndex;
-        } else if (mutationIndex == size) {
-            return 0;
-        } else {
-            //return (size - 1) - mutationIndex;
-            return invertIndex(mutationIndex);
-        }
-        */
     }
 
     private int invertIndex(final int index) {
-        //return -index + size();
         return size() - index;
     }
 
@@ -83,7 +69,7 @@ class ReverseEventListImpl extends AbstractEventList implements EventList {
     public void add(final int index, final Object element) {
         try {
             final int invertedIndex = invertIndex(index);
-            delegate.add(invertedIndex == -1 ? 0 : invertedIndex, element);
+            delegate.add(invertedIndex, element);
         } catch (IndexOutOfBoundsException iobe) {
             final IndexOutOfBoundsException e = new IndexOutOfBoundsException("Index: " + index + ", Size: " + size());
             e.initCause(iobe);
