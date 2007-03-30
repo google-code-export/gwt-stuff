@@ -26,10 +26,6 @@ class RangedEventListImpl extends TransformedEventList implements RangedEventLis
     private int maxSize = Integer.MAX_VALUE;
     private int size;
 
-    protected RangedEventListImpl(final EventList delegate) {
-        this(delegate, Integer.MAX_VALUE);
-    }
-
     protected RangedEventListImpl(final EventList delegate, final int maxSize) {
         super(delegate);
         size = delegate.size();
@@ -106,11 +102,12 @@ class RangedEventListImpl extends TransformedEventList implements RangedEventLis
         protected void listChangedRemoved(final int indexStart, final int indexEnd) {
             final int start = getStart();
             final int size = size();
+            final int delegateSize = getDelegate().size();
             final int maxSize = getMaxSize();
             final int end = sumWithoutOverflow(start, maxSize);
 
             final int rangeSize = Math.min(indexEnd - indexStart, Math.min(maxSize, end - indexStart));
-            final int addedSize = Math.min(size - (maxSize - rangeSize), start + maxSize - indexStart);
+            final int addedSize = Math.min(size - (maxSize - rangeSize), delegateSize - end);
             final int removeStart = Math.max(0, indexStart - start);
 
             if (removeStart < maxSize) {

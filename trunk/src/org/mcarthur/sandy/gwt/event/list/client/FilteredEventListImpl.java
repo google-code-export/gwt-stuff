@@ -245,7 +245,11 @@ class FilteredEventListImpl extends TransformedEventList implements FilteredEven
     }
 
     public boolean add(final Object o) {
-        return filter.accept(o) && super.add(o);
+        if (filter.accept(o)) {
+            return super.add(o);
+        } else {
+            throw new IllegalArgumentException("Rejected by Filter: " + o);
+        }
     }
 
     public void add(final int index, final Object element) {
@@ -258,27 +262,27 @@ class FilteredEventListImpl extends TransformedEventList implements FilteredEven
                 super.add(p, element);
             }
         } else {
-            throw new IllegalArgumentException("Filter rejected element.");
+            throw new IllegalArgumentException("Rejected by Filter: " + element);
         }
     }
 
-    private List onlyAccepted(final Collection c) {
-        final List toBeAdded = new ArrayList();
+    private void checkAll(final Collection c) {
         final Iterator iter = c.iterator();
         while (iter.hasNext()) {
             final Object o = iter.next();
-            if (filter.accept(o)) {
-                toBeAdded.add(o);
+            if (!filter.accept(o)) {
+                throw new IllegalArgumentException("Rejected by Filter: " + o);
             }
         }
-        return toBeAdded;
     }
 
-    public boolean addAll(final Collection c) {
-        return super.addAll(onlyAccepted(c));
+    public boolean addAll(final Collection c) throws IllegalArgumentException {
+        checkAll(c);
+        return super.addAll(c);
     }
 
-    public boolean addAll(final int index, final Collection c) {
-        return super.addAll(index, onlyAccepted(c));
+    public boolean addAll(final int index, final Collection c) throws IllegalArgumentException {
+        checkAll(c);
+        return super.addAll(index, c);
     }
 }

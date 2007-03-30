@@ -64,25 +64,33 @@ public interface FilteredEventList extends EventList {
 
     /**
      * Appends the specified element to the end of this list if accepted by the filter.
+     * 
+     * @throws IllegalArgumentException if rejected by the filter.
      */
-    public boolean add(Object o);
+    public boolean add(Object o) throws IllegalArgumentException;
 
     /**
      * Inserts the specified element at the specified position in this list if accepted by the filter.
+     *
+     * @throws IllegalArgumentException if rejected by the filter.
      */
-    public void add(int index, Object element);
+    public void add(int index, Object element) throws IllegalArgumentException;
 
     /**
-     * Appends all of the elements in the specified collection to the end of this list that are
+     * Appends all of the elements in the specified collection to the end of this list if all are
      * accepted by the filter.
+     *
+     * @throws IllegalArgumentException if rejected by the filter.
      */
-    public boolean addAll(Collection c);
+    public boolean addAll(Collection c) throws IllegalArgumentException;
 
     /**
      * Inserts all of the elements in the specified collection into this list at the specified
-     * position if accepted by the filter.
+     * position if all are accepted by the filter.
+     *
+     * @throws IllegalArgumentException if rejected by the filter.
      */
-    public boolean addAll(int index, Collection c);
+    public boolean addAll(int index, Collection c) throws IllegalArgumentException;
 
     /**
      * Removes all of the unfiltered elements from this list.
