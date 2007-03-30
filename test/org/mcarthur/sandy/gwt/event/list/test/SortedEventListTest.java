@@ -34,11 +34,12 @@ import java.util.List;
  * @author Sandy McArthur
  */
 public class SortedEventListTest extends TransformedEventListTest {
-    private final Integer I0 = new Integer(0);
-    private final Integer I5 = new Integer(5);
-    private final Integer I10 = new Integer(10);
-    private final Integer I15 = new Integer(15);
-    private final Integer I20 = new Integer(20);
+    private final Integer I0 = Integer.valueOf(0);
+    private final Integer I5 = Integer.valueOf(5);
+    private final Integer I10 = Integer.valueOf(10);
+    private final Integer I15 = Integer.valueOf(15);
+    private final Integer I20 = Integer.valueOf(20);
+    private final Integer I25 = Integer.valueOf(25);
 
     protected EventList createEmptyEventLists() {
         return EventLists.sortedEventList();
@@ -48,6 +49,10 @@ public class SortedEventListTest extends TransformedEventListTest {
         return EventLists.sortedEventList(el);
     }
 
+    protected SortedEventList createBackedSortedEventList(final EventList el) {
+        return (SortedEventList)createBackedEventList(el);
+    }
+
     public void testAdd() {
         super.testAdd();
 
@@ -55,7 +60,7 @@ public class SortedEventListTest extends TransformedEventListTest {
         el.add(I0);
         el.add(I20);
 
-        final SortedEventList sel = EventLists.sortedEventList(el);
+        final SortedEventList sel = createBackedSortedEventList(el);
 
         assertEquals(sel.get(0), I0);
         assertEquals(sel.get(1), I20);
@@ -100,6 +105,24 @@ public class SortedEventListTest extends TransformedEventListTest {
         assertEquals(sel.get(3), I20);
     }
 
+    public void testGet() {
+        super.testGet();
+
+        final EventList el = EventLists.eventList();
+        el.add(I10);
+        el.add(I5);
+        el.add(I20);
+        el.add(I0);
+
+        // Natural sorting by default
+        final SortedEventList sel = createBackedSortedEventList(el);
+
+        assertEquals(I0, sel.get(0));
+        assertEquals(I5, sel.get(1));
+        assertEquals(I10, sel.get(2));
+        assertEquals(I20, sel.get(3));
+    }
+
     public void testIndexOf() {
         final SortedEventList sel = EventLists.sortedEventList();
 
@@ -114,13 +137,15 @@ public class SortedEventListTest extends TransformedEventListTest {
     }
 
     public void testRemove() {
+        super.testRemove();
+
         final EventList el = EventLists.eventList();
         el.add(I10);
         el.add(I5);
         el.add(I20);
         el.add(I0);
 
-        final SortedEventList sel = EventLists.sortedEventList(el);
+        final SortedEventList sel = createBackedSortedEventList(el);
 
         sel.remove(2);
         assertFalse(el.contains(I10));
@@ -129,13 +154,68 @@ public class SortedEventListTest extends TransformedEventListTest {
         assertFalse(el.contains(I20));
     }
 
+    public void testSet() {
+        super.testSet();
+
+        final EventList el = EventLists.eventList();
+        el.add(I10);
+        el.add(I5);
+        el.add(I20);
+        el.add(I0);
+
+        final SortedEventList sel = createBackedSortedEventList(el);
+
+        ListEventListener lel = new ListEventListener() {
+            private int count = 0;
+            public void listChanged(final ListEvent listEvent) {
+                switch (count++) {
+                    case 0:
+                        assertEquals(new ListEvent(sel, ListEvent.CHANGED, 0), listEvent);
+                        break;
+                    case 1:
+                        assertNull(listEvent);
+                        break;
+                    default:
+                        fail("Unexpected: " + listEvent);
+                }
+            }
+        };
+        ListEventListener slel = new ListEventListener() {
+            private int count = 0;
+            public void listChanged(final ListEvent listEvent) {
+                switch (count++) {
+                    case 0:
+                        assertEquals(new ListEvent(sel, ListEvent.REMOVED, 2), listEvent);
+                        break;
+                    case 1:
+                        assertEquals(new ListEvent(sel, ListEvent.ADDED, 3), listEvent);
+                        break;
+                    case 2:
+                        assertNull(listEvent);
+                        break;
+                    default:
+                        fail("Unexpected: " + listEvent);
+                }
+            }
+        };
+        el.addListEventListener(lel);
+        sel.addListEventListener(slel);
+        sel.set(2, I25);
+        lel.listChanged(null);
+        slel.listChanged(null);
+        el.removeListEventListener(lel);
+        sel.removeListEventListener(slel);
+        assertEquals(I15, el.get(0));
+        assertEquals(I15, sel.get(2));
+    }
+
     public void testConsistentStateForRemovedEvents() throws Exception {
 
         final EventList deepest = EventLists.eventList();
         deepest.add("hello");
         deepest.add("world");
 
-        final SortedEventList sel = EventLists.sortedEventList(deepest);
+        final SortedEventList sel = createBackedSortedEventList(deepest);
 
         sel.addListEventListener(new ListEventListener() {
 
@@ -167,7 +247,7 @@ public class SortedEventListTest extends TransformedEventListTest {
             }
         });
 
-        final SortedEventList sel = EventLists.sortedEventList(fel);
+        final SortedEventList sel = createBackedSortedEventList(fel);
 
         sel.sort();
 

@@ -95,6 +95,13 @@ public abstract class EventListTest extends TestCase {
         el.add(0, "two");
         lel.listChanged(null);
         el.removeListEventListener(lel);
+
+        try {
+            el.add(el.size()+1, "three");
+            fail("Expected IndexOutOfBoundsException.");
+        } catch (IndexOutOfBoundsException iobe) {
+            // expected
+        }
     }
 
     public void testGet() {

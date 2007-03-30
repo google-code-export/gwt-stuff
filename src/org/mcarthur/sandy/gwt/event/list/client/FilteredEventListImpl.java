@@ -42,10 +42,6 @@ class FilteredEventListImpl extends TransformedEventList implements FilteredEven
      */
     private List translations = new ArrayList();
 
-    public FilteredEventListImpl(final EventList delegate) {
-        this(delegate, null);
-    }
-
     public FilteredEventListImpl(final EventList delegate, final Filter filter) {
         super(delegate);
         delegate.addListEventListener(new FilteredListEventListener());
@@ -156,8 +152,29 @@ class FilteredEventListImpl extends TransformedEventList implements FilteredEven
             }
         }
 
+        private void ZlistChangedChanged(final ListEvent listEvent) {
+            final List delegate = getDelegate();
+            int tStart = 0;
+
+            for (int i = 0; i < listEvent.getIndexStart(); i++) {
+                if (filter.accept(delegate.get(i))) {
+                    tStart++;
+                }
+                final Object o = delegate.get(i);
+                final boolean accepted = filter.accept(o);
+                if (accepted) {
+                    translations.add(tStart++, new Index(i));
+                }
+            }
+            for (int i = listEvent.getIndexStart(); i < listEvent.getIndexEnd(); i++) {
+
+            }
+        }
+
         private void listChangedChanged(final ListEvent listEvent) {
             // TODO: optimize me
+            fireListEvent(new ListEvent(FilteredEventListImpl.this, ListEvent.REMOVED, 0, size()));
+
             final List delegate = getDelegate();
             translations.clear();
             for (int i=0; i < delegate.size(); i++) {
@@ -167,7 +184,7 @@ class FilteredEventListImpl extends TransformedEventList implements FilteredEven
                     translations.add(new Index(i));
                 }                 
             }
-            fireListEvent(new ListEvent(FilteredEventListImpl.this, ListEvent.REMOVED, 0, size()));
+            //fireListEvent(new ListEvent(FilteredEventListImpl.this, ListEvent.REMOVED, 0, size()));
             fireListEvent(new ListEvent(FilteredEventListImpl.this, ListEvent.ADDED, 0, size()));
         }
 

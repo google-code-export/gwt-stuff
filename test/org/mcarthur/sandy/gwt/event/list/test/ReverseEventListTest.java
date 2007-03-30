@@ -99,6 +99,92 @@ public class ReverseEventListTest extends EventListTest {
         el.remove("two"); // 3
     }
 
+
+    public void testAdd() {
+        super.testAdd();
+
+        final EventList el = EventLists.eventList();
+        prefillWithIntegers(el, 5);
+        final EventList rel = createBackedEventList(el);
+
+        ListEventListener lel = new ListEventListener() {
+            private int count = 0;
+            public void listChanged(final ListEvent listEvent) {
+                switch (count++) {
+                    case 0:
+                        assertEquals(new ListEvent(rel, ListEvent.ADDED, 0), listEvent);
+                        break;
+                    case 1:
+                        assertNull(listEvent);
+                        break;
+                    default:
+                        fail("Unexpected: " + listEvent);
+                }
+            }
+        };
+        ListEventListener rlel = new ListEventListener() {
+            private int count = 0;
+            public void listChanged(final ListEvent listEvent) {
+                switch (count++) {
+                    case 0:
+                        assertEquals(new ListEvent(rel, ListEvent.ADDED, 5), listEvent);
+                        break;
+                    case 1:
+                        assertNull(listEvent);
+                        break;
+                    default:
+                        fail("Unexpected: " + listEvent);
+                }
+            }
+        };
+        el.addListEventListener(lel);
+        rel.addListEventListener(rlel);
+        rel.add("one");
+        lel.listChanged(null);
+        rlel.listChanged(null);
+        el.removeListEventListener(lel);
+        rel.removeListEventListener(rlel);
+
+
+        lel = new ListEventListener() {
+            private int count = 0;
+            public void listChanged(final ListEvent listEvent) {
+                switch (count++) {
+                    case 0:
+                        assertEquals(new ListEvent(rel, ListEvent.ADDED, 5), listEvent);
+                        break;
+                    case 1:
+                        assertNull(listEvent);
+                        break;
+                    default:
+                        fail("Unexpected: " + listEvent);
+                }
+            }
+        };
+        rlel = new ListEventListener() {
+            private int count = 0;
+            public void listChanged(final ListEvent listEvent) {
+                switch (count++) {
+                    case 0:
+                        assertEquals(new ListEvent(rel, ListEvent.ADDED, 1), listEvent);
+                        break;
+                    case 1:
+                        assertNull(listEvent);
+                        break;
+                    default:
+                        fail("Unexpected: " + listEvent);
+                }
+            }
+        };
+        el.addListEventListener(lel);
+        rel.addListEventListener(rlel);
+        rel.add(1, "two");
+        lel.listChanged(null);
+        rlel.listChanged(null);
+        el.removeListEventListener(lel);
+        rel.removeListEventListener(rlel);
+    }
+
     public void testAddAll() {
         final EventList el = EventLists.eventList();
         final EventList rel = createBackedEventList(el);
