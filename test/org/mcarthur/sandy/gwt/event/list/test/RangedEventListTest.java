@@ -140,6 +140,41 @@ public class RangedEventListTest extends TransformedEventListTest {
         assertEquals(2, rel.size());
         assertEquals(el, rel);
         rel.removeListEventListener(lel);
+
+
+        el.add("three");
+        rel.setStart(1);
+        rel.setMaxSize(2);
+
+        lel = new ListEventListener() {
+            private int count = 0;
+            public void listChanged(final ListEvent listEvent) {
+                switch (count++) {
+                    case 0:
+                        assertEquals(new ListEvent(rel, ListEvent.REMOVED, 1), listEvent);
+                        break;
+                    case 1:
+                        assertEquals(new ListEvent(rel, ListEvent.ADDED, 0), listEvent);
+                        break;
+                    case 2:
+                        assertNull(listEvent);
+                        break;
+                    default:
+                        fail("Unexpected: " + listEvent);
+                }
+            }
+        };
+        rel.addListEventListener(lel);
+        rel.setStart(0);
+        lel.listChanged(null);
+        rel.removeListEventListener(lel);
+
+        try {
+            rel.setStart(-1);
+            fail("Expected IllegalArgumentException.");
+        } catch (IllegalArgumentException iae) {
+            // expected
+        }
     }
 
     public void testSetMaxSize() {
@@ -233,6 +268,33 @@ public class RangedEventListTest extends TransformedEventListTest {
         lel.listChanged(null);
         assertEquals(el.size(), rel.size());
         rel.removeListEventListener(lel);
+
+        try {
+            rel.setMaxSize(-1);
+            fail("Expected IllegalArgumentException.");
+        } catch (IllegalArgumentException iae) {
+            // expected
+        }
+    }
+
+    public void testGetTotal() {
+        final EventList el = EventLists.eventList();
+        prefillWithIntegers(el, 50);
+        final RangedEventList rel = EventLists.rangedEventList(el);
+
+        assertEquals(el.size(), rel.getTotal());
+
+        rel.remove(4);
+        assertEquals(el.size(), rel.getTotal());
+
+        el.remove(40);
+        assertEquals(el.size(), rel.getTotal());
+
+        rel.setMaxSize(15);
+        assertEquals(el.size(), rel.getTotal());
+
+        rel.setStart(25);
+        assertEquals(el.size(), rel.getTotal());
     }
 
     public void testAdd() {
@@ -1219,6 +1281,35 @@ public class RangedEventListTest extends TransformedEventListTest {
         };
         rel.addListEventListener(lel);
         rel.remove(6);
+        lel.listChanged(null);
+        rel.removeListEventListener(lel);
+    }
+
+    public void testRemoveWhenSizeIsMaxSize() {
+        final EventList el = EventLists.eventList();
+        prefillWithIntegers(el, 10);
+
+        final RangedEventList rel = createBackedRangedEventList(el);
+        //rel.setStart(10);
+        rel.setMaxSize(10);
+
+        ListEventListener lel = new ListEventListener() {
+            private int count = 0;
+            public void listChanged(final ListEvent listEvent) {
+                switch (count++) {
+                    case 0:
+                        assertEquals(new ListEvent(rel, ListEvent.REMOVED, 4), listEvent);
+                        break;
+                    case 1:
+                        assertNull("was: " + listEvent, listEvent);
+                        break;
+                    default:
+                        fail("Unexpected: " + listEvent);
+                }
+            }
+        };
+        rel.addListEventListener(lel);
+        rel.remove(4);
         lel.listChanged(null);
         rel.removeListEventListener(lel);
     }

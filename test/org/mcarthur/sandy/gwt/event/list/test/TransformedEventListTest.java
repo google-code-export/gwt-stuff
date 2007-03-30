@@ -16,6 +16,7 @@
 
 package org.mcarthur.sandy.gwt.event.list.test;
 
+import org.mcarthur.sandy.gwt.event.list.client.AbstractEventList;
 import org.mcarthur.sandy.gwt.event.list.client.EventList;
 import org.mcarthur.sandy.gwt.event.list.client.EventLists;
 import org.mcarthur.sandy.gwt.event.list.client.ListEvent;
@@ -42,6 +43,40 @@ public abstract class TransformedEventListTest extends EventListTest {
         prefillWithIntegers(l, 5);
 
         assertEquals(l, bel);
+    }
+
+    public void testOtherListEventIsResourced() {
+        final EventList el = new AbstractEventList() {
+            public Object get(final int index) {
+                fireListEvent(new ListEvent(this));
+                return null;
+            }
+
+            public int size() {
+                return 0;
+            }
+        };
+        final EventList bel = createBackedEventList(el);
+
+        final ListEventListener lel = new ListEventListener() {
+            private int count = 0;
+            public void listChanged(final ListEvent listEvent) {
+                switch (count++) {
+                    case 0:
+                        assertEquals(new ListEvent(bel), listEvent);
+                        break;
+                    case 1:
+                        assertNull(listEvent);
+                        break;
+                    default:
+                        fail("Unexpected: " + listEvent);
+                }
+            }
+        };
+        bel.addListEventListener(lel);
+        el.get(0);
+        lel.listChanged(null);
+        bel.removeListEventListener(lel);
     }
 
     public void testAdd() {
