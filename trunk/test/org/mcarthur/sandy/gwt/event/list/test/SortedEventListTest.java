@@ -49,6 +49,8 @@ public class SortedEventListTest extends TransformedEventListTest {
     }
 
     public void testAdd() {
+        super.testAdd();
+
         final EventList el = EventLists.eventList();
         el.add(I0);
         el.add(I20);

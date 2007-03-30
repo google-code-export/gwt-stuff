@@ -36,10 +36,10 @@ public class WrappedEventListTest extends EventListTest {
 
     public void testAddAll() {
         final EventList el = createEmptyEventLists();
-        prefill(el, 3);
+        prefillWithIntegers(el, 3);
 
         final List l = new ArrayList();
-        prefill(l, 3);
+        prefillWithIntegers(l, 3);
 
         ListEventListener lel = new ListEventListener() {
             private int count = 0;
