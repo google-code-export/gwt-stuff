@@ -1,5 +1,5 @@
 /*
- * Copyright 2006 Sandy McArthur, Jr.
+ * Copyright 2007 Sandy McArthur, Jr.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
@@ -16,18 +16,15 @@
 
 package org.mcarthur.sandy.gwt.event.list.client;
 
-import java.util.AbstractList;
-import java.util.List;
-
 /**
  * RangedEventList that presents a view of a range of elements in another EventList.
  *
  * @author Sandy McArthur
  */
 class RangedEventListImpl extends TransformedEventList implements RangedEventList {
-    private int startOffset;
-    private int maxSize;
-    private List translationList = new TranslationList();
+    private int startOffset = 0;
+    private int maxSize = Integer.MAX_VALUE;
+    private int size;
 
     protected RangedEventListImpl(final EventList delegate) {
         this(delegate, Integer.MAX_VALUE);
@@ -35,6 +32,7 @@ class RangedEventListImpl extends TransformedEventList implements RangedEventLis
 
     protected RangedEventListImpl(final EventList delegate, final int maxSize) {
         super(delegate);
+        size = delegate.size();
         getDelegate().addListEventListener(getListEventListener());
         setStartOffset(0);
         setMaxSize(maxSize);
@@ -70,14 +68,19 @@ class RangedEventListImpl extends TransformedEventList implements RangedEventLis
             final int end = sumWithoutOverflow(start, maxSize);
 
             final int rangeSize = Math.min(indexEnd - indexStart, Math.min(maxSize, end - indexStart));
-            final int removeSize = Math.min(size - (maxSize - rangeSize), start + maxSize - indexStart);
-            final int insertStart = Math.max(0, indexStart - start);
+            final int removeSize = Math.min(size - (maxSize - rangeSize), end - indexStart);
+            final int insertStart = indexStart - start;
 
             if (removeSize > 0) {
+                RangedEventListImpl.this.size -= removeSize;
+                assert RangedEventListImpl.this.size >= 0 : "size: " + RangedEventListImpl.this.size;
                 fireListEvent(new ListEvent(RangedEventListImpl.this, ListEvent.REMOVED, size - removeSize, size));
             }
-            if (insertStart < maxSize) {
-                fireListEvent(new ListEvent(RangedEventListImpl.this, ListEvent.ADDED, insertStart, insertStart + rangeSize));
+            if (0 <= insertStart + size && insertStart < maxSize) {
+                RangedEventListImpl.this.size += rangeSize;
+                assert RangedEventListImpl.this.size >= 0 : "size: " + RangedEventListImpl.this.size;
+                final int indexStartOrZero = Math.max(0, insertStart);
+                fireListEvent(new ListEvent(RangedEventListImpl.this, ListEvent.ADDED, indexStartOrZero, indexStartOrZero + rangeSize));
             } else {
                 // the event was after our range, let them know something changed.
                 fireListEvent(new ListEvent(RangedEventListImpl.this));
@@ -111,9 +114,13 @@ class RangedEventListImpl extends TransformedEventList implements RangedEventLis
             final int removeStart = Math.max(0, indexStart - start);
 
             if (removeStart < maxSize) {
+                RangedEventListImpl.this.size -= rangeSize;
+                assert RangedEventListImpl.this.size >= 0 : "size: " + RangedEventListImpl.this.size;
                 fireListEvent(new ListEvent(RangedEventListImpl.this, ListEvent.REMOVED, removeStart, removeStart + rangeSize));
 
                 if (addedSize > 0) {
+                    RangedEventListImpl.this.size -= addedSize;
+                    assert RangedEventListImpl.this.size >= 0 : "size: " + RangedEventListImpl.this.size;
                     fireListEvent(new ListEvent(RangedEventListImpl.this, ListEvent.ADDED, size - addedSize, size));
                 }
             } else {
@@ -122,38 +129,9 @@ class RangedEventListImpl extends TransformedEventList implements RangedEventLis
             }
         }
 
-        private void XlistChangedRemoved(final int indexStart, final int indexEnd) {
-            final int start = getStart();
-            final int maxSize = getMaxSize();
-            final int maxEnd = sumWithoutOverflow(start, maxSize);
-            if (indexStart < maxEnd) {
-                final int removedSize = indexEnd - indexStart;
-                final int removedStart = Math.max(0, indexStart - start);
-                final int removedEnd = removedStart + removedSize;
-
-                fireListEvent(new ListEvent(RangedEventListImpl.this, ListEvent.REMOVED, removedStart, removedEnd));
-
-                // if the remove didn't shrink the number of visible elements
-                if (size() >= maxSize) {
-                    // clamp to current page range
-                    final int removedRange = removedEnd - removedStart;
-                    fireListEvent(new ListEvent(RangedEventListImpl.this, ListEvent.ADDED, maxEnd - removedRange, maxEnd));
-                }
-            } else {
-                fireListEvent(new ListEvent(RangedEventListImpl.this));
-            }
-        }
-        
         private int sumWithoutOverflow(final int start, final int maxSize) {
             return (Integer.MAX_VALUE - maxSize > start) ? start + maxSize : Integer.MAX_VALUE;
         }
-    }
-
-    /**
-     * @deprecated Use {@link #getSourceIndex(int)} instead.
-     */
-    private List getTranslations() {
-        return translationList;
     }
 
     protected int getSourceIndex(final int mutationIndex) {
@@ -161,37 +139,70 @@ class RangedEventListImpl extends TransformedEventList implements RangedEventLis
     }
 
     public int size() {
-        return getTranslations().size();
+        return size;
     }
 
     public int getStart() {
         return getStartOffset();
     }
 
-    public void setStart(final int start) {
-        if (start < 0) {
-            throw new IllegalArgumentException("Start must be positive. was: " + start);
+    public void setStart(final int newStart) {
+        if (newStart < 0) {
+            throw new IllegalArgumentException("Start must be positive. was: " + newStart);
         }
-        if (getStartOffset() != start) {
+        if (getStartOffset() != newStart) {
+            final int oldStart = getStartOffset();
+            final int startDelta = newStart - oldStart;
+            assert startDelta != 0;
             final int oldSize = size();
-            setStartOffset(start);
-            final int newSize = size();
-            if (oldSize < newSize) {
-                // bigger, start decreased
-                final int sizeChange = newSize - oldSize;
-                fireListEvent(new ListEvent(RangedEventListImpl.this, ListEvent.ADDED, 0, sizeChange));
-                if (newSize > sizeChange) {
-                    fireListEvent(new ListEvent(RangedEventListImpl.this, ListEvent.CHANGED, sizeChange, newSize));
+            final int newSize = Math.min(getMaxSize(), Math.max(getDelegate().size() - newStart, 0));
+
+            if (oldSize == 0 && newSize == 0) {
+                // offset changed but contents didn't.
+                setStartOffset(newStart);
+                fireListEvent(new ListEvent(this));
+                return;
+            }
+
+            final int sizeDelta = newSize - oldSize;
+
+            if (startDelta > 0) {
+                // start increased
+                final int delta = Math.min(startDelta, getMaxSize());
+                assert delta > 0 : "delta: " + delta;
+                size -= delta;
+                assert size >= 0 : "size: " + size;
+
+                setStartOffset(newStart);
+                fireListEvent(new ListEvent(this, ListEvent.REMOVED, 0, delta));
+
+                final int toAdd = delta + sizeDelta;
+                assert toAdd >= 0 : "Size changed in a unexpected way.";
+
+                if (toAdd > 0) {
+                    size += toAdd;
+                    fireListEvent(new ListEvent(this, ListEvent.ADDED, oldSize - delta, newSize));
                 }
-            } else if (oldSize > newSize) {
-                // smaller, start increased
-                final int sizeChange = oldSize - newSize;
-                fireListEvent(new ListEvent(RangedEventListImpl.this, ListEvent.REMOVED, 0, sizeChange));
-                if (newSize > 0) {
-                    fireListEvent(new ListEvent(RangedEventListImpl.this, ListEvent.CHANGED, 0, newSize));
+            } else {
+                // start decreased
+                // startDelta is negative
+                final int delta = Math.min(-startDelta, oldSize);
+                assert delta >= 0 : "delta: " + delta;
+                size -= delta;
+                assert size >= 0 : "size: " + size;
+
+                setStartOffset(newStart);
+                if (delta > 0) {
+                    fireListEvent(new ListEvent(this, ListEvent.REMOVED, oldSize - delta, oldSize));                    
                 }
-            } else if (newSize > 0) {
-                fireListEvent(new ListEvent(RangedEventListImpl.this, ListEvent.CHANGED, 0, newSize));
+
+                final int toAdd = delta + sizeDelta;
+                assert toAdd >= 0 : "Size changed in a unexpected way.";
+
+                if (toAdd > 0) {
+                    size += toAdd;
+                    fireListEvent(new ListEvent(this, ListEvent.ADDED, 0, toAdd));
+                }
             }
         }
     }
@@ -209,47 +220,58 @@ class RangedEventListImpl extends TransformedEventList implements RangedEventLis
         return maxSize;
     }
 
-    public void setMaxSize(final int maxSize) {
-        if (maxSize < 0) {
-            throw new IllegalArgumentException("MaxSize must be positive. was: " + maxSize);
+    public void setMaxSize(final int newMaxSize) {
+        if (newMaxSize < 0) {
+            throw new IllegalArgumentException("maxSize must be positive. was: " + newMaxSize);
+        } else if (maxSize == newMaxSize) {
+            // no change
+            return;
         }
-        final int oldMaxSize = this.maxSize;
+        
+        final int oldMaxSize = maxSize;
         final int oldSize = size();
-        this.maxSize = maxSize;
-        final int size = size();
-        if (oldMaxSize < maxSize) {
-            // grew, Add
-            final int actualChange = size - oldSize;
-            if (actualChange > 0) {
-                fireListEvent(new ListEvent(RangedEventListImpl.this, ListEvent.ADDED, size - actualChange, size));
+        final int newSize = Math.min(newMaxSize, Math.max(getDelegate().size() - getStart(), 0));
+
+        if (oldSize == newSize) {
+            // offset changed but contents didn't.
+            maxSize = newMaxSize;
+            fireListEvent(new ListEvent(this));
+            return;
+        }
+
+        final int maxSizeDelta = newMaxSize - oldMaxSize;
+        assert maxSizeDelta != 0 : "maxSizeDelta: " + maxSizeDelta;
+
+        if (maxSizeDelta > 0) {
+            // maxSize increased
+            final int delta = Math.min(maxSizeDelta, newSize - oldSize);
+            assert delta >= 0 : "delta: " + delta;
+            size += delta;
+            assert size >= 0 : "size: " + size;
+
+            maxSize = newMaxSize;
+
+            if (delta > 0) {
+                fireListEvent(new ListEvent(this, ListEvent.ADDED, oldSize, newSize));
             }
-        } else if (oldMaxSize > maxSize) {
-            // shrunk, remove
-            final int actualChange = oldSize - size;
-            if (actualChange > 0) {
-                fireListEvent(new ListEvent(RangedEventListImpl.this, ListEvent.REMOVED, size, size + actualChange));
+
+        } else {
+            // maxSize decreased
+            // maxSizeDelta is negative
+            final int delta = Math.min(-maxSizeDelta, oldSize - newSize);
+            assert delta >= 0 : "delta: " + delta;
+            size -= delta;
+            assert size >= 0 : "size: " + size;
+
+            maxSize = newMaxSize;
+
+            if (delta > 0) {
+                fireListEvent(new ListEvent(this, ListEvent.REMOVED, newSize, oldSize));
             }
         }
     }
 
     public int getTotal() {
         return getDelegate().size();
-    }
-
-    /**
-     * A List that creates {@link TransformedEventList.Index}s as needed based
-     * on {@link RangedEventList#getStart()} and {@link RangedEventList#getMaxSize()}.
-     */
-    private class TranslationList extends AbstractList {
-        public Object get(final int index) {
-            if (index >= size()) {
-                throw new IndexOutOfBoundsException("Index: " + index + ", Size: " + size());
-            }
-            return new Index(getStart() + index);
-        }
-
-        public int size() {
-            return Math.max(0, Math.min(getMaxSize(), getTotal() - getStart()));
-        }
     }
 }

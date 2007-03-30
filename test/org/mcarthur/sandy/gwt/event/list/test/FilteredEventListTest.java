@@ -40,6 +40,10 @@ public class FilteredEventListTest extends TransformedEventListTest {
         return EventLists.filteredEventList(el);
     }
 
+    protected FilteredEventList createBackedFilteredEventList(final EventList el) {
+        return (FilteredEventList)createBackedEventList(el);
+    }
+
     public void testToArrayRespectsFilters() {
         final EventList el = EventLists.eventList();
         final FilteredEventList fel = EventLists.filteredEventList(el);
@@ -101,5 +105,99 @@ public class FilteredEventListTest extends TransformedEventListTest {
         assertEquals(n1.size(), r1.size());
         assertTrue(n1.containsAll(r1));
         assertTrue(r1.containsAll(n1));
+    }
+
+    public void testSetFilter() {
+        final EventList el = EventLists.eventList();
+        prefillWithIntegers(el, 4);
+        final FilteredEventList fel = createBackedFilteredEventList(el);
+
+        final List even = new ArrayList();
+        even.add(Integer.valueOf(0));
+        even.add(Integer.valueOf(2));
+
+        final List odd = new ArrayList();
+        odd.add(Integer.valueOf(1));
+        odd.add(Integer.valueOf(3));
+
+        final FilteredEventList.Filter evenFilter = new FilteredEventList.Filter() {
+            public boolean accept(final Object element) {
+                final Integer i = (Integer)element;
+                return i.intValue() % 2 == 0;
+            }
+        };
+        fel.setFilter(evenFilter);
+
+        assertEquals(2, fel.size());
+        assertTrue(even.containsAll(fel));
+
+        final FilteredEventList.Filter oddFilter = new FilteredEventList.Filter() {
+            public boolean accept(final Object element) {
+                final Integer i = (Integer)element;
+                return i.intValue() % 2 == 1;
+            }
+        };
+        fel.setFilter(oddFilter);
+
+        assertEquals(2, fel.size());
+        assertTrue(odd.containsAll(fel));
+
+        fel.setFilter(null);
+
+        assertEquals(4, fel.size());
+        assertTrue(fel.containsAll(even));
+        assertTrue(fel.containsAll(odd));
+    }
+
+    public void testAdd() {
+        super.testAdd();
+        
+        final EventList el = EventLists.eventList();
+        prefillWithIntegers(el, 4);
+        final FilteredEventList fel = createBackedFilteredEventList(el);
+
+        final List even = new ArrayList();
+        even.add(Integer.valueOf(0));
+        even.add(Integer.valueOf(2));
+
+        final List odd = new ArrayList();
+        odd.add(Integer.valueOf(1));
+        odd.add(Integer.valueOf(3));
+
+        final FilteredEventList.Filter evenFilter = new FilteredEventList.Filter() {
+            public boolean accept(final Object element) {
+                final Integer i = (Integer)element;
+                return i.intValue() % 2 == 0;
+            }
+        };
+        fel.setFilter(evenFilter);
+
+        fel.add(Integer.valueOf(4));
+        try {
+            fel.add(Integer.valueOf(5));
+            fail("Exepected an IllegalArgumentException.");
+        } catch (IllegalArgumentException iae) {
+            // expected
+        }
+
+        final FilteredEventList.Filter oddFilter = new FilteredEventList.Filter() {
+            public boolean accept(final Object element) {
+                final Integer i = (Integer)element;
+                return i.intValue() % 2 == 1;
+            }
+        };
+        fel.setFilter(oddFilter);
+
+        fel.add(Integer.valueOf(5));
+        try {
+            fel.add(Integer.valueOf(6));
+            fail("Exepected an IllegalArgumentException.");
+        } catch (IllegalArgumentException iae) {
+            // expected
+        }
+    }
+
+    public void testSet() {
+        //super.testSet(); // TODO: uncomment when FilteredEventListImpl is optimized
     }
 }

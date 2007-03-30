@@ -42,7 +42,7 @@ public class ReverseEventListTest extends EventListTest {
 
     public void testIsReversed() {
         final EventList el = EventLists.eventList();
-        prefill(el, 3);
+        prefillWithIntegers(el, 3);
         final EventList rel = createBackedEventList(el);
 
         assertEquals(el.get(0), rel.get(2));
@@ -52,7 +52,7 @@ public class ReverseEventListTest extends EventListTest {
         el.clear();
 
         final List l = new ArrayList();
-        prefill(l, 3);
+        prefillWithIntegers(l, 3);
 
         rel.addAll(l);
 
@@ -63,7 +63,7 @@ public class ReverseEventListTest extends EventListTest {
 
     public void testEventsAreReversed() {
         final EventList el = EventLists.eventList();
-        prefill(el, 3);
+        prefillWithIntegers(el, 3);
         final EventList rel = createBackedEventList(el);
 
         rel.addListEventListener(new ListEventListener() {
@@ -110,7 +110,7 @@ public class ReverseEventListTest extends EventListTest {
                     case 0:
                         assertEquals(new ListEvent(rel,ListEvent.ADDED, 0, 3), listEvent);
                         final List l = new ArrayList();
-                        prefill(l, 3);
+                        prefillWithIntegers(l, 3);
                         Collections.reverse(l);
                         assertEquals(l, listEvent.getSourceList());
                         break;
@@ -122,15 +122,17 @@ public class ReverseEventListTest extends EventListTest {
         });
 
         final List l = new ArrayList();
-        prefill(l, 3);
+        prefillWithIntegers(l, 3);
 
         assertEquals(0, el.size());
         el.addAll(l);
     }
 
     public void testGet() {
+        super.testGet();
+
         final EventList el = EventLists.eventList();
-        prefill(el, 3);
+        prefillWithIntegers(el, 3);
         final EventList rel = createBackedEventList(el);
 
 
@@ -153,8 +155,10 @@ public class ReverseEventListTest extends EventListTest {
     }
 
     public void testSet() {
+        super.testSet();
+
         final EventList el = EventLists.eventList();
-        prefill(el, 3);
+        prefillWithIntegers(el, 3);
         final EventList rel = createBackedEventList(el);
 
         assertEquals(3, rel.size());
@@ -189,7 +193,7 @@ public class ReverseEventListTest extends EventListTest {
 
     public void testRemove() {
         final EventList el = EventLists.eventList();
-        prefill(el, 3);
+        prefillWithIntegers(el, 3);
         final EventList rel = createBackedEventList(el);
 
         assertEquals(Integer.valueOf(0), rel.remove(2));

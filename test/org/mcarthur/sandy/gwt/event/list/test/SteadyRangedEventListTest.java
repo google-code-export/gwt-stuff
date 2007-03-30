@@ -44,7 +44,7 @@ public class SteadyRangedEventListTest extends RangedEventListTest {
     public void testAddBeforeRangeStart() {
         // Insert before start doesn't affect visible elements
         final EventList el = EventLists.eventList();
-        prefill(el, 100);
+        prefillWithIntegers(el, 100);
 
         final RangedEventList rel = createBackedRangedEventList(el);
         rel.setStart(10);
