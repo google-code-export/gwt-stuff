@@ -183,7 +183,7 @@ public final class ObservingEventList extends DelegateEventList implements Event
             int i;
             for (i=0; i < size; i++) {
                 if (o == get(i)) {
-                    fireListEvent(new ListEvent(ObservingEventList.this, ListEvent.CHANGED, i));
+                    fireListEvent(ListEvent.createChanged(ObservingEventList.this, i));
                     break;
                 }
             }

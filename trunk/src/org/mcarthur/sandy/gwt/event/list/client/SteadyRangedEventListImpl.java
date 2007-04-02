@@ -39,7 +39,7 @@ class SteadyRangedEventListImpl extends RangedEventListImpl implements RangedEve
                 // if the removal didn't affect any visible elements
                 final int removedSize = indexEnd - indexStart;
                 setStartOffset(getStart() - removedSize);
-                fireListEvent(new ListEvent(SteadyRangedEventListImpl.this));
+                fireListEvent(ListEvent.createOther(SteadyRangedEventListImpl.this));
 
             } else {
                 super.listChangedRemoved(indexStart, indexEnd);
@@ -59,7 +59,7 @@ class SteadyRangedEventListImpl extends RangedEventListImpl implements RangedEve
                 if (indexStart < getStart()) {
                     // if the insert causes the start offset to change
                     setStartOffset(getStart() + addedSize);
-                    fireListEvent(new ListEvent(SteadyRangedEventListImpl.this));
+                    fireListEvent(ListEvent.createOther(SteadyRangedEventListImpl.this));
 
                 } else if (indexStart < maxEnd) {
                     final int oldTotal = getTotal() - addedSize;
@@ -70,16 +70,16 @@ class SteadyRangedEventListImpl extends RangedEventListImpl implements RangedEve
                         final int addStart = Math.max(0, indexStart - getStart());
                         final int addEnd = addStart + visableAddedSize;
                         if (size() > 0) {
-                            fireListEvent(new ListEvent(SteadyRangedEventListImpl.this, ListEvent.ADDED, addStart, addEnd));
+                            fireListEvent(ListEvent.createAdded(SteadyRangedEventListImpl.this, addStart, addEnd));
                             if (addEnd != size()) {
-                                fireListEvent(new ListEvent(SteadyRangedEventListImpl.this, ListEvent.CHANGED, addEnd, size()));
+                                fireListEvent(ListEvent.createChanged(SteadyRangedEventListImpl.this, addEnd, size()));
                             }
                         }
                     } else {
-                        fireListEvent(new ListEvent(SteadyRangedEventListImpl.this, ListEvent.CHANGED, 0, getMaxSize()));
+                        fireListEvent(ListEvent.createChanged(SteadyRangedEventListImpl.this, 0, getMaxSize()));
                     }
                 } else {
-                    fireListEvent(new ListEvent(SteadyRangedEventListImpl.this));
+                    fireListEvent(ListEvent.createOther(SteadyRangedEventListImpl.this));
                 }
 
             } else if (listEvent.isChanged()) {
@@ -88,9 +88,9 @@ class SteadyRangedEventListImpl extends RangedEventListImpl implements RangedEve
                     // clamp to current page range
                     final int changedStart = Math.max(0, indexStart - getStart());
                     final int changedEnd = Math.min(getMaxSize(), indexEnd - getStart());
-                    fireListEvent(new ListEvent(SteadyRangedEventListImpl.this, ListEvent.CHANGED, changedStart, changedEnd));
+                    fireListEvent(ListEvent.createChanged(SteadyRangedEventListImpl.this, changedStart, changedEnd));
                 } else {
-                    fireListEvent(new ListEvent(SteadyRangedEventListImpl.this));
+                    fireListEvent(ListEvent.createOther(SteadyRangedEventListImpl.this));
                 }
 
             } else if (listEvent.isRemoved()) {
@@ -98,19 +98,19 @@ class SteadyRangedEventListImpl extends RangedEventListImpl implements RangedEve
                 if (indexEnd <= getStart()) {
                     // if the removal didn't affect any visible elements
                     setStartOffset(getStart() - removedSize);
-                    fireListEvent(new ListEvent(SteadyRangedEventListImpl.this));
+                    fireListEvent(ListEvent.createOther(SteadyRangedEventListImpl.this));
 
                 } else if (indexStart < maxEnd) {
                     // if the new size shrinks the visible size
                     if (size() < getMaxSize()) {
                         final int removedStart = Math.max(0, indexStart - getStart());
                         final int removedEnd = removedStart + removedSize;
-                        fireListEvent(new ListEvent(SteadyRangedEventListImpl.this, ListEvent.REMOVED, removedStart, removedEnd));
+                        fireListEvent(ListEvent.createRemoved(SteadyRangedEventListImpl.this, removedStart, removedEnd));
                     } else {
-                        fireListEvent(new ListEvent(SteadyRangedEventListImpl.this, ListEvent.CHANGED, 0, getMaxSize()));
+                        fireListEvent(ListEvent.createChanged(SteadyRangedEventListImpl.this, 0, getMaxSize()));
                     }
                 } else {
-                    fireListEvent(new ListEvent(SteadyRangedEventListImpl.this));
+                    fireListEvent(ListEvent.createOther(SteadyRangedEventListImpl.this));
                 }
 
             } else {

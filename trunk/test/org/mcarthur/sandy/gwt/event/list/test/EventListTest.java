@@ -60,7 +60,7 @@ public abstract class EventListTest extends TestCase {
                 switch (count++) {
                     case 0:
                         // this should be the only elelemt, thus index == 0
-                        assertEquals(new ListEvent(el, ListEvent.ADDED, 0), listEvent);
+                        assertEquals(ListEvent.createAdded(el, 0), listEvent);
                         break;
                     case 1:
                         assertNull(listEvent);
@@ -121,7 +121,7 @@ public abstract class EventListTest extends TestCase {
                 switch (count++) {
                     case 0:
                         // this should be the only element, thus index == 0
-                        assertEquals(new ListEvent(el, ListEvent.REMOVED, 0), listEvent);
+                        assertEquals(ListEvent.createRemoved(el, 0), listEvent);
                         break;
                     case 1:
                         assertNull(listEvent);
@@ -164,7 +164,7 @@ public abstract class EventListTest extends TestCase {
                 switch (count++) {
                     case 0:
                         // this should be the only element, thus index == 0
-                        assertEquals(new ListEvent(el, ListEvent.CHANGED, 0), listEvent);
+                        assertEquals(ListEvent.createChanged(el, 0), listEvent);
                         break;
                     case 1:
                         assertNull(listEvent);

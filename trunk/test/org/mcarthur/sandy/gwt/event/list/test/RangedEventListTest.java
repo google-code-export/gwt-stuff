@@ -61,7 +61,7 @@ public class RangedEventListTest extends TransformedEventListTest {
             public void listChanged(final ListEvent listEvent) {
                 switch (count++) {
                     case 0:
-                        assertEquals(new ListEvent(rel, ListEvent.REMOVED, 0), listEvent);
+                        assertEquals(ListEvent.createRemoved(rel, 0), listEvent);
                         break;
                     case 1:
                         assertNull(listEvent);
@@ -82,7 +82,7 @@ public class RangedEventListTest extends TransformedEventListTest {
             public void listChanged(final ListEvent listEvent) {
                 switch (count++) {
                     case 0:
-                        assertEquals(new ListEvent(rel, ListEvent.REMOVED, 0), listEvent);
+                        assertEquals(ListEvent.createRemoved(rel, 0), listEvent);
                         break;
                     case 1:
                         assertNull(listEvent);
@@ -103,7 +103,7 @@ public class RangedEventListTest extends TransformedEventListTest {
             public void listChanged(final ListEvent listEvent) {
                 switch (count++) {
                     case 0:
-                        assertEquals(new ListEvent(rel), listEvent);
+                        assertEquals(ListEvent.createOther(rel), listEvent);
                         break;
                     case 1:
                         assertNull(listEvent);
@@ -124,7 +124,7 @@ public class RangedEventListTest extends TransformedEventListTest {
             public void listChanged(final ListEvent listEvent) {
                 switch (count++) {
                     case 0:
-                        assertEquals(new ListEvent(rel, ListEvent.ADDED, 0, 2), listEvent);
+                        assertEquals(ListEvent.createAdded(rel, 0, 2), listEvent);
                         break;
                     case 1:
                         assertNull(listEvent);
@@ -151,10 +151,10 @@ public class RangedEventListTest extends TransformedEventListTest {
             public void listChanged(final ListEvent listEvent) {
                 switch (count++) {
                     case 0:
-                        assertEquals(new ListEvent(rel, ListEvent.REMOVED, 1), listEvent);
+                        assertEquals(ListEvent.createRemoved(rel, 1), listEvent);
                         break;
                     case 1:
-                        assertEquals(new ListEvent(rel, ListEvent.ADDED, 0), listEvent);
+                        assertEquals(ListEvent.createAdded(rel, 0), listEvent);
                         break;
                     case 2:
                         assertNull(listEvent);
@@ -190,7 +190,7 @@ public class RangedEventListTest extends TransformedEventListTest {
             public void listChanged(final ListEvent listEvent) {
                 switch (count++) {
                     case 0:
-                        assertEquals(new ListEvent(rel), listEvent);
+                        assertEquals(ListEvent.createOther(rel), listEvent);
                         break;
                     case 1:
                         assertNull(listEvent);
@@ -211,7 +211,7 @@ public class RangedEventListTest extends TransformedEventListTest {
             public void listChanged(final ListEvent listEvent) {
                 switch (count++) {
                     case 0:
-                        assertEquals(new ListEvent(rel, ListEvent.REMOVED, 5, 10), listEvent);
+                        assertEquals(ListEvent.createRemoved(rel, 5, 10), listEvent);
                         break;
                     case 1:
                         assertNull(listEvent);
@@ -232,7 +232,7 @@ public class RangedEventListTest extends TransformedEventListTest {
             public void listChanged(final ListEvent listEvent) {
                 switch (count++) {
                     case 0:
-                        assertEquals(new ListEvent(rel, ListEvent.ADDED, 5, 8), listEvent);
+                        assertEquals(ListEvent.createAdded(rel, 5, 8), listEvent);
                         break;
                     case 1:
                         assertNull(listEvent);
@@ -253,7 +253,7 @@ public class RangedEventListTest extends TransformedEventListTest {
             public void listChanged(final ListEvent listEvent) {
                 switch (count++) {
                     case 0:
-                        assertEquals(new ListEvent(rel, ListEvent.ADDED, 8, 10), listEvent);
+                        assertEquals(ListEvent.createAdded(rel, 8, 10), listEvent);
                         break;
                     case 1:
                         assertNull(listEvent);
@@ -327,7 +327,7 @@ public class RangedEventListTest extends TransformedEventListTest {
             public void listChanged(final ListEvent listEvent) {
                 switch (count++) {
                     case 0:
-                        assertEquals(new ListEvent(rel), listEvent);
+                        assertEquals(ListEvent.createOther(rel), listEvent);
                         break;
                     case 1:
                         assertNull(listEvent);
@@ -347,7 +347,7 @@ public class RangedEventListTest extends TransformedEventListTest {
             public void listChanged(final ListEvent listEvent) {
                 switch (count++) {
                     case 0:
-                        assertEquals(new ListEvent(rel), listEvent);
+                        assertEquals(ListEvent.createOther(rel), listEvent);
                         break;
                     case 1:
                         assertNull(listEvent);
@@ -367,7 +367,7 @@ public class RangedEventListTest extends TransformedEventListTest {
             public void listChanged(final ListEvent listEvent) {
                 switch (count++) {
                     case 0:
-                        assertEquals(new ListEvent(rel, ListEvent.ADDED, 0), listEvent);
+                        assertEquals(ListEvent.createAdded(rel, 0), listEvent);
                         break;
                     case 1:
                         assertNull(listEvent);
@@ -625,10 +625,10 @@ public class RangedEventListTest extends TransformedEventListTest {
                 switch (count++) {
                     case 0:
                     case 1:
-                        assertEquals(new ListEvent(rel, ListEvent.ADDED, count - 1), listEvent);
+                        assertEquals(ListEvent.createAdded(rel, count - 1), listEvent);
                         break;
                     case 2:
-                        assertEquals(new ListEvent(rel), listEvent);
+                        assertEquals(ListEvent.createOther(rel), listEvent);
                         break;
                     case 3:
                         assertNull(listEvent);
@@ -662,10 +662,10 @@ public class RangedEventListTest extends TransformedEventListTest {
             public void listChanged(final ListEvent listEvent) {
                 switch (count++) {
                     case 0:
-                        assertEquals(new ListEvent(rel, ListEvent.REMOVED, 9), listEvent);
+                        assertEquals(ListEvent.createRemoved(rel, 9), listEvent);
                         break;
                     case 1:
-                        assertEquals(new ListEvent(rel, ListEvent.ADDED, 0), listEvent);
+                        assertEquals(ListEvent.createAdded(rel, 0), listEvent);
                         break;
                     case 2:
                         assertNull(listEvent);
@@ -687,7 +687,7 @@ public class RangedEventListTest extends TransformedEventListTest {
             public void listChanged(final ListEvent listEvent) {
                 switch (count++) {
                     case 0:
-                        assertEquals(new ListEvent(rel, ListEvent.ADDED, 0), listEvent);
+                        assertEquals(ListEvent.createAdded(rel, 0), listEvent);
                         break;
                     case 1:
                         assertNull(listEvent);
@@ -716,7 +716,7 @@ public class RangedEventListTest extends TransformedEventListTest {
             public void listChanged(final ListEvent listEvent) {
                 switch (count++) {
                     case 0:
-                        assertEquals(new ListEvent(rel), listEvent);
+                        assertEquals(ListEvent.createOther(rel), listEvent);
                         break;
                     case 1:
                         assertNull(listEvent);
@@ -747,10 +747,10 @@ public class RangedEventListTest extends TransformedEventListTest {
             public void listChanged(final ListEvent listEvent) {
                 switch (count++) {
                     case 0:
-                        assertEquals(new ListEvent(rel, ListEvent.REMOVED, 0), listEvent);
+                        assertEquals(ListEvent.createRemoved(rel, 0), listEvent);
                         break;
                     case 1:
-                        assertEquals(new ListEvent(rel, ListEvent.ADDED, 9), listEvent);
+                        assertEquals(ListEvent.createAdded(rel, 9), listEvent);
                         break;
                     case 2:
                         assertNull(listEvent);
@@ -772,7 +772,7 @@ public class RangedEventListTest extends TransformedEventListTest {
             public void listChanged(final ListEvent listEvent) {
                 switch (count++) {
                     case 0:
-                        assertEquals(new ListEvent(rel, ListEvent.REMOVED, 0), listEvent);
+                        assertEquals(ListEvent.createRemoved(rel, 0), listEvent);
                         break;
                     case 1:
                         assertNull(listEvent);
@@ -801,10 +801,10 @@ public class RangedEventListTest extends TransformedEventListTest {
             public void listChanged(final ListEvent listEvent) {
                 switch (count++) {
                     case 0:
-                        assertEquals(new ListEvent(rel, ListEvent.REMOVED, 9), listEvent);
+                        assertEquals(ListEvent.createRemoved(rel, 9), listEvent);
                         break;
                     case 1:
-                        assertEquals(new ListEvent(rel, ListEvent.ADDED, 0), listEvent);
+                        assertEquals(ListEvent.createAdded(rel, 0), listEvent);
                         break;
                     case 2:
                         assertNull(listEvent);
@@ -826,7 +826,7 @@ public class RangedEventListTest extends TransformedEventListTest {
             public void listChanged(final ListEvent listEvent) {
                 switch (count++) {
                     case 0:
-                        assertEquals(new ListEvent(rel, ListEvent.ADDED, 0), listEvent);
+                        assertEquals(ListEvent.createAdded(rel, 0), listEvent);
                         break;
                     case 1:
                         assertNull(listEvent);
@@ -855,7 +855,7 @@ public class RangedEventListTest extends TransformedEventListTest {
             public void listChanged(final ListEvent listEvent) {
                 switch (count++) {
                     case 0:
-                        assertEquals(new ListEvent(rel, ListEvent.CHANGED, 0), listEvent);
+                        assertEquals(ListEvent.createChanged(rel, 0), listEvent);
                         break;
                     case 1:
                         assertNull(listEvent);
@@ -884,10 +884,10 @@ public class RangedEventListTest extends TransformedEventListTest {
             public void listChanged(final ListEvent listEvent) {
                 switch (count++) {
                     case 0:
-                        assertEquals(new ListEvent(rel, ListEvent.REMOVED, 0), listEvent);
+                        assertEquals(ListEvent.createRemoved(rel, 0), listEvent);
                         break;
                     case 1:
-                        assertEquals(new ListEvent(rel, ListEvent.ADDED, 9), listEvent);
+                        assertEquals(ListEvent.createAdded(rel, 9), listEvent);
                         break;
                     case 2:
                         assertNull(listEvent);
@@ -909,7 +909,7 @@ public class RangedEventListTest extends TransformedEventListTest {
             public void listChanged(final ListEvent listEvent) {
                 switch (count++) {
                     case 0:
-                        assertEquals(new ListEvent(rel, ListEvent.REMOVED, 0), listEvent);
+                        assertEquals(ListEvent.createRemoved(rel, 0), listEvent);
                         break;
                     case 1:
                         assertNull(listEvent);
@@ -938,10 +938,10 @@ public class RangedEventListTest extends TransformedEventListTest {
             public void listChanged(final ListEvent listEvent) {
                 switch (count++) {
                     case 0:
-                        assertEquals(new ListEvent(rel, ListEvent.REMOVED, 9), listEvent);
+                        assertEquals(ListEvent.createRemoved(rel, 9), listEvent);
                         break;
                     case 1:
-                        assertEquals(new ListEvent(rel, ListEvent.ADDED, 0), listEvent);
+                        assertEquals(ListEvent.createAdded(rel, 0), listEvent);
                         break;
                     case 2:
                         assertNull(listEvent);
@@ -963,7 +963,7 @@ public class RangedEventListTest extends TransformedEventListTest {
             public void listChanged(final ListEvent listEvent) {
                 switch (count++) {
                     case 0:
-                        assertEquals(new ListEvent(rel, ListEvent.ADDED, 0), listEvent);
+                        assertEquals(ListEvent.createAdded(rel, 0), listEvent);
                         break;
                     case 1:
                         assertNull(listEvent);
@@ -992,7 +992,7 @@ public class RangedEventListTest extends TransformedEventListTest {
             public void listChanged(final ListEvent listEvent) {
                 switch (count++) {
                     case 0:
-                        assertEquals(new ListEvent(rel, ListEvent.CHANGED, 0), listEvent);
+                        assertEquals(ListEvent.createChanged(rel, 0), listEvent);
                         break;
                     case 1:
                         assertNull(listEvent);
@@ -1021,10 +1021,10 @@ public class RangedEventListTest extends TransformedEventListTest {
             public void listChanged(final ListEvent listEvent) {
                 switch (count++) {
                     case 0:
-                        assertEquals(new ListEvent(rel, ListEvent.REMOVED, 0), listEvent);
+                        assertEquals(ListEvent.createRemoved(rel, 0), listEvent);
                         break;
                     case 1:
-                        assertEquals(new ListEvent(rel, ListEvent.ADDED, 9), listEvent);
+                        assertEquals(ListEvent.createAdded(rel, 9), listEvent);
                         break;
                     case 2:
                         assertNull(listEvent);
@@ -1046,7 +1046,7 @@ public class RangedEventListTest extends TransformedEventListTest {
             public void listChanged(final ListEvent listEvent) {
                 switch (count++) {
                     case 0:
-                        assertEquals(new ListEvent(rel, ListEvent.REMOVED, 0), listEvent);
+                        assertEquals(ListEvent.createRemoved(rel, 0), listEvent);
                         break;
                     case 1:
                         assertNull(listEvent);
@@ -1078,10 +1078,10 @@ public class RangedEventListTest extends TransformedEventListTest {
             public void listChanged(final ListEvent listEvent) {
                 switch (count++) {
                     case 0:
-                        assertEquals(new ListEvent(rel, ListEvent.REMOVED, 7, 10), listEvent);
+                        assertEquals(ListEvent.createRemoved(rel, 7, 10), listEvent);
                         break;
                     case 1:
-                        assertEquals(new ListEvent(rel, ListEvent.ADDED, 0,3), listEvent);
+                        assertEquals(ListEvent.createAdded(rel, 0, 3), listEvent);
                         break;
                     case 2:
                         assertNull(listEvent);
@@ -1104,7 +1104,7 @@ public class RangedEventListTest extends TransformedEventListTest {
             public void listChanged(final ListEvent listEvent) {
                 switch (count++) {
                     case 0:
-                        assertEquals(new ListEvent(rel, ListEvent.ADDED, 0, 3), listEvent);
+                        assertEquals(ListEvent.createAdded(rel, 0, 3), listEvent);
                         break;
                     case 1:
                         assertNull(listEvent);
@@ -1137,12 +1137,18 @@ public class RangedEventListTest extends TransformedEventListTest {
             public void listChanged(final ListEvent listEvent) {
                 switch (count++) {
                     case 0:
-                        assertEquals(new ListEvent(rel, ListEvent.REMOVED, 0, 3), listEvent);
+                        assertEquals(ListEvent.createBatchStart(rel), listEvent);
                         break;
                     case 1:
-                        assertEquals(new ListEvent(rel, ListEvent.ADDED, 7, 10), listEvent);
+                        assertEquals(ListEvent.createRemoved(rel, 0, 3), listEvent);
                         break;
                     case 2:
+                        assertEquals(ListEvent.createAdded(rel, 7, 10), listEvent);
+                        break;
+                    case 3:
+                        assertEquals(ListEvent.createBatchEnd(rel), listEvent);
+                        break;
+                    case 4:
                         assertNull(listEvent);
                         break;
                     default:
@@ -1165,9 +1171,15 @@ public class RangedEventListTest extends TransformedEventListTest {
             public void listChanged(final ListEvent listEvent) {
                 switch (count++) {
                     case 0:
-                        assertEquals(new ListEvent(rel, ListEvent.REMOVED, 0, 3), listEvent);
+                        assertEquals(ListEvent.createBatchStart(rel), listEvent);
                         break;
                     case 1:
+                        assertEquals(ListEvent.createRemoved(rel, 0, 3), listEvent);
+                        break;
+                    case 2:
+                        assertEquals(ListEvent.createBatchEnd(rel), listEvent);
+                        break;
+                    case 3:
                         assertNull(listEvent);
                         break;
                     default:
@@ -1197,10 +1209,10 @@ public class RangedEventListTest extends TransformedEventListTest {
             public void listChanged(final ListEvent listEvent) {
                 switch (count++) {
                     case 0:
-                        assertEquals(new ListEvent(rel, ListEvent.REMOVED, 7, 10), listEvent);
+                        assertEquals(ListEvent.createRemoved(rel, 7, 10), listEvent);
                         break;
                     case 1:
-                        assertEquals(new ListEvent(rel, ListEvent.ADDED, 2, 5), listEvent);
+                        assertEquals(ListEvent.createAdded(rel, 2, 5), listEvent);
                         break;
                     case 2:
                         assertNull(listEvent);
@@ -1223,7 +1235,7 @@ public class RangedEventListTest extends TransformedEventListTest {
             public void listChanged(final ListEvent listEvent) {
                 switch (count++) {
                     case 0:
-                        assertEquals(new ListEvent(rel, ListEvent.ADDED, 5, 8), listEvent);
+                        assertEquals(ListEvent.createAdded(rel, 5, 8), listEvent);
                         break;
                     case 1:
                         assertNull(listEvent);
@@ -1253,7 +1265,7 @@ public class RangedEventListTest extends TransformedEventListTest {
             public void listChanged(final ListEvent listEvent) {
                 switch (count++) {
                     case 0:
-                        assertEquals(new ListEvent(rel, ListEvent.CHANGED, 5), listEvent);
+                        assertEquals(ListEvent.createChanged(rel, 5), listEvent);
                         break;
                     case 1:
                         assertNull(listEvent);
@@ -1282,10 +1294,10 @@ public class RangedEventListTest extends TransformedEventListTest {
             public void listChanged(final ListEvent listEvent) {
                 switch (count++) {
                     case 0:
-                        assertEquals(new ListEvent(rel, ListEvent.REMOVED, 4), listEvent);
+                        assertEquals(ListEvent.createRemoved(rel, 4), listEvent);
                         break;
                     case 1:
-                        assertEquals(new ListEvent(rel, ListEvent.ADDED, 9), listEvent);
+                        assertEquals(ListEvent.createAdded(rel, 9), listEvent);
                         break;
                     case 2:
                         assertNull(listEvent);
@@ -1307,7 +1319,7 @@ public class RangedEventListTest extends TransformedEventListTest {
             public void listChanged(final ListEvent listEvent) {
                 switch (count++) {
                     case 0:
-                        assertEquals(new ListEvent(rel, ListEvent.REMOVED, 6), listEvent);
+                        assertEquals(ListEvent.createRemoved(rel, 6), listEvent);
                         break;
                     case 1:
                         assertNull(listEvent);
@@ -1336,7 +1348,7 @@ public class RangedEventListTest extends TransformedEventListTest {
             public void listChanged(final ListEvent listEvent) {
                 switch (count++) {
                     case 0:
-                        assertEquals(new ListEvent(rel, ListEvent.REMOVED, 4), listEvent);
+                        assertEquals(ListEvent.createRemoved(rel, 4), listEvent);
                         break;
                     case 1:
                         assertNull("was: " + listEvent, listEvent);
@@ -1368,10 +1380,10 @@ public class RangedEventListTest extends TransformedEventListTest {
             public void listChanged(final ListEvent listEvent) {
                 switch (count++) {
                     case 0:
-                        assertEquals(new ListEvent(rel, ListEvent.REMOVED, 9), listEvent);
+                        assertEquals(ListEvent.createRemoved(rel, 9), listEvent);
                         break;
                     case 1:
-                        assertEquals(new ListEvent(rel, ListEvent.ADDED, 9), listEvent);
+                        assertEquals(ListEvent.createAdded(rel, 9), listEvent);
                         break;
                     case 2:
                         assertNull(listEvent);
@@ -1405,10 +1417,10 @@ public class RangedEventListTest extends TransformedEventListTest {
             public void listChanged(final ListEvent listEvent) {
                 switch (count++) {
                     case 0:
-                        assertEquals(new ListEvent(rel, ListEvent.REMOVED, 9), listEvent);
+                        assertEquals(ListEvent.createRemoved(rel, 9), listEvent);
                         break;
                     case 1:
-                        assertEquals(new ListEvent(rel, ListEvent.ADDED, 9), listEvent);
+                        assertEquals(ListEvent.createAdded(rel, 9), listEvent);
                         break;
                     case 2:
                         assertNull(listEvent);
@@ -1441,10 +1453,10 @@ public class RangedEventListTest extends TransformedEventListTest {
             public void listChanged(final ListEvent listEvent) {
                 switch (count++) {
                     case 0:
-                        assertEquals(new ListEvent(rel, ListEvent.REMOVED, 9), listEvent);
+                        assertEquals(ListEvent.createRemoved(rel, 9), listEvent);
                         break;
                     case 1:
-                        assertEquals(new ListEvent(rel, ListEvent.ADDED, 9), listEvent);
+                        assertEquals(ListEvent.createAdded(rel, 9), listEvent);
                         break;
                     case 2:
                         assertNull(listEvent);
@@ -1484,7 +1496,7 @@ public class RangedEventListTest extends TransformedEventListTest {
             public void listChanged(final ListEvent listEvent) {
                 switch (count++) {
                     case 0:
-                        assertEquals(new ListEvent(rel), listEvent);
+                        assertEquals(ListEvent.createOther(rel), listEvent);
                         break;
                     case 1:
                         assertNull("Expected null, not: " + listEvent, listEvent);
@@ -1514,7 +1526,7 @@ public class RangedEventListTest extends TransformedEventListTest {
             public void listChanged(final ListEvent listEvent) {
                 switch (count++) {
                     case 0:
-                        assertEquals(new ListEvent(rel), listEvent);
+                        assertEquals(ListEvent.createOther(rel), listEvent);
                         break;
                     case 1:
                         assertNull(listEvent);
@@ -1543,7 +1555,7 @@ public class RangedEventListTest extends TransformedEventListTest {
             public void listChanged(final ListEvent listEvent) {
                 switch (count++) {
                     case 0:
-                        assertEquals(new ListEvent(rel), listEvent);
+                        assertEquals(ListEvent.createOther(rel), listEvent);
                         break;
                     case 1:
                         assertNull(listEvent);

@@ -50,7 +50,7 @@ public abstract class TransformedEventListTest extends EventListTest {
     public void testOtherListEventIsResourced() {
         final EventList el = new AbstractEventList() {
             public Object get(final int index) {
-                fireListEvent(new ListEvent(this));
+                fireListEvent(ListEvent.createOther(this));
                 return null;
             }
 
@@ -65,7 +65,7 @@ public abstract class TransformedEventListTest extends EventListTest {
             public void listChanged(final ListEvent listEvent) {
                 switch (count++) {
                     case 0:
-                        assertEquals(new ListEvent(bel), listEvent);
+                        assertEquals(ListEvent.createOther(bel), listEvent);
                         break;
                     case 1:
                         assertNull(listEvent);
@@ -92,7 +92,7 @@ public abstract class TransformedEventListTest extends EventListTest {
             public void listChanged(final ListEvent listEvent) {
                 switch (count++) {
                     case 0:
-                        assertEquals(new ListEvent(bel, ListEvent.ADDED, 0), listEvent);
+                        assertEquals(ListEvent.createAdded(bel, 0), listEvent);
                         break;
                     case 1:
                         assertNull(listEvent);
@@ -112,7 +112,7 @@ public abstract class TransformedEventListTest extends EventListTest {
             public void listChanged(final ListEvent listEvent) {
                 switch (count++) {
                     case 0:
-                        assertEquals(new ListEvent(bel, ListEvent.ADDED, 1), listEvent);
+                        assertEquals(ListEvent.createAdded(bel, 1), listEvent);
                         break;
                     case 1:
                         assertNull(listEvent);

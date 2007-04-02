@@ -82,7 +82,7 @@ class PropertyTableEventList extends AbstractEventList {
         if (sel == null && comparator != null) {
             // build the stack
             if (size() > 0) {
-                fireListEvent(new ListEvent(this, ListEvent.REMOVED, 0, size()));
+                fireListEvent(ListEvent.createRemoved(this, 0, size()));
             }
 
             delegate.removeListEventListener(lel);
@@ -108,12 +108,12 @@ class PropertyTableEventList extends AbstractEventList {
 
             el.addListEventListener(lel);
             if (size() > 0) {
-                fireListEvent(new ListEvent(this, ListEvent.ADDED, 0, size()));
+                fireListEvent(ListEvent.createAdded(this, 0, size()));
             }
 
         } else if (sel != null && comparator == null) {
             if (size() > 0) {
-                fireListEvent(new ListEvent(this, ListEvent.REMOVED, 0, size()));
+                fireListEvent(ListEvent.createRemoved(this, 0, size()));
             }
 
             delegate.removeListEventListener(lel);
@@ -140,7 +140,7 @@ class PropertyTableEventList extends AbstractEventList {
 
             el.addListEventListener(lel);
             if (size() > 0) {
-                fireListEvent(new ListEvent(this, ListEvent.ADDED, 0, size()));
+                fireListEvent(ListEvent.createAdded(this, 0, size()));
             }
 
         } else if (sel != null && comparator != null) {

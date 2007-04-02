@@ -71,19 +71,19 @@ public class ReverseEventListTest extends EventListTest {
             public void listChanged(final ListEvent listEvent) {
                 switch (count++) {
                     case 0:
-                        assertEquals(new ListEvent(rel,ListEvent.ADDED, 0), listEvent);
+                        assertEquals(ListEvent.createAdded(rel, 0), listEvent);
                         assertEquals("one", listEvent.getSourceList().get(listEvent.getIndexStart()));
                         break;
                     case 1:
-                        assertEquals(new ListEvent(rel, ListEvent.ADDED, rel.size()-1), listEvent);
+                        assertEquals(ListEvent.createAdded(rel, rel.size() - 1), listEvent);
                         assertEquals("two", listEvent.getSourceList().get(listEvent.getIndexStart()));
                         break;
                     case 2:
-                        assertEquals(new ListEvent(rel, ListEvent.REMOVED, 0), listEvent);
+                        assertEquals(ListEvent.createRemoved(rel, 0), listEvent);
                         break;
                     case 3:
                         // rel.size has already shrunk by one at this point. 
-                        assertEquals(new ListEvent(rel, ListEvent.REMOVED, rel.size()), listEvent);
+                        assertEquals(ListEvent.createRemoved(rel, rel.size()), listEvent);
                         break;
                     default:
                         fail(listEvent.toString() + ", count: " + (count-1));
@@ -112,7 +112,7 @@ public class ReverseEventListTest extends EventListTest {
             public void listChanged(final ListEvent listEvent) {
                 switch (count++) {
                     case 0:
-                        assertEquals(new ListEvent(rel, ListEvent.ADDED, 0), listEvent);
+                        assertEquals(ListEvent.createAdded(el, 0), listEvent);
                         break;
                     case 1:
                         assertNull(listEvent);
@@ -127,7 +127,7 @@ public class ReverseEventListTest extends EventListTest {
             public void listChanged(final ListEvent listEvent) {
                 switch (count++) {
                     case 0:
-                        assertEquals(new ListEvent(rel, ListEvent.ADDED, 5), listEvent);
+                        assertEquals(ListEvent.createAdded(rel, 5), listEvent);
                         break;
                     case 1:
                         assertNull(listEvent);
@@ -151,7 +151,7 @@ public class ReverseEventListTest extends EventListTest {
             public void listChanged(final ListEvent listEvent) {
                 switch (count++) {
                     case 0:
-                        assertEquals(new ListEvent(rel, ListEvent.ADDED, 5), listEvent);
+                        assertEquals(ListEvent.createAdded(el, 5), listEvent);
                         break;
                     case 1:
                         assertNull(listEvent);
@@ -166,7 +166,7 @@ public class ReverseEventListTest extends EventListTest {
             public void listChanged(final ListEvent listEvent) {
                 switch (count++) {
                     case 0:
-                        assertEquals(new ListEvent(rel, ListEvent.ADDED, 1), listEvent);
+                        assertEquals(ListEvent.createAdded(rel, 1), listEvent);
                         break;
                     case 1:
                         assertNull(listEvent);
@@ -194,7 +194,7 @@ public class ReverseEventListTest extends EventListTest {
             public void listChanged(final ListEvent listEvent) {
                 switch (count++) {
                     case 0:
-                        assertEquals(new ListEvent(rel,ListEvent.ADDED, 0, 3), listEvent);
+                        assertEquals(ListEvent.createAdded(rel, 0, 3), listEvent);
                         final List l = new ArrayList();
                         prefillWithIntegers(l, 3);
                         Collections.reverse(l);
@@ -298,5 +298,64 @@ public class ReverseEventListTest extends EventListTest {
         } catch (IndexOutOfBoundsException iobe) {
             // expected
         }
+    }
+
+    public void testRemoveAllOnDeeperList() {
+        final EventList el = EventLists.eventList();
+        prefillWithIntegers(el, 30);
+        final EventList rel = createBackedEventList(el);
+
+        List middle = new ArrayList(el.subList(5, 15));
+
+        ListEventListener lel = new ListEventListener() {
+            private int count = 0;
+            public void listChanged(final ListEvent listEvent) {
+                switch (count++) {
+                    case 0:
+                        assertEquals(ListEvent.createBatchStart(el), listEvent);
+                        break;
+                    case 1:
+                        assertEquals(ListEvent.createRemoved(el, 5, 15), listEvent);
+                        break;
+                    case 2:
+                        assertEquals(ListEvent.createBatchEnd(el), listEvent);
+                        break;
+                    case 3:
+                        assertNull(listEvent);
+                        break;
+                    default:
+                        fail("Unexpected: " + listEvent);
+                }
+            }
+        };
+        ListEventListener rlel = new ListEventListener() {
+            private int count = 0;
+            public void listChanged(final ListEvent listEvent) {
+                switch (count++) {
+                    case 0:
+                        assertEquals(ListEvent.createBatchStart(rel), listEvent);
+                        break;
+                    case 1:
+                        assertEquals(ListEvent.createRemoved(rel, 15, 25), listEvent);
+                        break;
+                    case 2:
+                        assertEquals(ListEvent.createBatchEnd(rel), listEvent);
+                        break;
+                    case 3:
+                        assertNull(listEvent);
+                        break;
+                    default:
+                        fail("Unexpected: " + listEvent);
+                }
+            }
+        };
+        el.addListEventListener(lel);
+        rel.addListEventListener(rlel);
+        el.removeAll(middle);
+        lel.listChanged(null);
+        rlel.listChanged(null);
+        el.removeListEventListener(lel);
+        rel.removeListEventListener(rlel);
+
     }
 }

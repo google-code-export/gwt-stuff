@@ -27,27 +27,134 @@ public final class ListEvent extends EventObject {
 
     /**
      * Identifies one or more elements were added.
+     *
      * @see #isAdded()
+     * @see #createAdded(EventList, int)
+     * @see #createAdded(EventList, int, int)
      */
     public static final Type ADDED = new Type("ADDED");
 
     /**
      * Identifies one or more elements were changed.
+     *
      * @see #isChanged()
+     * @see #createChanged(EventList, int)
+     * @see #createChanged(EventList, int, int)
      */
     public static final Type CHANGED = new Type("CHANGED");
 
     /**
+     * Identifies one or more elements were removed.
+     *
+     * @see #isRemoved()
+     * @see #createRemoved(EventList, int)
+     * @see #createRemoved(EventList, int, int)
+     */
+    public static final Type REMOVED = new Type("REMOVED");
+
+    /**
+     * Identifies that the current EventList is about to perform a series of related changes.
+     * If an entire list change can be expressed with one {@link ListEvent} then batch events should not be used.
+     * For each <code>BATCH_START</code> event fired there <b>must</b> be one {@link #BATCH_END} event fired.
+     * Pairs of batch events can be nested in other pairs of batch events.
+     *
+     * @see #isBatchStart()
+     * @see #BATCH_END
+     * @see #createBatchStart(EventList)
+     * @see #createBatchStart(EventList, ListEvent)
+     */
+    public static final Type BATCH_START = new Type("BATCH_START");
+
+    /**
+     * Identifies that the current EventList has finished a series of related changes.
+     * If an entire list change can be expressed with one {@link ListEvent} then batch events should not be used.
+     * For each <code>BATCH_END</code> event fired there <b>must</b> have been one {@link #BATCH_START} event fired.
+     * Pairs of batch events can be nested in other pairs of batch events.
+     *
+     * @see #isBatchEnd()
+     * @see #BATCH_START
+     * @see #createBatchEnd(EventList)
+     * @see #createBatchEnd(EventList, ListEvent)
+     */
+    public static final Type BATCH_END = new Type("BATCH_END");
+
+    /**
      * Identifies zero elements changed but the list changed in other ways.
-     * @see #ListEvent(EventList)
+     * @see #createOther(EventList)
      */
     public static final Type OTHER = new Type("OTHER");
 
-    /**
-     * Identifies one or more elements were removed.
-     * @see #isRemoved()
-     */
-    public static final Type REMOVED = new Type("REMOVED");
+    public static ListEvent createAdded(final EventList source, final int index) throws IllegalArgumentException {
+        return createAdded(source, index, null);
+    }
+
+    public static ListEvent createAdded(final EventList source, final int index, final ListEvent cause) throws IllegalArgumentException {
+        return new ListEvent(source, ADDED, index);
+    }
+
+    public static ListEvent createAdded(final EventList source, final int indexStart, final int indexEnd) throws IllegalArgumentException {
+        return createAdded(source, indexStart, indexEnd, null);
+    }
+
+    public static ListEvent createAdded(final EventList source, final int indexStart, final int indexEnd, final ListEvent cause) throws IllegalArgumentException {
+        return new ListEvent(source, ADDED, indexStart, indexEnd);
+    }
+
+    public static ListEvent createChanged(final EventList source, final int index) throws IllegalArgumentException {
+        return createChanged(source, index, null);
+    }
+
+    public static ListEvent createChanged(final EventList source, final int index, final ListEvent cause) throws IllegalArgumentException {
+        return new ListEvent(source, CHANGED, index);
+    }
+
+    public static ListEvent createChanged(final EventList source, final int indexStart, final int indexEnd) throws IllegalArgumentException {
+        return createChanged(source, indexStart, indexEnd, null);
+    }
+
+    public static ListEvent createChanged(final EventList source, final int indexStart, final int indexEnd, final ListEvent cause) throws IllegalArgumentException {
+        return new ListEvent(source, CHANGED, indexStart, indexEnd);
+    }
+
+    public static ListEvent createRemoved(final EventList source, final int index) throws IllegalArgumentException {
+        return createRemoved(source, index, null);
+    }
+
+    public static ListEvent createRemoved(final EventList source, final int index, final ListEvent cause) throws IllegalArgumentException {
+        return new ListEvent(source, REMOVED, index);
+    }
+
+    public static ListEvent createRemoved(final EventList source, final int indexStart, final int indexEnd) throws IllegalArgumentException {
+        return createRemoved(source, indexStart, indexEnd, null);
+    }
+
+    public static ListEvent createRemoved(final EventList source, final int indexStart, final int indexEnd, final ListEvent cause) throws IllegalArgumentException {
+        return new ListEvent(source, REMOVED, indexStart, indexEnd);
+    }
+
+    public static ListEvent createBatchStart(final EventList source) throws IllegalArgumentException {
+        return createBatchStart(source, null);
+    }
+
+    public static ListEvent createBatchStart(final EventList source, final ListEvent cause) throws IllegalArgumentException {
+        return new ListEvent(source, BATCH_START);
+    }
+
+    public static ListEvent createBatchEnd(final EventList source) throws IllegalArgumentException {
+        return createBatchEnd(source, null);
+    }
+
+    public static ListEvent createBatchEnd(final EventList source, final ListEvent cause) throws IllegalArgumentException {
+        return new ListEvent(source, BATCH_END);
+    }
+
+    public static ListEvent createOther(final EventList source) throws IllegalArgumentException {
+        return createOther(source, null);
+    }
+
+    public static ListEvent createOther(final EventList source, final ListEvent cause) throws IllegalArgumentException {
+        return new ListEvent(source, OTHER);
+    }
 
     private final Type type;
 
@@ -58,10 +165,18 @@ public final class ListEvent extends EventObject {
      * Construct a ListEvent when none of the elements changed but the list did in some other manner.
      * @param source The EventList on which the ListEvent initially occurred.
      * @see #OTHER
+     * @deprecated {@link #createOther(EventList)}
      */
     public ListEvent(final EventList source) {
         super(source);
         type = OTHER;
+        indexStart = -1;
+        indexEnd = -1;
+    }
+
+    private ListEvent(final EventList source, final Type type) throws IllegalArgumentException {
+        super(source);
+        this.type = type;
         indexStart = -1;
         indexEnd = -1;
     }
@@ -76,6 +191,7 @@ public final class ListEvent extends EventObject {
      * @param type one of {@link #ADDED}, {@link #CHANGED}, or {@link #REMOVED}.
      * @param index affected element.
      * @throws IllegalArgumentException if source is <code>null</code>.
+     * @deprecated {@link #createAdded(EventList, int)} {@link #createChanged(EventList, int)} {@link #createRemoved(EventList, int)} 
      */
     public ListEvent(final EventList source, final Type type, final int index) throws IllegalArgumentException {
         this(source, type, index, index+1);
@@ -91,6 +207,7 @@ public final class ListEvent extends EventObject {
      * @param indexStart one end of the interval.
      * @param indexEnd one end of the interval.
      * @throws IllegalArgumentException if source is <code>null</code>.
+     * @deprecated {@link #createAdded(EventList, int, int)} {@link #createChanged(EventList, int, int)} {@link #createRemoved(EventList, int, int)}
      */
     public ListEvent(final EventList source, final Type type, final int indexStart, final int indexEnd) throws IllegalArgumentException {
         super(source);
@@ -113,9 +230,14 @@ public final class ListEvent extends EventObject {
      * @return a ListEvent copy but with newSource as the event's source.
      */
     public ListEvent resource(final EventList newSource) {
-        if (getType() == OTHER) {
-            return new ListEvent(newSource);
+        if (OTHER.equals(getType())) {
+            return ListEvent.createOther(newSource, this);
+        } else if (BATCH_START.equals(getType())) {
+            return ListEvent.createBatchStart(newSource, this);
+        } else if (BATCH_END.equals(getType())) {
+            return ListEvent.createBatchEnd(newSource, this);
         } else {
+            assert false : "Not sure how to resource: " + this;
             return new ListEvent(newSource, getType(), getIndexStart(), getIndexEnd());
         }
     }
@@ -171,6 +293,18 @@ public final class ListEvent extends EventObject {
         return REMOVED.equals(getType());
     }
 
+    public final boolean isBatchStart() {
+        return BATCH_START.equals(getType());
+    }
+
+    public final boolean isBatchEnd() {
+        return BATCH_END.equals(getType());
+    }
+
+    public final boolean isOther() {
+        return OTHER.equals(getType());
+    }
+
     /**
      * Convience for {@link #getSource()} that casts to {@link EventList}.
      *
@@ -181,10 +315,10 @@ public final class ListEvent extends EventObject {
     }
 
     public String toString() {
-        if (type == OTHER) {
-            return "ListEvent[" + type + "]";
+        if (OTHER.equals(getType()) || BATCH_START.equals(getType()) || BATCH_END.equals(getType())) {
+            return "ListEvent[" + getType() + "]";
         } else {
-            return "ListEvent[" + type + " (" + getIndexStart() + "," + getIndexEnd() + ")]";
+            return "ListEvent[" + getType() + " (" + getIndexStart() + "," + getIndexEnd() + ")]";
         }
     }
 
@@ -195,7 +329,7 @@ public final class ListEvent extends EventObject {
 
         final ListEvent event = (ListEvent)o;
 
-        return indexEnd == event.indexEnd && indexStart == event.indexStart && type.equals(event.type);
+        return indexEnd == event.indexEnd && indexStart == event.indexStart && type.equals(event.type) && getSourceList().equals(event.getSourceList());
     }
 
     public int hashCode() {
