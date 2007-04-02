@@ -70,11 +70,20 @@ class FilteredEventListImpl extends TransformedEventList implements FilteredEven
     protected int getSourceIndex(final int mutationIndex) {
         if (mutationIndex < getTranslations().size()) {
             return getTranslationIndex(mutationIndex).getIndex();
+        } else if (mutationIndex == getTranslations().size()) {
+            return mutationIndex;
+        } else {
+            throw new IndexOutOfBoundsException("Index: " + mutationIndex + ", Size: " + getTranslations().size());
+        }
+        /*
+        if (mutationIndex < getTranslations().size()) {
+            return getTranslationIndex(mutationIndex).getIndex();
         } else if (getTranslations().size() > 0) {
             return getTranslationIndex(getTranslations().size() - 1).getIndex() + 1;
         } else {
             return 0;            
         }
+        */
     }
 
     public int size() {
@@ -124,68 +133,58 @@ class FilteredEventListImpl extends TransformedEventList implements FilteredEven
             }
         }
 
-        private void XlistChangedChanged(final ListEvent listEvent) {
-            // FIXME: this is buggy
-            final EventList delegate = getDelegate();
-            final List translations = getTranslations();
-            for (int i = listEvent.getIndexStart(); i < listEvent.getIndexEnd(); i++) {
-                final Object delegateElement = delegate.get(i);
-                final boolean accepted = filter.accept(delegateElement);
-                for (int k=0; k < translations.size(); k++) {
-                    final Index index = getTranslationIndex(k);
-                    if (index.getIndex() == i) {
-                        if (accepted) {
-                            fireListEvent(new ListEvent(FilteredEventListImpl.this, ListEvent.CHANGED, k));
-                        } else {
-                            translations.remove(k);
-                            fireListEvent(new ListEvent(FilteredEventListImpl.this, ListEvent.REMOVED, k));
-                        }
-                        break;
-                    } else if (i < index.getIndex()) {
-                        if (accepted) {
-                            translations.add(k, new Index(i));
-                            fireListEvent(new ListEvent(FilteredEventListImpl.this, ListEvent.ADDED, k));
-                        }
-                        break;
-                    }
-                }
-            }
-        }
-
-        private void ZlistChangedChanged(final ListEvent listEvent) {
+        private void listChangedChanged(final ListEvent listEvent) {
             final List delegate = getDelegate();
             int tStart = 0;
 
-            for (int i = 0; i < listEvent.getIndexStart(); i++) {
-                if (filter.accept(delegate.get(i))) {
-                    tStart++;
-                }
-                final Object o = delegate.get(i);
-                final boolean accepted = filter.accept(o);
-                if (accepted) {
-                    translations.add(tStart++, new Index(i));
+            for (tStart = 0; tStart < translations.size(); tStart++) {
+                final Index index = (Index)translations.get(tStart);
+                if (index.getIndex() >= listEvent.getIndexStart()) {
+                    break;
                 }
             }
             for (int i = listEvent.getIndexStart(); i < listEvent.getIndexEnd(); i++) {
+                final Index index = tStart < translations.size() ? (Index)translations.get(tStart) : null;
+                final Object obj = delegate.get(i);
 
+                if (index == null) {
+                    // end of translations list, just append
+                    if (filter.accept(obj)) {
+                        translations.add(new Index(i));
+                        // XXX: optimize for consecutive objects
+                        fireListEvent(new ListEvent(FilteredEventListImpl.this, ListEvent.ADDED, tStart));
+                        tStart++;
+                    }
+
+                } else if (index.getIndex() == i) {
+                    // was accepted
+                    if (filter.accept(obj)) {
+                        // changed some how
+                        // XXX: optimize for consecutive objects
+                        fireListEvent(new ListEvent(FilteredEventListImpl.this, ListEvent.CHANGED, tStart));
+                        tStart++;
+                    } else {
+                        // no longer accepted
+                        translations.remove(tStart);
+                        // XXX: optimize for consecutive objects
+                        fireListEvent(new ListEvent(FilteredEventListImpl.this, ListEvent.REMOVED, tStart));
+                        // no need to incr tStart because the remove shifted all down one
+                    }
+
+                } else if (index.getIndex() > i) {
+                    // was not accepted
+                    if (filter.accept(obj)) {
+                        // now it's accepted
+                        translations.add(tStart, new Index(i));
+                        // XXX: optimize for consecutive objects
+                        fireListEvent(new ListEvent(FilteredEventListImpl.this, ListEvent.ADDED, tStart));
+                        tStart++;
+                    } else {
+                        // still not accepted
+                    }
+                }
+                assert index == null || !(index.getIndex() < i) : "Index: " + index + " is less than i: " + i;
             }
-        }
-
-        private void listChangedChanged(final ListEvent listEvent) {
-            // TODO: optimize me
-            fireListEvent(new ListEvent(FilteredEventListImpl.this, ListEvent.REMOVED, 0, size()));
-
-            final List delegate = getDelegate();
-            translations.clear();
-            for (int i=0; i < delegate.size(); i++) {
-                final Object o = delegate.get(i);
-                final boolean accepted = filter.accept(o);
-                if (accepted) {
-                    translations.add(new Index(i));
-                }                 
-            }
-            //fireListEvent(new ListEvent(FilteredEventListImpl.this, ListEvent.REMOVED, 0, size()));
-            fireListEvent(new ListEvent(FilteredEventListImpl.this, ListEvent.ADDED, 0, size()));
         }
 
         private void listChangedRemoved(final ListEvent listEvent) {
@@ -194,7 +193,7 @@ class FilteredEventListImpl extends TransformedEventList implements FilteredEven
             final int delta = listEvent.getIndexEnd() - listEvent.getIndexStart();
             final Iterator iter = translations.iterator();
             int pos = 0;
-            int lower = delegate.size();
+            int lower = translations.size(); // delegate.size();
             int upper = -1;
             while (iter.hasNext()) {
                 final Index index = (Index)iter.next();
@@ -256,9 +255,7 @@ class FilteredEventListImpl extends TransformedEventList implements FilteredEven
                 }
             }
         }
-        if (pos != translations.size()) {
-            throw new IllegalStateException("pos: " + pos + " size: " + translations.size());
-        }
+        assert pos == translations.size() : "pos: " + pos + " size: " + translations.size();
     }
 
     public boolean add(final Object o) {
@@ -271,13 +268,7 @@ class FilteredEventListImpl extends TransformedEventList implements FilteredEven
 
     public void add(final int index, final Object element) {
         if (filter.accept(element)) {
-            if (index == size()) {
-                super.add(size(), element);
-            } else {
-                final Object o = get(index);
-                final int p = getDelegate().indexOf(o);
-                super.add(p, element);
-            }
+            super.add(index, element);
         } else {
             throw new IllegalArgumentException("Rejected by Filter: " + element);
         }
@@ -301,5 +292,13 @@ class FilteredEventListImpl extends TransformedEventList implements FilteredEven
     public boolean addAll(final int index, final Collection c) throws IllegalArgumentException {
         checkAll(c);
         return super.addAll(index, c);
+    }
+
+    public Object set(final int index, final Object element) {
+        if (filter.accept(element)) {
+            return super.set(index, element);
+        } else {
+            throw new IllegalArgumentException("Rejected by Filter: " + element);
+        }
     }
 }

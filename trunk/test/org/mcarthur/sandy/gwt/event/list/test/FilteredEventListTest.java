@@ -24,6 +24,7 @@ import org.mcarthur.sandy.gwt.event.list.client.ListEventListener;
 import org.mcarthur.sandy.gwt.event.list.client.SortedEventList;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
@@ -33,6 +34,18 @@ import java.util.List;
  * @author Sandy McArthur
  */
 public class FilteredEventListTest extends TransformedEventListTest {
+    private static final FilteredEventList.Filter ODD_FILTER = new FilteredEventList.Filter() {
+        public boolean accept(final Object element) {
+            final Integer i = (Integer)element;
+            return i.intValue() % 2 != 0;
+        }
+    };
+    private static final FilteredEventList.Filter EVEN_FILTER = new FilteredEventList.Filter() {
+        public boolean accept(final Object element) {
+            final Integer i = (Integer)element;
+            return i.intValue() % 2 == 0;
+        }
+    };
 
     protected EventList createEmptyEventLists() {
         return EventLists.filteredEventList();
@@ -109,6 +122,34 @@ public class FilteredEventListTest extends TransformedEventListTest {
         assertTrue(r1.containsAll(n1));
     }
 
+    public void testContains() {
+        final EventList el = EventLists.eventList();
+        prefillWithIntegers(el, 4);
+        final FilteredEventList fel = createBackedFilteredEventList(el);
+
+        final List even = new ArrayList();
+        even.add(Integer.valueOf(0));
+        even.add(Integer.valueOf(2));
+
+        final List odd = new ArrayList();
+        odd.add(Integer.valueOf(1));
+        odd.add(Integer.valueOf(3));
+
+        fel.setFilter(EVEN_FILTER);
+
+        Collections.shuffle(el);
+
+        assertEquals(EVEN_FILTER, fel.getFilter());
+
+        assertTrue(fel.containsAll(even));
+        assertTrue(even.containsAll(fel));
+
+        fel.setFilter(ODD_FILTER);
+
+        assertTrue(fel.containsAll(odd));
+        assertTrue(odd.containsAll(fel));
+    }
+
     public void testSetFilter() {
         final EventList el = EventLists.eventList();
         prefillWithIntegers(el, 4);
@@ -122,24 +163,12 @@ public class FilteredEventListTest extends TransformedEventListTest {
         odd.add(Integer.valueOf(1));
         odd.add(Integer.valueOf(3));
 
-        final FilteredEventList.Filter evenFilter = new FilteredEventList.Filter() {
-            public boolean accept(final Object element) {
-                final Integer i = (Integer)element;
-                return i.intValue() % 2 == 0;
-            }
-        };
-        fel.setFilter(evenFilter);
+        fel.setFilter(EVEN_FILTER);
 
         assertEquals(2, fel.size());
         assertTrue(even.containsAll(fel));
 
-        final FilteredEventList.Filter oddFilter = new FilteredEventList.Filter() {
-            public boolean accept(final Object element) {
-                final Integer i = (Integer)element;
-                return i.intValue() % 2 == 1;
-            }
-        };
-        fel.setFilter(oddFilter);
+        fel.setFilter(ODD_FILTER);
 
         assertEquals(2, fel.size());
         assertTrue(odd.containsAll(fel));
@@ -180,13 +209,7 @@ public class FilteredEventListTest extends TransformedEventListTest {
         odd.add(Integer.valueOf(1));
         odd.add(Integer.valueOf(3));
 
-        final FilteredEventList.Filter evenFilter = new FilteredEventList.Filter() {
-            public boolean accept(final Object element) {
-                final Integer i = (Integer)element;
-                return i.intValue() % 2 == 0;
-            }
-        };
-        fel.setFilter(evenFilter);
+        fel.setFilter(EVEN_FILTER);
 
         fel.add(Integer.valueOf(4));
         try {
@@ -196,13 +219,7 @@ public class FilteredEventListTest extends TransformedEventListTest {
             // expected
         }
 
-        final FilteredEventList.Filter oddFilter = new FilteredEventList.Filter() {
-            public boolean accept(final Object element) {
-                final Integer i = (Integer)element;
-                return i.intValue() % 2 != 0;
-            }
-        };
-        fel.setFilter(oddFilter);
+        fel.setFilter(ODD_FILTER);
 
         fel.add(Integer.valueOf(5));
         try {
@@ -211,10 +228,162 @@ public class FilteredEventListTest extends TransformedEventListTest {
         } catch (IllegalArgumentException iae) {
             // expected
         }
+
+        fel.add(0,Integer.valueOf(5));
+        try {
+            fel.add(0, Integer.valueOf(6));
+            fail("Exepected an IllegalArgumentException.");
+        } catch (IllegalArgumentException iae) {
+            // expected
+        }
+    }
+
+    public void testAddAll() {
+        super.testAdd();
+
+        final EventList el = EventLists.eventList();
+        prefillWithIntegers(el, 4);
+        final FilteredEventList fel = createBackedFilteredEventList(el);
+
+        final List even = new ArrayList();
+        even.add(Integer.valueOf(0));
+        even.add(Integer.valueOf(2));
+
+        final List odd = new ArrayList();
+        odd.add(Integer.valueOf(1));
+        odd.add(Integer.valueOf(3));
+
+        fel.setFilter(EVEN_FILTER);
+
+        fel.addAll(even);
+
+        final int beforeSize = fel.size();
+        try {
+            fel.addAll(odd);
+            fail("Exepected an IllegalArgumentException.");
+        } catch (IllegalArgumentException iae) {
+            // expected
+        }
+        assertEquals(beforeSize, fel.size());
+    }
+
+    public void testRemove() {
+        super.testRemove();
+
+        final EventList el = EventLists.eventList();
+        prefillWithIntegers(el, 6);
+
+        final FilteredEventList fel = createBackedFilteredEventList(el);
+
+        fel.setFilter(EVEN_FILTER);
+
+        final List even = new ArrayList(fel);
+
+        ListEventListener flel = new ListEventListener() {
+            private int count = 0;
+            public void listChanged(final ListEvent listEvent) {
+                switch (count++) {
+                    case 0:
+                        assertNull("listEvent: " + listEvent, listEvent);
+                        break;
+                    default:
+                        fail("Unexpected: " + listEvent);
+                }
+            }
+        };
+        fel.addListEventListener(flel);
+        assertFalse(EVEN_FILTER.accept(el.get(1)));
+        assertEquals(3, fel.size());
+        Object removed = el.remove(1);
+        assertEquals(3, fel.size());
+        flel.listChanged(null);
+        fel.removeListEventListener(flel);
+
+        el.add(1, removed);
+
+        flel = new ListEventListener() {
+            private int count = 0;
+            public void listChanged(final ListEvent listEvent) {
+                switch (count++) {
+                    case 0:
+                        assertEquals(new ListEvent(fel, ListEvent.REMOVED, 1), listEvent);
+                        break;
+                    case 1:
+                        assertNull("listEvent: " + listEvent, listEvent);
+                        break;
+                    default:
+                        fail("Unexpected: " + listEvent);
+                }
+            }
+        };
+        fel.addListEventListener(flel);
+        assertTrue(EVEN_FILTER.accept(el.get(2)));
+        assertEquals(3, fel.size());
+        removed = el.remove(2);
+        assertEquals(2, fel.size());
+        flel.listChanged(null);
+        fel.removeListEventListener(flel);
+        assertTrue(even.containsAll(fel));
+
+        el.add(2, removed);
+
+        ListEventListener lel = new ListEventListener() {
+            private int count = 0;
+            public void listChanged(final ListEvent listEvent) {
+                switch (count++) {
+                    case 0:
+                        assertEquals(new ListEvent(el, ListEvent.REMOVED, 2), listEvent);
+                        break;
+                    case 1:
+                        assertNull("listEvent: " + listEvent, listEvent);
+                        break;
+                    default:
+                        fail("Unexpected: " + listEvent);
+                }
+            }
+        };
+        flel = new ListEventListener() {
+            private int count = 0;
+            public void listChanged(final ListEvent listEvent) {
+                switch (count++) {
+                    case 0:
+                        assertEquals(new ListEvent(fel, ListEvent.REMOVED, 1), listEvent);
+                        break;
+                    case 1:
+                        assertNull("listEvent: " + listEvent, listEvent);
+                        break;
+                    default:
+                        fail("Unexpected: " + listEvent);
+                }
+            }
+        };
+        el.addListEventListener(lel);
+        fel.addListEventListener(flel);
+        assertTrue(EVEN_FILTER.accept(el.get(2)));
+        assertEquals(3, fel.size());
+        fel.remove(1);
+        assertEquals(2, fel.size());
+        lel.listChanged(null);
+        flel.listChanged(null);
+        fel.removeListEventListener(flel);
     }
 
     public void testSet() {
-        //super.testSet(); // TODO: uncomment when FilteredEventListImpl is optimized
+        super.testSet(); // TODO: uncomment when FilteredEventListImpl is optimized
+
+        final FilteredEventList fel = (FilteredEventList)createEmptyEventLists();
+
+        prefillWithIntegers(fel, 6);
+
+        fel.setFilter(ODD_FILTER);
+
+        fel.set(0, Integer.valueOf(3));
+        try {
+            fel.set(0, Integer.valueOf(4));
+            fail("Expected IllegalArgumentException.");
+        } catch (IllegalArgumentException iae) {
+            // expected
+        }
     }
 
     public void testSetViaDeeperList() {
@@ -223,13 +392,7 @@ public class FilteredEventListTest extends TransformedEventListTest {
 
         final FilteredEventList fel = createBackedFilteredEventList(el);
 
-        final FilteredEventList.Filter evenFilter = new FilteredEventList.Filter() {
-            public boolean accept(final Object element) {
-                final Integer i = (Integer)element;
-                return i.intValue() % 2 == 0;
-            }
-        };
-        fel.setFilter(evenFilter);
+        fel.setFilter(EVEN_FILTER);
 
         ListEventListener lel = new ListEventListener() {
             private int count = 0;
@@ -244,9 +407,10 @@ public class FilteredEventListTest extends TransformedEventListTest {
             }
         };
         fel.addListEventListener(lel);
-        assertFalse(evenFilter.accept(Integer.valueOf(-1)));
+        assertFalse(EVEN_FILTER.accept(Integer.valueOf(-1)));
         el.set(1, Integer.valueOf(-1));
         lel.listChanged(null);
+        assertEquals(3, fel.size());
         fel.removeListEventListener(lel);
 
         lel = new ListEventListener() {
@@ -254,12 +418,9 @@ public class FilteredEventListTest extends TransformedEventListTest {
             public void listChanged(final ListEvent listEvent) {
                 switch (count++) {
                     case 0:
-                        assertEquals(new ListEvent(fel, ListEvent.REMOVED, 1), listEvent);
+                        assertEquals(new ListEvent(fel, ListEvent.CHANGED, 1), listEvent);
                         break;
                     case 1:
-                        assertEquals(new ListEvent(fel, ListEvent.ADDED, 1), listEvent);
-                        break;
-                    case 2:
                         assertNull("listEvent: " + listEvent, listEvent);
                         break;
                     default:
@@ -268,9 +429,54 @@ public class FilteredEventListTest extends TransformedEventListTest {
             }
         };
         fel.addListEventListener(lel);
-        assertTrue(evenFilter.accept(Integer.valueOf(-2)));
+        assertTrue(EVEN_FILTER.accept(Integer.valueOf(-2)));
         el.set(2, Integer.valueOf(-2));
         lel.listChanged(null);
+        assertEquals(3, fel.size());
+        fel.removeListEventListener(lel);
+
+        lel = new ListEventListener() {
+            private int count = 0;
+            public void listChanged(final ListEvent listEvent) {
+                switch (count++) {
+                    case 0:
+                        assertEquals(new ListEvent(fel, ListEvent.ADDED, 2), listEvent);
+                        break;
+                    case 1:
+                        assertNull("listEvent: " + listEvent, listEvent);
+                        break;
+                    default:
+                        fail("Unexpected: " + listEvent);
+                }
+            }
+        };
+        fel.addListEventListener(lel);
+        assertTrue(EVEN_FILTER.accept(Integer.valueOf(30)));
+        el.set(3, Integer.valueOf(30));
+        lel.listChanged(null);
+        assertEquals(4, fel.size());
+        fel.removeListEventListener(lel);
+
+        lel = new ListEventListener() {
+            private int count = 0;
+            public void listChanged(final ListEvent listEvent) {
+                switch (count++) {
+                    case 0:
+                        assertEquals(new ListEvent(fel, ListEvent.REMOVED, 2), listEvent);
+                        break;
+                    case 1:
+                        assertNull("listEvent: " + listEvent, listEvent);
+                        break;
+                    default:
+                        fail("Unexpected: " + listEvent);
+                }
+            }
+        };
+        fel.addListEventListener(lel);
+        assertFalse(EVEN_FILTER.accept(Integer.valueOf(3)));
+        el.set(3, Integer.valueOf(3));
+        lel.listChanged(null);
+        assertEquals(3, fel.size());
         fel.removeListEventListener(lel);
     }
 }

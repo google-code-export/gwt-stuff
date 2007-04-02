@@ -100,6 +100,7 @@ class RangedEventListImpl extends TransformedEventList implements RangedEventLis
         }
 
         protected void listChangedRemoved(final int indexStart, final int indexEnd) {
+            // FIXME: buggy
             final int start = getStart();
             final int size = size();
             final int delegateSize = getDelegate().size();
@@ -107,7 +108,6 @@ class RangedEventListImpl extends TransformedEventList implements RangedEventLis
             final int end = sumWithoutOverflow(start, maxSize);
 
             final int rangeSize = Math.min(indexEnd - indexStart, Math.min(maxSize, end - indexStart));
-            final int addedSize = Math.min(size - (maxSize - rangeSize), delegateSize - end);
             final int removeStart = Math.max(0, indexStart - start);
 
             if (removeStart < maxSize) {
@@ -115,8 +115,9 @@ class RangedEventListImpl extends TransformedEventList implements RangedEventLis
                 assert RangedEventListImpl.this.size >= 0 : "size: " + RangedEventListImpl.this.size;
                 fireListEvent(new ListEvent(RangedEventListImpl.this, ListEvent.REMOVED, removeStart, removeStart + rangeSize));
 
+                final int addedSize = Math.min(size - (maxSize - rangeSize), delegateSize - end);
                 if (addedSize > 0) {
-                    RangedEventListImpl.this.size -= addedSize;
+                    RangedEventListImpl.this.size += addedSize;
                     assert RangedEventListImpl.this.size >= 0 : "size: " + RangedEventListImpl.this.size;
                     fireListEvent(new ListEvent(RangedEventListImpl.this, ListEvent.ADDED, size - addedSize, size));
                 }

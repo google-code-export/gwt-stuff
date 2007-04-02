@@ -28,6 +28,8 @@ import org.mcarthur.sandy.gwt.event.list.client.ListEvent;
 public class ListEventTest extends TestCase {
 
      public void testNewEvent() {
+         new ListEvent(EventLists.eventList());
+
          try {
              new ListEvent(null);
              fail("Expected a IllegalArgumentException.");
@@ -35,6 +37,40 @@ public class ListEventTest extends TestCase {
              // expected
          }
 
-         new ListEvent(EventLists.eventList());
+         ListEvent e = new ListEvent(EventLists.eventList(), ListEvent.CHANGED, 0);
+         assertTrue(e.getIndexStart() + 1 == e.getIndexEnd());
+
+         try {
+             new ListEvent(null, ListEvent.CHANGED, 0);
+             fail("Expected a IllegalArgumentException.");
+         } catch (IllegalArgumentException iae) {
+             // expected
+         }
+
+         e = new ListEvent(EventLists.eventList(), ListEvent.CHANGED, 10, 0);
+         assertEquals(0, e.getIndexStart());
+         assertEquals(10, e.getIndexEnd());
+
+         try {
+             new ListEvent(null, ListEvent.CHANGED, 0, 1);
+             fail("Expected a IllegalArgumentException.");
+         } catch (IllegalArgumentException iae) {
+             // expected
+         }
+
+         try {
+             new ListEvent(EventLists.eventList(), ListEvent.CHANGED, 0, 0);
+             fail("Expected a AssertionError. Did use use -ea?");
+         } catch (AssertionError ae) {
+             // expected
+         }
+
+         try {
+             new ListEvent(EventLists.eventList(), null, 0);
+             fail("Expected a AssertionError. Did use use -ea?");
+         } catch (AssertionError ae) {
+             // expected
+         }
+
      }
 }
