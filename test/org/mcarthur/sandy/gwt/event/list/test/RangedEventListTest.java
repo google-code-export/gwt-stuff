@@ -488,10 +488,13 @@ public class RangedEventListTest extends TransformedEventListTest {
     }
 
     public void testClearOfDeeperList() {
-        EventList e;
+        EventList e = null;
         final EventList el = EventLists.eventList(); e = el;
+        final List elReplay = new EventListReplayList(el);
+
+        final SortedEventList sel;
         if (true) {
-            final SortedEventList sel = EventLists.sortedEventList(e);
+            sel = EventLists.sortedEventList(e);
             // keep a reverse sort
             sel.setComparator(new Comparator() {
                 public int compare(final Object o1, final Object o2) {
@@ -501,11 +504,20 @@ public class RangedEventListTest extends TransformedEventListTest {
                 }
             });
             e = sel;
+        } else {
+            sel = null;
         }
-        if (true) {
-            final FilteredEventList fel = EventLists.filteredEventList(e);
+        final List selReplay = sel != null ? new EventListReplayList(sel) : null;
+
+        final FilteredEventList fel;
+        if (!true) {
+            fel = EventLists.filteredEventList(e);
             e = fel;
+        } else {
+            fel = null;
         }
+        final List felReplay = fel != null ? new EventListReplayList(fel) : null;
+
         final RangedEventList rel;
         if (true) {
             rel = createBackedRangedEventList(e);
@@ -514,6 +526,8 @@ public class RangedEventListTest extends TransformedEventListTest {
         } else {
             rel = null;
         }
+        final List relReplay = rel != null ? new EventListReplayList(rel) : null;
+
         // don't change the order
         el.add(new Integer(25));
         el.add(new Integer(33));
@@ -521,17 +535,29 @@ public class RangedEventListTest extends TransformedEventListTest {
         el.add(new Integer(7));
         el.add(new Integer(93));
 
-        rel.addListEventListener(new ListEventListener() {
-            public void listChanged(final ListEvent listEvent) {
-                if (listEvent.isChanged()) {
-                    for (int i = listEvent.getIndexStart(); i < listEvent.getIndexEnd();i ++) {
-                        listEvent.getSourceList().get(i);
+        assertEquals(elReplay, el);
+        assertEquals(selReplay, sel);
+        assertEquals(felReplay, fel);
+        assertEquals(relReplay, rel);
+
+        if (rel != null) {
+            rel.addListEventListener(new ListEventListener() {
+                public void listChanged(final ListEvent listEvent) {
+                    if (listEvent.isChanged()) {
+                        for (int i = listEvent.getIndexStart(); i < listEvent.getIndexEnd();i ++) {
+                            listEvent.getSourceList().get(i);
+                        }
                     }
                 }
-            }
-        });
+            });
+        }
 
         el.clear();
+
+        assertEquals(elReplay, el);
+        assertEquals(selReplay, sel);
+        assertEquals(felReplay, fel);
+        assertEquals(relReplay, rel);
     }
 
     public void testSizePlusMaxSizeDoesNotOverflow() {
@@ -1396,6 +1422,50 @@ public class RangedEventListTest extends TransformedEventListTest {
         el.addAll(19, few);
         lel.listChanged(null);
         rel.removeListEventListener(lel);
+    }
+
+    public void testRemoveAcrossMaxRange2() {
+        final EventList el = EventLists.eventList();
+        final List elReplay = new EventListReplayList(el);
+        prefillWithIntegers(el, 4);
+
+        final RangedEventList rel = createBackedRangedEventList(el);
+        final List relReplay = new EventListReplayList(rel);
+        rel.setMaxSize(2);
+
+        assertEquals(elReplay, el);
+        assertEquals(relReplay, rel);
+
+        ListEventListener lel = new ListEventListener() {
+            private int count = 0;
+            public void listChanged(final ListEvent listEvent) {
+                switch (count++) {
+                    case 0:
+                        assertEquals(new ListEvent(rel, ListEvent.REMOVED, 9), listEvent);
+                        break;
+                    case 1:
+                        assertEquals(new ListEvent(rel, ListEvent.ADDED, 9), listEvent);
+                        break;
+                    case 2:
+                        assertNull(listEvent);
+                        break;
+                    default:
+                        fail("Unexpected: " + listEvent);
+                }
+            }
+        };
+        //rel.addListEventListener(lel);
+        int end = el.size();
+        int[] sizes = new int[] {2, 2, 2, 1};
+        for (int i=0; i < sizes.length; i++) {
+            el.remove(0);
+            assertEquals("i: " + i, sizes[i], rel.size());
+        }
+        //lel.listChanged(null);
+        //rel.removeListEventListener(lel);
+
+        assertEquals(elReplay, el);
+        assertEquals(relReplay, rel);
     }
 
     public void testAddAfterMaxRange() {

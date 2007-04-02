@@ -91,9 +91,7 @@ class ReverseEventListImpl extends AbstractEventList implements EventList {
         public void listChanged(final ListEvent listEvent) {
             final ListEvent reverse;
             final int sizeDelta = listEvent.getIndexEnd() - listEvent.getIndexStart();
-            if (ListEvent.OTHER.equals(listEvent.getType())) {
-                reverse = listEvent.resource(ReverseEventListImpl.this);
-            } else if (listEvent.isAdded()) {
+            if (listEvent.isAdded()) {
                 size += sizeDelta;
                 final int revStart = invertIndex(listEvent.getIndexEnd());
                 reverse = new ListEvent(ReverseEventListImpl.this, listEvent.getType(), revStart, revStart + sizeDelta);
@@ -108,9 +106,8 @@ class ReverseEventListImpl extends AbstractEventList implements EventList {
                 size -= sizeDelta;
 
             } else {
-                // untested?
-                final int revStart = invertIndex(listEvent.getIndexStart());
-                reverse = new ListEvent(ReverseEventListImpl.this, listEvent.getType(), revStart, revStart + sizeDelta);
+                assert ListEvent.OTHER.equals(listEvent.getType());
+                reverse = listEvent.resource(ReverseEventListImpl.this);
             }
             fireListEvent(reverse);
         }

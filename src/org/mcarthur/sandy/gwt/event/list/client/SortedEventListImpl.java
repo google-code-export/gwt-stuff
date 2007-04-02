@@ -77,10 +77,12 @@ class SortedEventListImpl extends TransformedEventList implements SortedEventLis
 
     protected int getSourceIndex(final int mutationIndex) {
         // TODO: deal with mutationIndex == size()
-        if (mutationIndex < size()) {
+        if (mutationIndex < getTranslations().size()) {
             return getTranslationIndex(mutationIndex).getIndex();
+        } else if (mutationIndex == getTranslations().size()) {
+            return mutationIndex;
         } else {
-            return size();
+            throw new IndexOutOfBoundsException("Index: " + mutationIndex + ", Size: " + getTranslations().size());
         }
     }
 
@@ -100,7 +102,8 @@ class SortedEventListImpl extends TransformedEventList implements SortedEventLis
             } else if (listEvent.isChanged()) {
                 // TODO: Optimize
                 // XXX: fuck it! just resort the whole thing.
-                sort();
+                //sort();
+                listChangedChanged(listEvent);
 
             } else if (listEvent.isRemoved()) {
                 listChangedRemoved(listEvent);
@@ -134,6 +137,13 @@ class SortedEventListImpl extends TransformedEventList implements SortedEventLis
                 reverse.add(i, revIdx);
                 fireListEvent(new ListEvent(SortedEventListImpl.this, ListEvent.ADDED, pos));
             }
+        }
+
+        private void listChangedChanged(final ListEvent listEvent) {
+            // remove the changed range
+            listChangedRemoved(new ListEvent(listEvent.getSourceList(), ListEvent.REMOVED, listEvent.getIndexStart(), listEvent.getIndexEnd()));
+            // add the changed range back in
+            listChangedAdded(new ListEvent(listEvent.getSourceList(), ListEvent.ADDED, listEvent.getIndexStart(), listEvent.getIndexEnd()));
         }
 
         private void listChangedRemoved(final ListEvent listEvent) {

@@ -23,7 +23,9 @@ import org.mcarthur.sandy.gwt.event.list.client.ListEvent;
 import org.mcarthur.sandy.gwt.event.list.client.ListEventListener;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.Random;
 
 /**
  * Tests for {@link org.mcarthur.sandy.gwt.event.list.client.TransformedEventList}.
@@ -128,5 +130,36 @@ public abstract class TransformedEventListTest extends EventListTest {
 
         assertTrue(bel.contains("one"));
         assertTrue(el.contains("two"));
+    }
+
+    public void testListEvent() {
+        final EventList el = EventLists.eventList();
+        prefillWithIntegers(el, 100);
+        final EventList bel = createBackedEventList(el);
+
+        final List replay = new EventListReplayList(bel);
+        assertEquals(replay, bel);
+
+        Collections.shuffle(bel, new Random(42));
+        assertEquals(replay, bel);
+
+        Collections.sort(bel);
+        assertEquals(replay, bel);
+
+
+        Collections.shuffle(bel, new Random(53672));
+        assertEquals(replay, bel);
+
+        List s = new ArrayList(bel);
+        Collections.shuffle(s);
+        s = s.subList(10, 90);
+        bel.retainAll(s);
+        assertEquals(replay, bel);
+
+        s = new ArrayList(bel);
+        Collections.shuffle(s);
+        s = s.subList(10, 20);
+        bel.removeAll(s);
+        assertEquals(replay, bel);
     }
 }
