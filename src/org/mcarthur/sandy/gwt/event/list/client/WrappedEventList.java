@@ -42,7 +42,7 @@ class WrappedEventList extends AbstractEventList implements EventList {
         final int index = delegate.size();
         final boolean changed = delegate.add(element);
         if (changed) {
-            fireListEvent(new ListEvent(this, ListEvent.ADDED, index));
+            fireListEvent(ListEvent.createAdded(this, index));
         }
         return changed;
     }
@@ -50,7 +50,7 @@ class WrappedEventList extends AbstractEventList implements EventList {
     public void add(final int index, final Object element) throws NullPointerException {
         checkNotNull(element);
         delegate.add(index, element);
-        fireListEvent(new ListEvent(this, ListEvent.ADDED, index));
+        fireListEvent(ListEvent.createAdded(this, index));
     }
 
     public boolean addAll(final Collection c) throws NullPointerException {
@@ -59,7 +59,7 @@ class WrappedEventList extends AbstractEventList implements EventList {
         final int indexStart = delegate.size();
         final boolean changed = delegate.addAll(c);
         if (changed) {
-            fireListEvent(new ListEvent(this, ListEvent.ADDED, indexStart, indexStart + c.size()));
+            fireListEvent(ListEvent.createAdded(this, indexStart, indexStart + c.size()));
         }
         return changed;
     }
@@ -69,7 +69,7 @@ class WrappedEventList extends AbstractEventList implements EventList {
 
         final boolean changed = delegate.addAll(index, c);
         if (changed) {
-            fireListEvent(new ListEvent(this, ListEvent.ADDED, index, index + c.size()));
+            fireListEvent(ListEvent.createAdded(this, index, index + c.size()));
         }
         return changed;
     }
@@ -78,7 +78,7 @@ class WrappedEventList extends AbstractEventList implements EventList {
         final int indexEnd = delegate.size();
         delegate.clear();
         if (indexEnd > 0) {
-            fireListEvent(new ListEvent(this, ListEvent.REMOVED, 0, indexEnd));
+            fireListEvent(ListEvent.createRemoved(this, 0, indexEnd));
         }
     }
 
@@ -120,7 +120,7 @@ class WrappedEventList extends AbstractEventList implements EventList {
 
     public Object remove(final int index) {
         final Object element = delegate.remove(index);
-        fireListEvent(new ListEvent(this, ListEvent.REMOVED, index));
+        fireListEvent(ListEvent.createRemoved(this, index));
         return element;
     }
 
@@ -129,7 +129,7 @@ class WrappedEventList extends AbstractEventList implements EventList {
         final boolean wasRemoved = delegate.remove(element);
         // only fire an event when the list changed
         if (wasRemoved) {
-            fireListEvent(new ListEvent(this, ListEvent.REMOVED, index));
+            fireListEvent(ListEvent.createRemoved(this, index));
         }
         return wasRemoved;
     }
@@ -146,7 +146,7 @@ class WrappedEventList extends AbstractEventList implements EventList {
             }
         }
 
-        return remove(toBeRemoved);
+        return doRemove(toBeRemoved);
     }
 
     public boolean retainAll(final Collection c) {
@@ -161,7 +161,7 @@ class WrappedEventList extends AbstractEventList implements EventList {
             }
         }
 
-        return remove(toBeRemoved);
+        return doRemove(toBeRemoved);
     }
 
     /**
@@ -170,10 +170,11 @@ class WrappedEventList extends AbstractEventList implements EventList {
      * @param toBeRemoved elements that should be removed from this list.
      * @return <code>true</code> when there were elements that removed.
      */
-    private boolean remove(final List toBeRemoved) {
+    private boolean doRemove(final List toBeRemoved) {
         final Iterator iter = toBeRemoved.iterator();
         int start = -1;
         int run = 1;
+        fireListEvent(ListEvent.createBatchStart(this));
         while (iter.hasNext() || start != -1) { // loop for each item to be removed and then once more
             final Object o = iter.hasNext() ? iter.next() : null;
             if (start == -1) { // first element
@@ -184,7 +185,7 @@ class WrappedEventList extends AbstractEventList implements EventList {
                 run++;
 
             } else { // not consecutive or end
-                fireListEvent(new ListEvent(this, ListEvent.REMOVED, start, start + run));
+                fireListEvent(ListEvent.createRemoved(this, start, start + run));
                 if (o != null) { // not end
                     start = delegate.indexOf(o);
                 } else { // end
@@ -197,6 +198,7 @@ class WrappedEventList extends AbstractEventList implements EventList {
                 delegate.remove(start);
             }
         }
+        fireListEvent(ListEvent.createBatchEnd(this));
 
         // were any removed?
         return toBeRemoved.size() > 0;
@@ -204,7 +206,7 @@ class WrappedEventList extends AbstractEventList implements EventList {
 
     public Object set(final int index, final Object element) {
         final Object oldElement = delegate.set(index, element);
-        fireListEvent(new ListEvent(this, ListEvent.CHANGED, index));
+        fireListEvent(ListEvent.createChanged(this, index));
         return oldElement;
     }
 

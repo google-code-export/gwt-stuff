@@ -120,7 +120,7 @@ public final class ObjectListTable extends Widget implements SourcesMouseEvents 
 
         if (objects.size() > 0) {
             // fake a list changed event to initialize the table rows.
-            objectsListener.listChanged(new ListEvent(objects, ListEvent.ADDED, 0, objects.size()));
+            objectsListener.listChanged(ListEvent.createAdded(objects, 0, objects.size()));
         }
     }
 

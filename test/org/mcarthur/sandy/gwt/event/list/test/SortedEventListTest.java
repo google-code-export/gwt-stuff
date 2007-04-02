@@ -170,7 +170,7 @@ public class SortedEventListTest extends TransformedEventListTest {
             public void listChanged(final ListEvent listEvent) {
                 switch (count++) {
                     case 0:
-                        assertEquals(new ListEvent(sel, ListEvent.CHANGED, 0), listEvent);
+                        assertEquals(ListEvent.createChanged(el, 0), listEvent);
                         break;
                     case 1:
                         assertNull(listEvent);
@@ -185,10 +185,10 @@ public class SortedEventListTest extends TransformedEventListTest {
             public void listChanged(final ListEvent listEvent) {
                 switch (count++) {
                     case 0:
-                        assertEquals(new ListEvent(sel, ListEvent.REMOVED, 2), listEvent);
+                        assertEquals(ListEvent.createRemoved(sel, 2), listEvent);
                         break;
                     case 1:
-                        assertEquals(new ListEvent(sel, ListEvent.ADDED, 3), listEvent);
+                        assertEquals(ListEvent.createAdded(sel, 3), listEvent);
                         break;
                     case 2:
                         assertNull(listEvent);

@@ -46,7 +46,7 @@ public class WrappedEventListTest extends EventListTest {
             public void listChanged(final ListEvent listEvent) {
                 switch (count++) {
                     case 0:
-                        assertEquals(new ListEvent(el, ListEvent.ADDED, 3, 6), listEvent);
+                        assertEquals(ListEvent.createAdded(el, 3, 6), listEvent);
                         break;
                     case 1:
                         assertNull(listEvent);
@@ -66,7 +66,7 @@ public class WrappedEventListTest extends EventListTest {
             public void listChanged(final ListEvent listEvent) {
                 switch (count++) {
                     case 0:
-                        assertEquals(new ListEvent(el, ListEvent.ADDED, 4, 7), listEvent);
+                        assertEquals(ListEvent.createAdded(el, 4, 7), listEvent);
                         break;
                     case 1:
                         assertNull(listEvent);

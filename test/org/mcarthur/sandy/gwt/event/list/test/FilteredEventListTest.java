@@ -306,7 +306,7 @@ public class FilteredEventListTest extends TransformedEventListTest {
             public void listChanged(final ListEvent listEvent) {
                 switch (count++) {
                     case 0:
-                        assertEquals(new ListEvent(fel, ListEvent.REMOVED, 1), listEvent);
+                        assertEquals(ListEvent.createRemoved(fel, 1), listEvent);
                         break;
                     case 1:
                         assertNull("listEvent: " + listEvent, listEvent);
@@ -332,7 +332,7 @@ public class FilteredEventListTest extends TransformedEventListTest {
             public void listChanged(final ListEvent listEvent) {
                 switch (count++) {
                     case 0:
-                        assertEquals(new ListEvent(el, ListEvent.REMOVED, 2), listEvent);
+                        assertEquals(ListEvent.createRemoved(el, 2), listEvent);
                         break;
                     case 1:
                         assertNull("listEvent: " + listEvent, listEvent);
@@ -347,7 +347,7 @@ public class FilteredEventListTest extends TransformedEventListTest {
             public void listChanged(final ListEvent listEvent) {
                 switch (count++) {
                     case 0:
-                        assertEquals(new ListEvent(fel, ListEvent.REMOVED, 1), listEvent);
+                        assertEquals(ListEvent.createRemoved(fel, 1), listEvent);
                         break;
                     case 1:
                         assertNull("listEvent: " + listEvent, listEvent);
@@ -418,7 +418,7 @@ public class FilteredEventListTest extends TransformedEventListTest {
             public void listChanged(final ListEvent listEvent) {
                 switch (count++) {
                     case 0:
-                        assertEquals(new ListEvent(fel, ListEvent.CHANGED, 1), listEvent);
+                        assertEquals(ListEvent.createChanged(fel, 1), listEvent);
                         break;
                     case 1:
                         assertNull("listEvent: " + listEvent, listEvent);
@@ -440,7 +440,7 @@ public class FilteredEventListTest extends TransformedEventListTest {
             public void listChanged(final ListEvent listEvent) {
                 switch (count++) {
                     case 0:
-                        assertEquals(new ListEvent(fel, ListEvent.ADDED, 2), listEvent);
+                        assertEquals(ListEvent.createAdded(fel, 2), listEvent);
                         break;
                     case 1:
                         assertNull("listEvent: " + listEvent, listEvent);
@@ -462,7 +462,7 @@ public class FilteredEventListTest extends TransformedEventListTest {
             public void listChanged(final ListEvent listEvent) {
                 switch (count++) {
                     case 0:
-                        assertEquals(new ListEvent(fel, ListEvent.REMOVED, 2), listEvent);
+                        assertEquals(ListEvent.createRemoved(fel, 2), listEvent);
                         break;
                     case 1:
                         assertNull("listEvent: " + listEvent, listEvent);

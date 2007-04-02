@@ -135,15 +135,15 @@ class SortedEventListImpl extends TransformedEventList implements SortedEventLis
                 shiftUp(pos, reverse.iterator());
                 translations.add(pos, newIdx);
                 reverse.add(i, revIdx);
-                fireListEvent(new ListEvent(SortedEventListImpl.this, ListEvent.ADDED, pos));
+                fireListEvent(ListEvent.createAdded(SortedEventListImpl.this, pos));
             }
         }
 
         private void listChangedChanged(final ListEvent listEvent) {
             // remove the changed range
-            listChangedRemoved(new ListEvent(listEvent.getSourceList(), ListEvent.REMOVED, listEvent.getIndexStart(), listEvent.getIndexEnd()));
+            listChangedRemoved(ListEvent.createRemoved(listEvent.getSourceList(), listEvent.getIndexStart(), listEvent.getIndexEnd()));
             // add the changed range back in
-            listChangedAdded(new ListEvent(listEvent.getSourceList(), ListEvent.ADDED, listEvent.getIndexStart(), listEvent.getIndexEnd()));
+            listChangedAdded(ListEvent.createAdded(listEvent.getSourceList(), listEvent.getIndexStart(), listEvent.getIndexEnd()));
         }
 
         private void listChangedRemoved(final ListEvent listEvent) {
@@ -156,7 +156,7 @@ class SortedEventListImpl extends TransformedEventList implements SortedEventLis
                 final Index tranIdx = (Index)translations.get(revIdx.getIndex());
                 removeAndShift(tranIdx, translations.iterator());
                 removeAndShift(revIdx, reverse.iterator());
-                events.add(new ListEvent(SortedEventListImpl.this, ListEvent.REMOVED, revIdx.getIndex()));
+                events.add(ListEvent.createRemoved(SortedEventListImpl.this, revIdx.getIndex()));
             }
 
             for (Iterator iter = events.iterator(); iter.hasNext();) {
@@ -218,7 +218,7 @@ class SortedEventListImpl extends TransformedEventList implements SortedEventLis
             getTranslationIndex(i).setIndex(j);
             ((Index)reverse.get(j)).setIndex(i);
         }
-        final ListEvent event = new ListEvent(this, ListEvent.CHANGED, 0, size());
+        final ListEvent event = ListEvent.createChanged(this, 0, size());
         fireListEvent(event);
     }
 }

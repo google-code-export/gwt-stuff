@@ -55,7 +55,7 @@ public class SteadyRangedEventListTest extends RangedEventListTest {
             public void listChanged(final ListEvent listEvent) {
                 switch (count++) {
                     case 0:
-                        assertEquals(new ListEvent(rel), listEvent);
+                        assertEquals(ListEvent.createOther(rel), listEvent);
                         break;
                     default:
                         fail("Unexpected: " + listEvent);

@@ -45,7 +45,7 @@ class FilteredEventListImpl extends TransformedEventList implements FilteredEven
     public FilteredEventListImpl(final EventList delegate, final Filter filter) {
         super(delegate);
         delegate.addListEventListener(new FilteredListEventListener());
-        setFilter(filter);
+        setFilter(null);
     }
 
     /**
@@ -122,15 +122,17 @@ class FilteredEventListImpl extends TransformedEventList implements FilteredEven
                 }
             }
 
+            if (delta > 1) fireListEvent(ListEvent.createBatchStart(FilteredEventListImpl.this, listEvent));
             for (int i = listEvent.getIndexStart(); i < listEvent.getIndexEnd(); i++) {
                 final Object o = delegate.get(i);
                 if (filter.accept(o)) {
                     translations.add(insertAt, new Index(i));
                     // XXX: optimize for consecutive objects
-                    fireListEvent(new ListEvent(FilteredEventListImpl.this, ListEvent.ADDED, insertAt));
+                    fireListEvent(ListEvent.createAdded(FilteredEventListImpl.this, insertAt));
                     insertAt++;
                 }
             }
+            if (delta > 1) fireListEvent(ListEvent.createBatchEnd(FilteredEventListImpl.this, listEvent));
         }
 
         private void listChangedChanged(final ListEvent listEvent) {
@@ -152,7 +154,7 @@ class FilteredEventListImpl extends TransformedEventList implements FilteredEven
                     if (filter.accept(obj)) {
                         translations.add(new Index(i));
                         // XXX: optimize for consecutive objects
-                        fireListEvent(new ListEvent(FilteredEventListImpl.this, ListEvent.ADDED, tStart));
+                        fireListEvent(ListEvent.createAdded(FilteredEventListImpl.this, tStart));
                         tStart++;
                     }
 
@@ -161,13 +163,13 @@ class FilteredEventListImpl extends TransformedEventList implements FilteredEven
                     if (filter.accept(obj)) {
                         // changed some how
                         // XXX: optimize for consecutive objects
-                        fireListEvent(new ListEvent(FilteredEventListImpl.this, ListEvent.CHANGED, tStart));
+                        fireListEvent(ListEvent.createChanged(FilteredEventListImpl.this, tStart));
                         tStart++;
                     } else {
                         // no longer accepted
                         translations.remove(tStart);
                         // XXX: optimize for consecutive objects
-                        fireListEvent(new ListEvent(FilteredEventListImpl.this, ListEvent.REMOVED, tStart));
+                        fireListEvent(ListEvent.createRemoved(FilteredEventListImpl.this, tStart));
                         // no need to incr tStart because the remove shifted all down one
                     }
 
@@ -177,7 +179,7 @@ class FilteredEventListImpl extends TransformedEventList implements FilteredEven
                         // now it's accepted
                         translations.add(tStart, new Index(i));
                         // XXX: optimize for consecutive objects
-                        fireListEvent(new ListEvent(FilteredEventListImpl.this, ListEvent.ADDED, tStart));
+                        fireListEvent(ListEvent.createAdded(FilteredEventListImpl.this, tStart));
                         tStart++;
                     } else {
                         // still not accepted
@@ -209,7 +211,7 @@ class FilteredEventListImpl extends TransformedEventList implements FilteredEven
                 pos++;
             }
             if (lower <= upper) {
-                fireListEvent(new ListEvent(FilteredEventListImpl.this, ListEvent.REMOVED, lower, upper+1));
+                fireListEvent(ListEvent.createRemoved(FilteredEventListImpl.this, lower, upper + 1));
             }
         }
     }
@@ -230,6 +232,7 @@ class FilteredEventListImpl extends TransformedEventList implements FilteredEven
         int pos = 0;
         final List delegate = getDelegate();
         final List translations = getTranslations();
+        fireListEvent(ListEvent.createBatchStart(this));
         for (int i=0; i < delegate.size(); i++) {
             final Object o = delegate.get(i);
             final boolean accepted = filter.accept(o);
@@ -238,11 +241,11 @@ class FilteredEventListImpl extends TransformedEventList implements FilteredEven
                     final Index index = getTranslationIndex(pos);
                     if (index.getIndex() != i) {
                         translations.add(pos, new Index(i));
-                        fireListEvent(new ListEvent(this, ListEvent.ADDED, pos));
+                        fireListEvent(ListEvent.createAdded(this, pos));
                     } // else already there, no change
                 } else {
                     translations.add(new Index(i));
-                    fireListEvent(new ListEvent(this, ListEvent.ADDED, translations.size()-1));
+                    fireListEvent(ListEvent.createAdded(this, translations.size()-1));
                 }
                 pos++;
             } else {
@@ -250,11 +253,12 @@ class FilteredEventListImpl extends TransformedEventList implements FilteredEven
                     final Index index = getTranslationIndex(pos);
                     if (index.getIndex() == i) {
                         translations.remove(pos);
-                        fireListEvent(new ListEvent(this, ListEvent.REMOVED, pos));
+                        fireListEvent(ListEvent.createRemoved(this, pos));
                     }
                 }
             }
         }
+        fireListEvent(ListEvent.createBatchEnd(this));
         assert pos == translations.size() : "pos: " + pos + " size: " + translations.size();
     }
 
