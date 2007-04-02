@@ -67,7 +67,7 @@ public class EventLists {
      * @return A view over eventList that is filtered with <code>filter</code>.
      */
     public static FilteredEventList filteredEventList(final FilteredEventList.Filter filter) {
-        return new FilteredEventListImpl(eventList(), filter);
+        return filteredEventList(eventList(), filter);
     }
 
     /**
@@ -113,7 +113,7 @@ public class EventLists {
      * @see #steadyRangedEventList(EventList, int)
      */
     public static RangedEventList rangedEventList(final EventList eventList, final int maxSize) {
-        return new RangedEventListImpl(eventList, maxSize);
+        return new RangedEventListImpl2(eventList, maxSize);
     }
 
     /**

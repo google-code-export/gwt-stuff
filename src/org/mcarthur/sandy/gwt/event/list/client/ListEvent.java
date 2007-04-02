@@ -97,7 +97,7 @@ public final class ListEvent extends EventObject {
     }
 
     public static ListEvent createAdded(final EventList source, final int indexStart, final int indexEnd, final ListEvent cause) throws IllegalArgumentException {
-        return new ListEvent(source, ADDED, indexStart, indexEnd);
+        return new ListEvent(source, ADDED, indexStart, indexEnd, cause);
     }
 
     public static ListEvent createChanged(final EventList source, final int index) throws IllegalArgumentException {
@@ -113,7 +113,7 @@ public final class ListEvent extends EventObject {
     }
 
     public static ListEvent createChanged(final EventList source, final int indexStart, final int indexEnd, final ListEvent cause) throws IllegalArgumentException {
-        return new ListEvent(source, CHANGED, indexStart, indexEnd);
+        return new ListEvent(source, CHANGED, indexStart, indexEnd, cause);
     }
 
     public static ListEvent createRemoved(final EventList source, final int index) throws IllegalArgumentException {
@@ -129,7 +129,7 @@ public final class ListEvent extends EventObject {
     }
 
     public static ListEvent createRemoved(final EventList source, final int indexStart, final int indexEnd, final ListEvent cause) throws IllegalArgumentException {
-        return new ListEvent(source, REMOVED, indexStart, indexEnd);
+        return new ListEvent(source, REMOVED, indexStart, indexEnd, cause);
     }
 
     public static ListEvent createBatchStart(final EventList source) throws IllegalArgumentException {
@@ -161,6 +161,8 @@ public final class ListEvent extends EventObject {
     private final int indexStart;
     private final int indexEnd;
 
+    private final ListEvent cause;
+
     /**
      * Construct a ListEvent when none of the elements changed but the list did in some other manner.
      * @param source The EventList on which the ListEvent initially occurred.
@@ -172,6 +174,7 @@ public final class ListEvent extends EventObject {
         type = OTHER;
         indexStart = -1;
         indexEnd = -1;
+        cause = null;
     }
 
     private ListEvent(final EventList source, final Type type) throws IllegalArgumentException {
@@ -179,6 +182,7 @@ public final class ListEvent extends EventObject {
         this.type = type;
         indexStart = -1;
         indexEnd = -1;
+        cause = null;
     }
 
     /**
@@ -194,7 +198,7 @@ public final class ListEvent extends EventObject {
      * @deprecated {@link #createAdded(EventList, int)} {@link #createChanged(EventList, int)} {@link #createRemoved(EventList, int)} 
      */
     public ListEvent(final EventList source, final Type type, final int index) throws IllegalArgumentException {
-        this(source, type, index, index+1);
+        this(source, type, index, index+1, null);
     }
 
     /**
@@ -210,6 +214,10 @@ public final class ListEvent extends EventObject {
      * @deprecated {@link #createAdded(EventList, int, int)} {@link #createChanged(EventList, int, int)} {@link #createRemoved(EventList, int, int)}
      */
     public ListEvent(final EventList source, final Type type, final int indexStart, final int indexEnd) throws IllegalArgumentException {
+        this(source, type, indexStart, indexEnd, null);
+    }
+
+    private ListEvent(final EventList source, final Type type, final int indexStart, final int indexEnd, final ListEvent cause) throws IllegalArgumentException {
         super(source);
         assert OTHER.equals(type) || indexStart != indexEnd : "indexStart and indexEnd must not be the same value.";
         assert type != null : "type must not be null";
@@ -221,6 +229,7 @@ public final class ListEvent extends EventObject {
             this.indexStart = indexEnd;
             this.indexEnd = indexStart;
         }
+        this.cause = cause;
     }
 
     /**
@@ -238,7 +247,7 @@ public final class ListEvent extends EventObject {
             return ListEvent.createBatchEnd(newSource, this);
         } else {
             assert false : "Not sure how to resource: " + this;
-            return new ListEvent(newSource, getType(), getIndexStart(), getIndexEnd());
+            return new ListEvent(newSource, getType(), getIndexStart(), getIndexEnd(), this);
         }
     }
 
