@@ -24,7 +24,7 @@ import java.util.List;
  *
  * @author Sandy McArthur
  */
-public class RangedEventListImpl2 extends AbstractEventList implements RangedEventList {
+class RangedEventListImpl2 extends AbstractEventList implements RangedEventList {
 
     private final List elements = new ArrayList();
     private final EventList delegate;

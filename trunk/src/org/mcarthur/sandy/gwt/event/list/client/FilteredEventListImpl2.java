@@ -221,6 +221,9 @@ class FilteredEventListImpl2 extends AbstractEventList implements FilteredEventL
                     break;
                 }
             }
+            if (listEvent.getIndexEnd() - listEvent.getIndexStart() > 1) {
+                fireListEvent(ListEvent.createBatchStart(delegate, listEvent));
+            }
             for (int i = listEvent.getIndexStart(); i < listEvent.getIndexEnd(); i++) {
                 final Index index = tStart < translations.size() ? (Index)translations.get(tStart) : null;
                 final Object obj = elements.get(i);
@@ -262,6 +265,9 @@ class FilteredEventListImpl2 extends AbstractEventList implements FilteredEventL
                     }
                 }
                 assert index == null || !(index.getIndex() < i) : "Index: " + index + " is less than i: " + i;
+            }
+            if (listEvent.getIndexEnd() - listEvent.getIndexStart() > 1) {
+                fireListEvent(ListEvent.createBatchEnd(delegate, listEvent));
             }
         }
 
