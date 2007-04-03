@@ -246,7 +246,6 @@ public final class ListEvent extends EventObject {
         } else if (BATCH_END.equals(getType())) {
             return ListEvent.createBatchEnd(newSource, this);
         } else {
-            assert false : "Not sure how to resource: " + this;
             return new ListEvent(newSource, getType(), getIndexStart(), getIndexEnd(), this);
         }
     }

@@ -174,7 +174,10 @@ class WrappedEventList extends AbstractEventList implements EventList {
         final Iterator iter = toBeRemoved.iterator();
         int start = -1;
         int run = 1;
-        fireListEvent(ListEvent.createBatchStart(this));
+
+        if (toBeRemoved.size() > 1) {
+            fireListEvent(ListEvent.createBatchStart(this));
+        }
         while (iter.hasNext() || start != -1) { // loop for each item to be removed and then once more
             final Object o = iter.hasNext() ? iter.next() : null;
             if (start == -1) { // first element
@@ -198,7 +201,9 @@ class WrappedEventList extends AbstractEventList implements EventList {
                 delegate.remove(start);
             }
         }
-        fireListEvent(ListEvent.createBatchEnd(this));
+        if (toBeRemoved.size() > 1) {
+            fireListEvent(ListEvent.createBatchEnd(this));
+        }
 
         // were any removed?
         return toBeRemoved.size() > 0;
