@@ -55,6 +55,7 @@ public class ObjectListTableRendererTest extends GWTTestCase {
 
 
     public void testCallbacksCalledWhenAppropriate() {
+        // TODO: Update this test for new optimized attached logic
         final List expected = new ArrayList();
         final ObjectListTable olt;
 
