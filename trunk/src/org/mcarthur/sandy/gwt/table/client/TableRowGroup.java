@@ -80,6 +80,10 @@ public abstract class TableRowGroup extends UIObject implements EventListener {
 
     public abstract TableRow newTableRow();
 
+    public boolean isAttached() {
+        return attached;
+    }
+
     public void setAlignment(final HasHorizontalAlignment.HorizontalAlignmentConstant hAlign, final HasVerticalAlignment.VerticalAlignmentConstant vAlign) {
         setHorizontalAlignment(hAlign);
         setVerticalAlignment(vAlign);
@@ -228,7 +232,7 @@ public abstract class TableRowGroup extends UIObject implements EventListener {
     }
 
     protected void onAttach() {
-        assert !attached : "TableRowGroup cannot be attached twice.";
+        assert !isAttached() : "TableRowGroup cannot be attached twice.";
 
         attached = true;
 
@@ -240,7 +244,7 @@ public abstract class TableRowGroup extends UIObject implements EventListener {
     }
 
     protected void onDetach() {
-        assert attached : "TableRowGroup cannot be detached twice.";
+        assert isAttached() : "TableRowGroup cannot be detached twice.";
 
         attached = false;
 
@@ -256,6 +260,7 @@ public abstract class TableRowGroup extends UIObject implements EventListener {
      * reinitializes the element's CSS classes.
      */
     protected void reset() {
+        assert !isAttached() : "Trying to reset an attached row group!";
         while (mouseListeners != null) {
             removeMouseListener((MouseListener)mouseListeners.get(0));
         }

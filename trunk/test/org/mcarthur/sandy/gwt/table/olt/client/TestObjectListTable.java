@@ -87,11 +87,11 @@ public class TestObjectListTable implements EntryPoint {
     private DialogBox db = new DialogBox(true);
 
     public void onModuleLoad() {
-        EventList el = new ObservingEventList(); this.el = el;
+        EventList el = true ? new ObservingEventList() : EventLists.eventList(); this.el = el;
         sel = EventLists.sortedEventList(el); el = sel;
         fel = EventLists.filteredEventList(el); el = fel;
-        //rel = EventLists.rangedEventList(el, 4); el = rel;
-        rel = EventLists.steadyRangedEventList(el, 4); el = rel;
+        rel = EventLists.rangedEventList(el, 4); el = rel;
+        //rel = EventLists.steadyRangedEventList(el, 4); el = rel;
         ot = new ObjectListTable(new OLTR(), el);
         ot.setWidth("100%");
         RootPanel.get("log").add(vp);
@@ -188,7 +188,7 @@ public class TestObjectListTable implements EntryPoint {
         clear.setTitle("Calls clear() on the backing EventList.");
         clear.addClickListener(new ClickListener() {
             public void onClick(final Widget sender) {
-                ot.getObjects().clear();
+                TestObjectListTable.this.el.clear();
             }
         });
         fp.add(clear);
