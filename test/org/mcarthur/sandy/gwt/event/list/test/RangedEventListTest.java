@@ -1470,10 +1470,9 @@ public class RangedEventListTest extends TransformedEventListTest {
         };
         //rel.addListEventListener(lel);
         int end = el.size();
-        int[] sizes = new int[] {2, 2, 2, 1};
-        for (int i=0; i < sizes.length; i++) {
+        while (!el.isEmpty()) {
             el.remove(0);
-            assertEquals("i: " + i, sizes[i], rel.size());
+            assertEquals(Math.min(rel.getMaxSize(), el.size()) , rel.size());
         }
         //lel.listChanged(null);
         //rel.removeListEventListener(lel);
