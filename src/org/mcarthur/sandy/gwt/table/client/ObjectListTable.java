@@ -83,6 +83,8 @@ public final class ObjectListTable extends Widget implements SourcesMouseEvents 
 
     private MouseListenerCollection mouseListeners = null;
 
+    private int batchDepth = 0;
+
     /**
      * Create a new ObjectListTable backed by an empty object list.
      *
@@ -441,7 +443,7 @@ public final class ObjectListTable extends Widget implements SourcesMouseEvents 
         */
 
         // if the table is attached, attach the row group
-        if (isAttached()) {
+        if (isAttached() && batchDepth == 0) {
             renderer.render(bodyGroup.getObject(), bodyGroup);
             bodyGroup.setRendered(true);
             attach(bodyGroup);
@@ -547,6 +549,17 @@ public final class ObjectListTable extends Widget implements SourcesMouseEvents 
                     disown(bodyGroup);
                 }
 
+            } else if (listEvent.isBatchStart()) {
+                batchDepth++;
+                GWT.log("batchDepth: " + batchDepth, null);
+
+            } else if (listEvent.isBatchEnd()) {
+                batchDepth--;
+                GWT.log("batchDepth: " + batchDepth, null);
+
+                if (batchDepth == 0) {
+                    renderAndAttachTbodies();
+                }
             }
         }
     }
@@ -685,22 +698,7 @@ public final class ObjectListTable extends Widget implements SourcesMouseEvents 
             attachRenderer.onAttach(tfoot);
         }
 
-        final Iterator iter = getTbodies().iterator();
-        while (iter.hasNext()) {
-            final ObjectListTableBodyGroup tbody = (ObjectListTableBodyGroup)iter.next();
-            assert tbody != null : "Broken State: A null tbody got into the list of tbodies.";
-
-            if (!tbody.isRendered()) {
-                renderer.render(tbody.getObject(), tbody);
-                tbody.setRendered(true);
-            }
-            tbody.onAttach();
-
-            if (renderer instanceof AttachRenderer) {
-                final AttachRenderer attachRenderer = (AttachRenderer)renderer;
-                attachRenderer.onAttach(tbody.getObject(), tbody);
-            }
-        }
+        renderAndAttachTbodies();
     }
 
     protected void onDetach() {
@@ -735,6 +733,28 @@ public final class ObjectListTable extends Widget implements SourcesMouseEvents 
             if (renderer instanceof AttachRenderer) {
                 final AttachRenderer attachRenderer = (AttachRenderer)renderer;
                 attachRenderer.onDetach(tbody.getObject(), tbody);
+            }
+        }
+    }
+
+    private void renderAndAttachTbodies() {
+        final Iterator iter = getTbodies().iterator();
+        while (iter.hasNext()) {
+            final ObjectListTableBodyGroup tbody = (ObjectListTableBodyGroup)iter.next();
+            assert tbody != null : "Broken State: A null tbody got into the list of tbodies.";
+
+            if (!tbody.isRendered()) {
+                renderer.render(tbody.getObject(), tbody);
+                tbody.setRendered(true);
+            }
+
+            if (!tbody.isAttached()) {
+                tbody.onAttach();
+
+                if (renderer instanceof AttachRenderer) {
+                    final AttachRenderer attachRenderer = (AttachRenderer)renderer;
+                    attachRenderer.onAttach(tbody.getObject(), tbody);
+                }
             }
         }
     }
