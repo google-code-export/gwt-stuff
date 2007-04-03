@@ -551,13 +551,11 @@ public final class ObjectListTable extends Widget implements SourcesMouseEvents 
 
             } else if (listEvent.isBatchStart()) {
                 batchDepth++;
-                GWT.log("batchDepth: " + batchDepth, null);
 
             } else if (listEvent.isBatchEnd()) {
                 batchDepth--;
-                GWT.log("batchDepth: " + batchDepth, null);
 
-                if (batchDepth == 0) {
+                if (isAttached() && batchDepth == 0) {
                     renderAndAttachTbodies();
                 }
             }
