@@ -53,7 +53,8 @@ public final class ListEvent extends EventObject {
     public static final Type REMOVED = new Type("REMOVED");
 
     /**
-     * Identifies that the current EventList is about to perform a series of related changes.
+     * Identifies that the current EventList is about to perform a series of related changes and
+     * until the batch is complete the EventList may not be in a consistant state.
      * If an entire list change can be expressed with one {@link ListEvent} then batch events should not be used.
      * For each <code>BATCH_START</code> event fired there <b>must</b> be one {@link #BATCH_END} event fired.
      * Pairs of batch events can be nested in other pairs of batch events.

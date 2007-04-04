@@ -21,8 +21,10 @@ import org.mcarthur.sandy.gwt.event.list.client.EventList;
 import org.mcarthur.sandy.gwt.event.list.client.ListEvent;
 import org.mcarthur.sandy.gwt.event.list.client.ListEventListener;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Random;
 
 /**
  * Tests for {@link org.mcarthur.sandy.gwt.event.list.client.EventList}.
@@ -190,5 +192,73 @@ public abstract class EventListTest extends TestCase {
             el.add(Integer.valueOf(i));
         }
         assertEquals(10, el.size());
+    }
+
+    public void testRemoveAll() {
+        final List l = new ArrayList();
+        final EventList el = createEmptyEventLists();
+        final List replay = new EventListReplayList(el);
+
+        prefillWithIntegers(l, 150);
+
+        Collections.shuffle(l, new Random(8482));
+
+        el.addAll(l);
+
+        Collections.shuffle(l, new Random(4372));
+
+        assertTrue(l.containsAll(el));
+        assertTrue(el.containsAll(l));
+
+        final List sub = new ArrayList(l.subList(50, 100));
+
+        l.removeAll(sub);
+        el.removeAll(sub);
+
+        final List a = new ArrayList(l);
+        final List b = new ArrayList(el);
+        Collections.sort(a);
+        Collections.sort(b);
+        assertEquals(a, b);
+
+        assertTrue(l.containsAll(el));
+        assertTrue(el.containsAll(l));
+        assertEquals(el, replay);
+        assertTrue(l.containsAll(replay));
+        assertTrue(replay.containsAll(l));
+    }
+
+    public void testRetainAll() {
+        final List l = new ArrayList();
+        final EventList el = createEmptyEventLists();
+        final List replay = new EventListReplayList(el);
+
+        prefillWithIntegers(l, 150);
+
+        Collections.shuffle(l, new Random(1283));
+
+        el.addAll(l);
+
+        Collections.shuffle(l, new Random(5623));
+
+        assertTrue(l.containsAll(el));
+        assertTrue(el.containsAll(l));
+
+        final List sub = new ArrayList(l.subList(50, 100));
+
+        l.retainAll(sub);
+        el.retainAll(sub);
+
+        final List a = new ArrayList(l);
+        final List b = new ArrayList(el);
+        Collections.sort(a);
+        Collections.sort(b);
+        assertEquals(a, b);
+
+        assertTrue(l.containsAll(el));
+        assertTrue(el.containsAll(l));
+        assertEquals(el, replay);
+        assertTrue(l.containsAll(replay));
+        assertTrue(replay.containsAll(l));
     }
 }

@@ -30,6 +30,15 @@ import java.util.Comparator;
  * behavior. If you need to change the sort order of a list, use a new Comparator instance.
  * </p>
  *
+ * <p>
+ * <b>Note:</b> because a SortedEventList does not respect the index parameter with methods like
+ * {@link #add(int, Object)}, {@link #addAll(int, java.util.Collection)}, or {@link #set(int, Object)}
+ * some uses of the List may cause an unexpected behavior. A perfect example is
+ * {@link java.util.Collections#shuffle(java.util.List)}. Not only does it not make sense to shuffle
+ * a sorted list but they way the shuffle method is implemented causes the elements in the sorted
+ * list to be either duplicated or removed.
+ * </p>
+ *
  * @author Sandy McArthur
  */
 public interface SortedEventList extends EventList {
