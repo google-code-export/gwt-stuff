@@ -27,6 +27,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Random;
 
 /**
  * Tests for {@link org.mcarthur.sandy.gwt.event.list.client.SortedEventList}.
@@ -293,5 +294,34 @@ public class SortedEventListTest extends TransformedEventListTest {
         assertEquals(replay, sel);
     }
 
+    public static List b;
+    public void testSorting2() {
+        final EventList el = EventLists.eventList();
+        prefillWithIntegers(el, 5);
 
+        final List sorted = new ArrayList(el);
+
+        Collections.shuffle(el);
+
+        final SortedEventList sel = createBackedSortedEventList(el);
+
+        //final List replay = new EventListReplayList(sel);
+
+        assertEquals(sorted, sel);
+
+        b = sel;
+        final Random r = new Random(19649); // don't change the seed
+        Collections.shuffle(el, r);
+        b = null;
+        assertEquals(sorted, sel);
+
+        /*
+        Collections.shuffle(el);
+        assertEquals(sorted, sel);
+
+        Collections.shuffle(el);
+
+        assertEquals(replay, sel);
+        */
+    }
 }

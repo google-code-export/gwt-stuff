@@ -452,6 +452,8 @@ public class RangedEventListTest extends TransformedEventListTest {
     }
 
     public void testRemoveAll() {
+        super.testRemoveAll();
+
         final List all = new ArrayList();
         all.add("one");
         all.add("two");
@@ -468,6 +470,8 @@ public class RangedEventListTest extends TransformedEventListTest {
     }
     
     public void testRetainAll() {
+        super.testRetainAll();
+
         final List all = new ArrayList();
         all.add("one");
         all.add("two");
