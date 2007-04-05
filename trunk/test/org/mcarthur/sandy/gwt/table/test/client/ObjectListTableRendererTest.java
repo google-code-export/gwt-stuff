@@ -55,19 +55,18 @@ public class ObjectListTableRendererTest extends GWTTestCase {
 
 
     public void testCallbacksCalledWhenAppropriate() {
-        // TODO: Update this test for new optimized attached logic
         final List expected = new ArrayList();
         final ObjectListTable olt;
 
-        // Initial items are rendered
+        // Nothing is rendered until needed now
         olt = new ObjectListTable(new PersonRenderer(events), people);
-        expected.add("render");
         assertEquals(expected, events);
 
         //atcching to browser's document causes the headers/footers to be rendered and rows to be attached
         RootPanel.get().add(olt);
         expected.add("renderHeader");
         expected.add("renderFooter");
+        expected.add("render");
         assertEquals(expected, events);
 
         // adding a element will rendered
@@ -82,9 +81,8 @@ public class ObjectListTableRendererTest extends GWTTestCase {
         RootPanel.get().remove(olt);
         assertEquals(expected, events);
 
-        // should just render
+        // detached so nothing
         people.add(new Person("Joe"));
-        expected.add("render");
         assertEquals(expected, events);
 
         // removing while detached shouldn't affect anything
