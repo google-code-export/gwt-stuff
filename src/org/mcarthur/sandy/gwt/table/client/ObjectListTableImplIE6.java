@@ -12,6 +12,9 @@ import java.util.List;
  */
 class ObjectListTableImplIE6 extends ObjectListTableImpl {
 
+    /**
+     * tbody end: used so we can use insertBefore consistently.
+     */
     private final Element tbe = DOM.createElement("tbody");
     private final List unusedTbodies = new ArrayList();
 
