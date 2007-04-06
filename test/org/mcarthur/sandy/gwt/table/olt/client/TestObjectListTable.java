@@ -197,6 +197,14 @@ public class TestObjectListTable implements EntryPoint {
         attach.addClickListener(new ClickListener() {
             public void onClick(final Widget sender) {
                 final Button attach = (Button)sender;
+                final long start = System.currentTimeMillis();
+                DeferredCommand.add(new Command() {
+                    public void execute() {
+                        final long end = System.currentTimeMillis();
+                        vp.add(new Label("Attach/Detach took: " + (end - start)));
+                        Window.setTitle("Attach/Detach took: " + (end - start));
+                    }
+                });
                 if (ot.isAttached()) {
                     // detach
                     RootPanel.get("tableDiv").remove(ot);
