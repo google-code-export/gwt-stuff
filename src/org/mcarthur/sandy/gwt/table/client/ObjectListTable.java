@@ -768,9 +768,16 @@ public final class ObjectListTable extends Widget implements SourcesMouseEvents 
 
             // find the parent of the event target that is a row group.
             Element targetParent = DOM.getParent(target);
-            while (target != null && !DOM.compare(tableElement, targetParent)) {
+            while (targetParent != null && !DOM.compare(tableElement, targetParent)) {
                 target = targetParent;
                 targetParent = DOM.getParent(target);
+            }
+            if (targetParent == null) {
+                // event target's element or element parent was removed from the DOM
+                // before this onBrowserEvent was notified. There is no way to
+                // discover what row it came from so there is nothing we can do with
+                // this event. Everything below this would be wasted work.
+                return;
             }
 
             // fire the onBrowserEvent for the row group that the event came from.
