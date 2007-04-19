@@ -33,6 +33,9 @@ class FilteredEventListImpl2 extends AbstractEventList implements FilteredEventL
         }
     };
 
+    /**
+     * This is needed during a batch change from a deeper list.
+     */
     private final List elements = new ArrayList();
     private final EventList delegate;
 

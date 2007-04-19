@@ -215,7 +215,7 @@ public class EventLists {
      * @see #rangedEventList(EventList, int)
      */
     public static RangedEventList steadyRangedEventList(final EventList eventList, final int maxSize) {
-        return new SteadyRangedEventListImpl(eventList, maxSize);
+        return new SteadyRangedEventListImpl2(eventList, maxSize);
     }
 
     /**
