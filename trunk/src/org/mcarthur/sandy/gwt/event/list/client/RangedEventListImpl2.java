@@ -50,8 +50,7 @@ class RangedEventListImpl2 extends AbstractEventList implements RangedEventList 
         return getStart() + mutationIndex;
     }
 
-
-    public void add(int index, Object element) {
+    public void add(final int index, final Object element) {
         delegate.add(getSourceIndex(index), element);
     }
 
@@ -71,7 +70,7 @@ class RangedEventListImpl2 extends AbstractEventList implements RangedEventList 
         }
     }
 
-    public Object set(int index, Object element) {
+    public Object set(final int index, final Object element) {
         if (index < size()) {
             return delegate.set(getSourceIndex(index), element);
         } else {
