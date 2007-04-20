@@ -51,7 +51,7 @@ public class RangedEventListTest extends TransformedEventListTest {
         final EventList el = EventLists.eventList();
         el.add("one");
         el.add("two");
-        final RangedEventList rel = EventLists.rangedEventList(el);
+        final RangedEventList rel = createBackedRangedEventList(el);
 
         assertEquals(2, el.size());
         assertEquals(2, rel.size());
@@ -280,7 +280,7 @@ public class RangedEventListTest extends TransformedEventListTest {
     public void testGetTotal() {
         final EventList el = EventLists.eventList();
         prefillWithIntegers(el, 50);
-        final RangedEventList rel = EventLists.rangedEventList(el);
+        final RangedEventList rel = createBackedRangedEventList(el);
 
         assertEquals(el.size(), rel.getTotal());
 
@@ -383,11 +383,26 @@ public class RangedEventListTest extends TransformedEventListTest {
         rel.removeListEventListener(lel);
     }
 
+    public void testClear() {
+        final EventList el = EventLists.eventList();
+        prefillWithIntegers(el, 100);
+
+        final RangedEventList rel = createBackedRangedEventList(el);
+        rel.setStart(10);
+        rel.setMaxSize(10);
+
+        assertEquals(100, el.size());
+        assertEquals(10, rel.size());
+        rel.clear();
+        assertEquals(90, el.size());
+        assertEquals(10, rel.size());
+    }
+
     public void testContains() {
         final EventList el = EventLists.eventList();
         el.add("one");
         el.add("two");
-        final RangedEventList rel = EventLists.rangedEventList(el);
+        final RangedEventList rel = createBackedRangedEventList(el);
 
         assertTrue(el.contains("one"));
         assertTrue(el.contains("two"));
