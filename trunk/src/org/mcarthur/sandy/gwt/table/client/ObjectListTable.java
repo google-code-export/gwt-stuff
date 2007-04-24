@@ -455,7 +455,7 @@ public final class ObjectListTable extends Widget implements SourcesMouseEvents 
         assert DOM.compare(getElement(), DOM.getParent(bodyGroup.getElement())) : "bodyGroup is not owned by this table.";
 
         // if the table is attached, detach the row group
-        if (isAttached()) {
+        if (isAttached() && bodyGroup.isAttached()) {
             detach(bodyGroup);
         }
 
