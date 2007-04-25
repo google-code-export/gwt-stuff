@@ -16,7 +16,7 @@
 
 package org.mcarthur.sandy.gwt.event.list.property.client;
 
-import org.mcarthur.sandy.gwt.event.list.client.DelegateEventList;
+import org.mcarthur.sandy.gwt.event.list.client.AbstractEventList;
 import org.mcarthur.sandy.gwt.event.list.client.EventList;
 import org.mcarthur.sandy.gwt.event.list.client.EventLists;
 import org.mcarthur.sandy.gwt.event.list.client.ListEvent;
@@ -48,7 +48,10 @@ import java.util.Iterator;
  * @see org.mcarthur.sandy.gwt.event.list.client.FilteredEventList
  * @see org.mcarthur.sandy.gwt.event.list.client.SortedEventList
  */
-public final class ObservingEventList extends DelegateEventList implements EventList {
+public final class ObservingEventList extends AbstractEventList implements EventList {
+
+    private final EventList delegate = EventLists.eventList();
+
     private final PropertyChangeListener pcl = new PropertyChangeEventListListener();
 
     private final ListEventListener observingListEventListener = new ListEventListener() {
@@ -58,8 +61,7 @@ public final class ObservingEventList extends DelegateEventList implements Event
     };
 
     public ObservingEventList() {
-        super(EventLists.eventList());
-        getDelegate().addListEventListener(observingListEventListener);
+        delegate.addListEventListener(observingListEventListener);
     }
 
     /**
@@ -67,7 +69,7 @@ public final class ObservingEventList extends DelegateEventList implements Event
      */
     public boolean add(final Object element) throws IllegalArgumentException {
         checkType(element);
-        if (super.add(element)) {
+        if (delegate.add(element)) {
             ((PropertyChangeSource)element).addPropertyChangeListener(pcl);
             return true;
         }
@@ -79,28 +81,44 @@ public final class ObservingEventList extends DelegateEventList implements Event
      */
     public void add(final int index, final Object element) throws IllegalArgumentException {
         checkType(element);
-        super.add(index, element);
+        delegate.add(index, element);
         ((PropertyChangeSource)element).addPropertyChangeListener(pcl);
     }
 
     /**
      * @throws IllegalArgumentException when any element in <code>c</code> does not implement {@link PropertyChangeSource}.
      */
-    private boolean XaddAll(final Collection c) throws IllegalArgumentException {
+    public boolean addAll(final Collection c) throws IllegalArgumentException {
         checkAllTypes(c);
-        return attachAllListeners(c, super.addAll(c));
+        return attachAllListeners(c, delegate.addAll(c));
     }
 
-    /**
-     * @throws IllegalArgumentException when any element in <code>c</code> does not implement {@link PropertyChangeSource}.
-     */
-    private boolean XaddAll(final int index, final Collection c) throws IllegalArgumentException {
-        checkAllTypes(c);
-        return attachAllListeners(c, super.addAll(index, c));
+    public boolean contains(final Object o) {
+        return delegate.contains(o);
+    }
+
+    public boolean containsAll(final Collection c) {
+        return delegate.containsAll(c);
+    }
+
+    public Object get(final int index) {
+        return delegate.get(index);
+    }
+
+    public int indexOf(final Object o) {
+        return delegate.indexOf(o);
+    }
+
+    public boolean isEmpty() {
+        return delegate.isEmpty();
+    }
+
+    public int lastIndexOf(final Object o) {
+        return delegate.lastIndexOf(o);
     }
 
     public boolean remove(final Object element) {
-        final boolean changed = super.remove(element);
+        final boolean changed = delegate.remove(element);
         if (changed) {
             ((PropertyChangeSource)element).removePropertyChangeListener(pcl);
         }
@@ -108,32 +126,34 @@ public final class ObservingEventList extends DelegateEventList implements Event
     }
 
     public Object remove(final int index) {
-        final Object element = super.remove(index);
+        final Object element = delegate.remove(index);
         if (element != null) {
             ((PropertyChangeSource)element).removePropertyChangeListener(pcl);
         }
         return element;
     }
 
-    private boolean XremoveAll(final Collection c) {
-        final Collection removed = new ArrayList();
-        removed.addAll(c);
-        removed.retainAll(this);
-        return detachAllListeners(removed, super.removeAll(c));
+    public boolean removeAll(final Collection c) {
+        final Collection removed = new ArrayList(c);
+        removed.retainAll(delegate);
+        return detachAllListeners(removed, delegate.removeAll(c));
     }
 
-    private boolean XretainAll(final Collection c) {
-        final Collection removed = new ArrayList();
-        removed.addAll(this);
+    public boolean retainAll(final Collection c) {
+        final Collection removed = new ArrayList(this);
         removed.retainAll(c);
-        return detachAllListeners(removed, super.retainAll(c));
+        return detachAllListeners(removed, delegate.retainAll(c));
     }
 
     public Object set(final int index, final Object element) {
-        final Object removed = super.set(index, element);
+        final Object removed = delegate.set(index, element);
         ((PropertyChangeSource)removed).removePropertyChangeListener(pcl);
         ((PropertyChangeSource)element).addPropertyChangeListener(pcl);
         return removed;
+    }
+
+    public int size() {
+        return delegate.size();
     }
 
     private static void checkType(final Object element) {
@@ -188,16 +208,5 @@ public final class ObservingEventList extends DelegateEventList implements Event
                 }
             }
         }
-    }
-
-    public EventList detach() {
-        final EventList eventList = super.detach();
-        eventList.removeListEventListener(observingListEventListener);
-        final Iterator iter = eventList.iterator();
-        while (iter.hasNext()) {
-            final PropertyChangeSource pcs = (PropertyChangeSource)iter.next();
-            pcs.removePropertyChangeListener(pcl);
-        }
-        return eventList;
     }
 }

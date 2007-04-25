@@ -46,6 +46,8 @@ public class TestAll extends TestCase {
         suite.addTestSuite(SortedEventListTest.class);
         suite.addTestSuite(WrappedEventListTest.class);
 
+        suite.addTest(org.mcarthur.sandy.gwt.event.list.property.TestAll.suite());
+
         return suite;
     }
 }
