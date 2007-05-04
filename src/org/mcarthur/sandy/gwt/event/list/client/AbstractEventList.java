@@ -17,8 +17,6 @@
 package org.mcarthur.sandy.gwt.event.list.client;
 
 import java.util.AbstractList;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * A skeletal implementation of the EventList interface.
@@ -27,14 +25,37 @@ import java.util.List;
  * @see java.util.AbstractList
  */
 public abstract class AbstractEventList extends AbstractList implements EventList {
-    private final List listeners = new ArrayList();
+    // This is an array instead of a List because these aren't volitile and an array carries less overhead.
+    private ListEventListener[] listeners = new ListEventListener[0];
 
     public void addListEventListener(final ListEventListener listEventListener) {
-        listeners.add(listEventListener);
+        final ListEventListener[] resizedListeners = new ListEventListener[listeners.length + 1];
+        for (int i=0; i < listeners.length; i++) {
+            resizedListeners[i] = listeners[i];
+        }
+        resizedListeners[listeners.length] = listEventListener;
+        listeners = resizedListeners;
     }
 
     public void removeListEventListener(final ListEventListener listEventListener) {
-        listeners.remove(listEventListener);
+        int indexOfListener = -1;
+        for (int i=0; i < listeners.length; i++) {
+            if (listeners[i] == listEventListener) {
+                indexOfListener = i;
+                break;
+            }
+        }
+        if (indexOfListener >= 0) {
+            // This needs to be a new list instance because of the way fireListEvent works
+            final ListEventListener[] resizedListeners = new ListEventListener[listeners.length - 1];
+            for (int i=0; i < indexOfListener; i++) {
+                resizedListeners[i] = listeners[i];
+            }
+            for (int i=indexOfListener+1; i < listeners.length; i++) {
+                resizedListeners[i-1] = listeners[i];
+            }
+            listeners = resizedListeners;
+        }
     }
 
     /**
@@ -43,10 +64,9 @@ public abstract class AbstractEventList extends AbstractList implements EventLis
      * @param listEvent the event to signal.
      */
     protected void fireListEvent(final ListEvent listEvent) {
-        final Object[] l = listeners.toArray();
-        for (int i=0; i< l.length; i++) {
-            final ListEventListener listEventListener = (ListEventListener)l[i];
-            listEventListener.listChanged(listEvent);
+        final ListEventListener[] listeners = this.listeners; // capture the current instance
+        for (int i=0; i< listeners.length; i++) {
+            listeners[i].listChanged(listEvent);
         }
     }
 
