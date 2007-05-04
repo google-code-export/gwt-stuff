@@ -80,7 +80,7 @@ public class EventLists {
      * @return A view over eventList that is filtered with <code>filter</code>.
      */
     public static FilteredEventList filteredEventList(final EventList eventList, final FilteredEventList.Filter filter) {
-        return new FilteredEventListImpl(eventList, filter);
+        return new FilteredEventListImpl2(eventList, filter);
     }
 
     /**

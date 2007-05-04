@@ -26,6 +26,8 @@ import java.util.List;
  * @author Sandy McArthur
  */
 class FilteredEventListImpl2 extends AbstractEventList implements FilteredEventList {
+    // TODO: The EVERYTHING filter should have almost no overhead
+    // TODO: add event batching
 
     private static final Filter EVERYTHING = new Filter() {
         public boolean accept(final Object element) {
