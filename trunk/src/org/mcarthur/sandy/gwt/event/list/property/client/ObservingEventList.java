@@ -200,8 +200,7 @@ public final class ObservingEventList extends AbstractEventList implements Event
         public void propertyChange(final PropertyChangeEvent evt) {
             final Object o = evt.getSource();
             final int size = size();
-            int i;
-            for (i=0; i < size; i++) {
+            for (int i=0; i < size; i++) {
                 if (o == get(i)) {
                     fireListEvent(ListEvent.createChanged(ObservingEventList.this, i));
                     break;
