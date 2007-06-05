@@ -43,7 +43,7 @@ public class TableHeaderCell extends TableCell {
      * @see <a href="http://www.w3.org/TR/html4/struct/tables.html#adef-scope">HTML Table Header Cell Scope</a>
      */
     public String getScope() {
-        return DOM.getAttribute(getElement(), "scope");
+        return DOM.getElementProperty(getElement(), "scope");
     }
 
     /**
@@ -53,6 +53,6 @@ public class TableHeaderCell extends TableCell {
      * @see <a href="http://www.w3.org/TR/html4/struct/tables.html#adef-scope">HTML Table Header Cell Scope</a>
      */
     public void setScope(final String scope) {
-        DOM.setAttribute(getElement(), "scope", scope != null ? scope : "");
+        DOM.setElementProperty(getElement(), "scope", scope != null ? scope : "");
     }
 }

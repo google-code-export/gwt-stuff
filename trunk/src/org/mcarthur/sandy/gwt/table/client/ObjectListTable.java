@@ -69,6 +69,7 @@ import java.util.List;
 public final class ObjectListTable extends Widget implements SourcesMouseEvents {
 
     private static final String CLASS_GWTSTUFF_OBJECTLISTTABLE = Constants.GWTSTUFF + "-ObjectListTable";
+    private static final int MOUSEEVENTSALL = Event.MOUSEEVENTS | Event.ONCLICK | Event.ONDBLCLICK;
 
     private ObjectListTableImpl impl = (ObjectListTableImpl)GWT.create(ObjectListTableImpl.class);
 
@@ -105,6 +106,7 @@ public final class ObjectListTable extends Widget implements SourcesMouseEvents 
         this.renderer = renderer;
         this.objects = objects;
         setElement(DOM.createTable());
+        sinkEvents(MOUSEEVENTSALL); // required on the Widget with GWT 1.4's event model changes
         addStyleName(CLASS_GWTSTUFF_OBJECTLISTTABLE);
 
         objects.addListEventListener(objectsListener);
