@@ -1,0 +1,25 @@
+<module>
+
+    <inherits name="com.google.gwt.user.User"/>
+
+    <!-- Default rule -->
+    <replace-with class="org.mcarthur.sandy.gwt.plugin.client.FlashImpl">
+        <when-type-is class="org.mcarthur.sandy.gwt.plugin.client.FlashImpl"/>
+    </replace-with>
+
+    <replace-with class="org.mcarthur.sandy.gwt.plugin.client.FlashImplIE6">
+        <when-type-is class="org.mcarthur.sandy.gwt.plugin.client.FlashImpl"/>
+        <when-property-is name="user.agent" value="ie6"/>
+    </replace-with>
+
+    <!--
+     Opera seems to take either embed or object tags in HTML.
+     embed tags aren't working for me when I create them via the DOM.
+     I need to figure out how to get FSCommand working in IE and Opera.
+    -->
+    <replace-with class="org.mcarthur.sandy.gwt.plugin.client.FlashImplIE6">
+        <when-type-is class="org.mcarthur.sandy.gwt.plugin.client.FlashImpl"/>
+        <when-property-is name="user.agent" value="opera"/>
+    </replace-with>
+
+</module>

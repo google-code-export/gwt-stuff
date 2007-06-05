@@ -1,0 +1,268 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<project name="GWT-Stuff" default="all" basedir=".">
+    <description>
+        Build file for GWT-Stuff modules.
+    </description>
+
+    <target name="find-gwt">
+        <!-- Load the user's host enviroment to try to find the GWT install -->
+        <property environment="env"/>
+        <property name="env.GWT_HOME" value="C:/gwt-windows-1.3.3/"/>
+
+        <!-- Configure: either edit there here or specify with -Dname=value when invking Ant -->
+        <property name="gwt.homedir" value="${env.GWT_HOME}" description="The base directory where you installed GWT."/>
+        <available property="gwt.user.jar-found" file="${gwt.homedir}/gwt-user.jar"/>
+    </target>
+
+    <target depends="find-gwt" name="gwt-not-found" unless="gwt.user.jar-found">
+        <fail>
+Could not find GWT install directory.
+Please set GWT_HOME in your OS's environment or invoke ant with -Dgwt.homedir="/path/to/gwt-home" .
+        </fail>
+    </target>
+
+    <target name="init" depends="gwt-not-found">
+        <tstamp/>
+        <property name="gwt.compiler.style" value="OBF" description="GWTCompiler -style option value, defaults to OBF"/>
+
+        <property name="build.dir" value="build"/>
+        <property name="build.classes.dir" value="${build.dir}/classes"/>
+        <property name="build.tests.dir" value="${build.dir}/tests"/>
+
+        <!-- Classpath to compile sources -->
+        <path id="project.class.path">
+            <pathelement path="${basedir}/src"/>
+            <pathelement path="${build.classes.dir}"/>
+            <!--<pathelement path="${basedir}/test"/>-->
+            <!-- If you have any external GWT modules, add their jars here. -->
+            <fileset dir="${basedir}/lib">
+                <include name="*.jar"/>
+            </fileset>
+            <!-- The GWT client libs -->
+            <fileset dir="${gwt.homedir}">
+                <include name="gwt-user.jar"/>
+            </fileset>
+        </path>
+
+        <!-- Classpath to launch GWTShell and GWTCompilter -->
+        <path id="gwt.class.path">
+            <fileset dir="${gwt.homedir}">
+                <include name="gwt-dev-*.jar"/>
+            </fileset>
+        </path>
+
+        <!-- Mac OS X needs -XstartOnFirstThread, the -Xmixed is because an empty jvmarg causes java not to start -->
+        <condition property="gwt.jvmarg" value="-XstartOnFirstThread" else="-Xmixed">
+            <os family="mac"/>
+        </condition>
+
+        <macrodef name="gwtshell">
+            <attribute name="module"/>
+            <attribute name="page"/>
+            <sequential>
+                <java classname="com.google.gwt.dev.GWTShell" failonerror="true" fork="true">
+                    <jvmarg value="${gwt.jvmarg}"/>
+                    <arg value="-style"/>
+                    <arg value="${gwt.compiler.style}"/>
+                    <arg value="-out"/>
+                    <arg value="${basedir}/www"/>
+                    <arg value="-gen"/>
+                    <arg value="${basedir}/gen"/>
+                    <arg value="@{module}/@{page}"/>
+                    <classpath path="src"/>
+                    <classpath path="test"/>
+                    <classpath path="${build.classes.dir}"/>
+                    <classpath path="${build.tests.dir}"/>
+                    <classpath refid="project.class.path"/>
+                    <classpath refid="gwt.class.path"/>
+                </java>
+            </sequential>
+        </macrodef>
+
+        <macrodef name="gwtcompile">
+            <attribute name="module"/>
+            <sequential>
+                <java classname="com.google.gwt.dev.GWTCompiler" failonerror="true" fork="true">
+                    <arg value="-style"/>
+                    <arg value="${gwt.compiler.style}"/>
+                    <arg value="-out"/>
+                    <arg value="${basedir}/www"/>
+                    <arg value="-gen"/>
+                    <arg value="${basedir}/gen"/>
+                    <arg value="@{module}"/>
+                    <classpath path="src"/>
+                    <classpath path="test"/>
+                    <classpath path="${build.classes.dir}"/>
+                    <classpath path="${build.tests.dir}"/>
+                    <classpath refid="project.class.path"/>
+                    <classpath refid="gwt.class.path"/>
+                </java>
+            </sequential>
+        </macrodef>
+
+        <macrodef name="gwttestcase">
+            <attribute name="testclass"/>
+            <sequential>
+                <java classname="junit.textui.TestRunner" failonerror="true" fork="true">
+                    <jvmarg value="${gwt.jvmarg}"/>
+                    <jvmarg value="-Dgwt.args=-out www-test"/>
+                    <arg line="@{testclass}"/>
+                    <classpath path="src"/>
+                    <classpath path="test"/>
+                    <classpath path="${build.classes.dir}"/>
+                    <classpath path="${build.tests.dir}"/>
+                    <classpath refid="project.class.path"/>
+                    <classpath refid="gwt.class.path"/>
+                </java>
+            </sequential>
+        </macrodef>
+
+        <macrodef name="gwttestcaseweb">
+            <attribute name="testclass"/>
+            <sequential>
+                <java classname="junit.textui.TestRunner" failonerror="true" fork="true">
+                    <jvmarg value="${gwt.jvmarg}"/>
+                    <jvmarg value="-Dgwt.args=-web -out www-test"/>
+                    <arg value="@{testclass}"/>
+                    <classpath path="src"/>
+                    <classpath path="test"/>
+                    <classpath path="${build.classes.dir}"/>
+                    <classpath path="${build.tests.dir}"/>
+                    <classpath refid="project.class.path"/>
+                    <classpath refid="gwt.class.path"/>
+                </java>
+            </sequential>
+        </macrodef>
+
+    </target>
+
+    <target name="compile-src" depends="init" description="Compile java source to bin">
+        <mkdir dir="${build.classes.dir}"/>
+        <javac srcdir="src" destdir="${build.classes.dir}" includes="**" debug="on" optimize="off" source="1.4">
+            <classpath refid="project.class.path"/>
+        </javac>
+    </target>
+
+    <target name="compile-test" depends="init,compile-src" description="Compile java source to bin">
+        <mkdir dir="${build.tests.dir}"/>
+        <javac srcdir="test" destdir="${build.tests.dir}" includes="**" debug="on" optimize="off" source="1.4">
+            <classpath refid="project.class.path"/>
+            <classpath refid="gwt.class.path"/>
+        </javac>
+    </target>
+
+    <target name="gwtcompile-TestLoginPanel" depends="init">
+        <mkdir dir="www"/>
+        <delete dir="www/org.mcarthur.sandy.gwt.login.TestLoginPanel"/>
+        <gwtcompile module="org.mcarthur.sandy.gwt.login.TestLoginPanel"/>
+    </target>
+
+    <target name="gwtshell-TestLoginPanel" depends="init">
+        <mkdir dir="www"/>
+        <delete dir="www/org.mcarthur.sandy.gwt.login.TestLoginPanel"/>
+        <gwtshell module="org.mcarthur.sandy.gwt.login.TestLoginPanel" page="TestLoginPanel.html"/>
+    </target>
+
+    <target name="gwtcompile-TestEventList" depends="init">
+        <mkdir dir="www"/>
+        <delete dir="www/org.mcarthur.sandy.gwt.event.list.TestEventList"/>
+        <gwtcompile module="org.mcarthur.sandy.gwt.event.list.TestEventList"/>
+    </target>
+
+    <target name="gwtshell-TestEventList" depends="init">
+        <mkdir dir="www"/>
+        <delete dir="www/org.mcarthur.sandy.gwt.event.list.TestEventList"/>
+        <gwtshell module="org.mcarthur.sandy.gwt.event.list.TestEventList" page="TestEventList.html"/>
+    </target>
+
+    <target name="gwtcompile-TestObjectListTable" depends="init">
+        <mkdir dir="www"/>
+        <delete dir="www/org.mcarthur.sandy.gwt.table.olt.TestObjectListTable"/>
+        <gwtcompile module="org.mcarthur.sandy.gwt.table.olt.TestObjectListTable"/>
+    </target>
+
+    <target name="gwtshell-TestObjectListTable" depends="init">
+        <mkdir dir="www"/>
+        <delete dir="www/org.mcarthur.sandy.gwt.table.olt.TestObjectListTable"/>
+        <gwtshell module="org.mcarthur.sandy.gwt.table.olt.TestObjectListTable" page="TestObjectListTable.html"/>
+    </target>
+
+    <target name="gwtcompile-TestFlash" depends="init">
+        <mkdir dir="www"/>
+        <delete dir="www/org.mcarthur.sandy.gwt.plugin.flash.TestFlash"/>
+        <gwtcompile module="org.mcarthur.sandy.gwt.plugin.flash.TestFlash"/>
+    </target>
+
+    <target name="package" depends="compile-src" description="Package up the whole project as a jar">
+        <jar destfile="GWT-Stuff-${DSTAMP}.jar">
+            <fileset dir="${build.classes.dir}">
+                <include name="**/*.class"/>
+                <exclude name="**/test/**"/>
+                <exclude name="**/emul/**"/>
+                <exclude name="**/alpha/**"/>
+            </fileset>
+            <!-- Get everything; source, modules, html files -->
+            <fileset dir="src">
+                <include name="**"/>
+                <exclude name="**/test/**"/>
+                <exclude name="**/emul/**"/>
+                <exclude name="**/alpha/**"/>
+            </fileset>
+        </jar>
+    </target>
+
+    <target name="javadoc" depends="init" description="Generate Javadocs">
+        <property name="javadoc.dir" value="doc/javadoc"/>
+        <property name="javadoc.footer" value="${TODAY}"/>
+        <mkdir dir="${javadoc.dir}"/>
+        <javadoc destdir="${javadoc.dir}" use="true" author="true" version="true" windowtitle="${ant.project.name}">
+            <packageset dir="src">
+                <include name="**"/>
+                <exclude name="**/test/**"/>
+                <exclude name="**/emul/**"/>
+                <exclude name="**/alpha/**"/>
+            </packageset>
+            <doctitle><![CDATA[${ant.project.name}]]></doctitle>
+            <header><![CDATA[<a href="http://code.google.com/p/gwt-stuff/">${ant.project.name}</a>]]></header>
+            <footer><![CDATA[${javadoc.footer}]]></footer>
+
+            <group title="Events" packages="org.mcarthur.sandy.gwt.event:org.mcarthur.sandy.gwt.event.*"/>
+            <group title="Event Lists" packages="org.mcarthur.sandy.gwt.event.list:org.mcarthur.sandy.gwt.event.list.*"/>
+            <group title="Property Change Events" packages="org.mcarthur.sandy.gwt.event.property:org.mcarthur.sandy.gwt.event.property.*"/>
+            <group title="Login Panel" packages="org.mcarthur.sandy.gwt.login:org.mcarthur.sandy.gwt.login.*"/>
+            <group title="Browser Plugins" packages="org.mcarthur.sandy.gwt.plugin:org.mcarthur.sandy.gwt.plugin.*"/>
+            <group title="Tables" packages="org.mcarthur.sandy.gwt.table:org.mcarthur.sandy.gwt.table.*"/>
+            <classpath refid="project.class.path"/>
+            <classpath refid="gwt.class.path"/>
+            <link href="http://java.sun.com/j2se/1.5.0/docs/api/"/>
+        </javadoc>
+    </target>
+
+    <target name="test" depends="init,clean,compile-test">
+        <gwttestcase testclass="org.mcarthur.sandy.gwt.TestAll"/>
+    </target>
+
+    <target name="test-web" depends="init,clean,compile-test">
+        <mkdir dir="www-test"/>        
+        <gwttestcaseweb testclass="org.mcarthur.sandy.gwt.TestAll"/>
+    </target>
+
+    <target name="clean" depends="init" description="Remove generated files.">
+        <delete dir="${build.dir}"/>
+        <delete dir="gen"/>
+        <delete dir="www"/>
+        <delete dir="www-test"/>
+        <delete>
+            <fileset dir="." includes="GWT-Stuff.jar"/>
+            <fileset dir="." includes="GWT-Stuff.txt"/>
+            <fileset dir="." includes="GWT-Stuff-*.jar"/>
+            <fileset dir="." includes="GWT-Stuff-*.txt"/>
+        </delete>
+        <delete dir="doc/javadoc"/>
+        <delete dir=".gwt-cache"/>
+        <delete dir="tomcat"/>
+    </target>
+
+    <target name="all" depends="test,javadoc,package" description="Build all packages."/>
+
+</project>

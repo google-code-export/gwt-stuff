@@ -1,0 +1,20 @@
+<module>
+    <inherits name="com.google.gwt.user.User"/>
+    <inherits name="org.mcarthur.sandy.gwt.event.list.EventList"/>
+
+    <!-- Default rule -->
+    <replace-with class="org.mcarthur.sandy.gwt.table.client.ObjectListTableImpl">
+        <when-type-is class="org.mcarthur.sandy.gwt.table.client.ObjectListTableImpl"/>
+    </replace-with>
+
+    <replace-with class="org.mcarthur.sandy.gwt.table.client.ObjectListTableImplSafari">
+        <when-type-is class="org.mcarthur.sandy.gwt.table.client.ObjectListTableImpl"/>
+        <when-property-is name="user.agent" value="safari"/>
+    </replace-with>
+
+    <replace-with class="org.mcarthur.sandy.gwt.table.client.ObjectListTableImplIE6">
+        <when-type-is class="org.mcarthur.sandy.gwt.table.client.ObjectListTableImpl"/>
+        <when-property-is name="user.agent" value="ie6"/>
+    </replace-with>
+
+</module>

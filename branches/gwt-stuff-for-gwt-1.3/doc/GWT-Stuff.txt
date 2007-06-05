@@ -1,0 +1,19 @@
+GWT-Stuff.jar - The complete GWT-Stuff library.
+
+GWT-Stuff.jar contails all modules provided by the GWT-Stuff project.
+
+Dependencies: none
+
+Module XML:
+
+<inherits name="org.mcarthur.sandy.gwt.event.list.EventList"/> :
+    This inherits the EventList lib for use in your project.
+
+<inherits name="org.mcarthur.sandy.gwt.login.Login"/> :
+    This inherits the LoginPanel widgets for use in your project.
+
+<inherits name="org.mcarthur.sandy.gwt.event.property.PropertyChange"/> :
+    This inherits the Property Change lib for use in your project.
+
+License: Apache License, Version 2.0
+ 

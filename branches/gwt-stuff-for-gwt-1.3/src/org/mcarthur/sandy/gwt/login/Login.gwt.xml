@@ -1,0 +1,25 @@
+<module>
+    <inherits name="com.google.gwt.user.User"/>
+    <inherits name="com.google.gwt.i18n.I18N"/>
+
+    <!-- Supported languages -->
+    <!--
+    // Let projects importing Login specificy which locales to use.
+    <extend-property name="locale" values="de"/>
+    <extend-property name="locale" values="en"/>
+    <extend-property name="locale" values="es"/>
+    <extend-property name="locale" values="fr"/>
+    <extend-property name="locale" values="it"/>
+    <extend-property name="locale" values="ja"/>
+    <extend-property name="locale" values="ko"/>
+    <extend-property name="locale" values="pt"/>
+    <extend-property name="locale" values="zh_CN"/>
+
+    // 'Fun' locales
+    <extend-property name="locale" values="xx_BORK"/>
+    <extend-property name="locale" values="xx_ELMER"/>
+    <extend-property name="locale" values="xx_HACKER"/>
+    <extend-property name="locale" values="xx_PIGLATIN"/>
+    -->
+
+</module>

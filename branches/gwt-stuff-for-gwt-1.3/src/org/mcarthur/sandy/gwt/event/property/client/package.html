@@ -1,0 +1,43 @@
+<html>
+<body>
+<p>
+    Property Change Source interfaces.
+</p>
+
+<h2>Including in your project</h2>
+<p>
+    To add this to your project add the jar file to your classpath and add the following to your GWT module file:
+</p>
+<blockquote>
+    <code>&lt;inherits name="org.mcarthur.sandy.gwt.event.property.PropertyChange"/&gt;</code>
+</blockquote>
+<p>
+    This module depents on the <code>java.bean</code> package emulation provided by <a href="http://code.google.com/p/gwtx/">GWTx</a>.
+</p>
+
+<h2>Example Usage</h2>
+<p>
+    The most basic usage is to create a private PropertyChangeSupport field and delegate to it.
+</p>
+<blockquote>
+    <code>
+<pre style='color:#000020;'><span style='color:#200080; font-weight:bold; '>class</span> Foo <span style='color:#406080; '>{</span>
+    <span style='color:#200080; font-weight:bold; '>private</span> <span style='color:#6679aa; font-weight:bold; '>Object</span> bar<span style='color:#406080; '>;</span>
+    <span style='color:#200080; font-weight:bold; '>private</span> <span style='color:#6679aa; font-weight:bold; '>PropertyChangeSupport</span> pce <span style='color:#308080; '>=</span> <span style='color:#200080; font-weight:bold; '>new</span> <span style='color:#6679aa; font-weight:bold; '>PropertyChangeSupport</span><span style='color:#308080; '>(</span><span style='color:#200080; font-weight:bold; '>this</span><span style='color:#308080; '>)</span><span style='color:#406080; '>;</span>
+
+    <span style='color:#200080; font-weight:bold; '>public</span> <span style='color:#7779bb; '>void</span> setBar<span style='color:#308080; '>(</span><span style='color:#6679aa; font-weight:bold; '>Object</span> bar<span style='color:#308080; '>)</span> <span style='color:#406080; '>{</span>
+        <span style='color:#6679aa; font-weight:bold; '>Object</span> old <span style='color:#308080; '>=</span> <span style='color:#200080; font-weight:bold; '>this</span><span style='color:#308080; '>.</span>bar<span style='color:#406080; '>;</span>
+        <span style='color:#200080; font-weight:bold; '>this</span><span style='color:#308080; '>.</span>bar <span style='color:#308080; '>=</span> bar<span style='color:#406080; '>;</span>
+        pce<span style='color:#308080; '>.</span>firePropertyChange<span style='color:#308080; '>(</span><span style='color:#1060b6; '>"bar"</span><span style='color:#308080; '>,</span> old<span style='color:#308080; '>,</span> bar<span style='color:#308080; '>)</span><span style='color:#406080; '>;</span>
+    <span style='color:#406080; '>}</span>
+
+    <span style='color:#200080; font-weight:bold; '>public</span> <span style='color:#7779bb; '>void</span> addPropertyChangeListener<span style='color:#308080; '>(</span><span style='color:#6679aa; font-weight:bold; '>PropertyChangeListener</span> pcl<span style='color:#308080; '>)</span> <span style='color:#406080; '>{</span>
+        pce<span style='color:#308080; '>.</span>addPropertyChangeListener<span style='color:#308080; '>(</span>pcl<span style='color:#308080; '>)</span><span style='color:#406080; '>;</span>
+    <span style='color:#406080; '>}</span>
+<span style='color:#406080; '>}</span>
+</pre>
+    </code>
+</blockquote>
+
+</body>
+</html>

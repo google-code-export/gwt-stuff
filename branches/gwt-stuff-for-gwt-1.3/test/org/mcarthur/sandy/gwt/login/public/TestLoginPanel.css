@@ -1,0 +1,57 @@
+body {
+    background-color: white;
+    color: black;
+    font-family: Arial, sans-serif;
+    font-size: small;
+    margin: 8px;
+}
+
+.login-LoginPanel {
+    /* the outermost LoginPanel element */
+}
+
+.login-Message {
+    /* the login message element */
+    text-align:left;
+    font-weight:bolder;
+}
+
+.login-ErrorMessage {
+    /* the login error message element */
+    color: red;
+    font-weight: bolder;
+}
+
+.login-Username {
+    /* the username field */
+}
+
+.login-UsernameLabel {
+    /* the username field label */
+}
+
+.login-Password {
+    /* the password field */
+}
+
+.login-PasswordLabel {
+    /* the password field label */
+}
+
+.login-Button {
+    /* the login button */
+}
+
+.gwt-DialogBox {
+  sborder: 8px solid #C3D9FF;
+  border: 2px outset;
+  background-color: white;
+}
+
+.gwt-DialogBox .Caption {
+  background-color: #C3D9FF;
+  padding: 3px;
+  margin: 2px;
+  font-weight: bold;
+  cursor: default;
+}

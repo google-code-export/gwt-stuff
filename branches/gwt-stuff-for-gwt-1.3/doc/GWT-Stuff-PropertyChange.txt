@@ -1,0 +1,14 @@
+GWT-Stuff-PropertyChange.jar - The Property Change lib from the GWT-Stuff library.
+
+GWT-Stuff-PropertyChange.jar contails all Property Change modules provided by the
+GWT-Stuff project.
+
+Dependencies:
+GWTx: http://code.google.com/p/gwtx/ for java.bean Property Change Support
+
+Module XML:
+
+<inherits name="org.mcarthur.sandy.gwt.event.property.PropertyChange"/> :
+    This inherits the Property Change lib for use in your project.
+
+License: Apache License, Version 2.0

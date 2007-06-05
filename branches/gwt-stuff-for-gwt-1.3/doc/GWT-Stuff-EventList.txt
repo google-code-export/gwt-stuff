@@ -1,0 +1,17 @@
+GWT-Stuff-EventList.jar - The EventList lib from the GWT-Stuff library.
+
+GWT-Stuff-EventList.jar contails all EventList modules provided by the
+GWT-Stuff project.
+
+Dependencies: none, unless you use PropertyChangeEventList
+
+Module XML:
+
+<inherits name="org.mcarthur.sandy.gwt.event.list.EventList"/> :
+    This inherits the EventList lib for use in your project.
+
+<inherits name="org.mcarthur.sandy.gwt.event.list.property.PropertyChangeEventList"/> :
+    This inherts the PropertyChangeEventList for use in your project.
+    This module depends on GWT-Stuff-PropertyChange.
+
+License: Apache License, Version 2.0
