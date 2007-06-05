@@ -61,7 +61,7 @@ class ObjectListTableImplSafari extends ObjectListTableImpl {
                     relayout = null;
                 }
             };
-            DeferredCommand.add(relayout);
+            DeferredCommand.addCommand(relayout);
         }
     }
 

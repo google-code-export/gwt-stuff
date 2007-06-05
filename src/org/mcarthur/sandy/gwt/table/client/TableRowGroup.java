@@ -44,7 +44,7 @@ import java.util.List;
  * @see <a href="http://www.w3.org/TR/html4/struct/tables.html#h-11.2.3">HTML Row Group</a>
  */
 public abstract class TableRowGroup extends UIObject implements EventListener {
-    static final int MOUSEEVENTSALL = Event.MOUSEEVENTS | Event.ONCLICK | Event.ONDBLCLICK;
+    //static final int MOUSEEVENTSALL = Event.MOUSEEVENTS | Event.ONCLICK | Event.ONDBLCLICK;
 
     private final EventList/*<TableRow>*/ rows = EventLists.eventList();
     private final List rowsbk = new ArrayList();
@@ -90,7 +90,7 @@ public abstract class TableRowGroup extends UIObject implements EventListener {
     }
 
     public void setHorizontalAlignment(final HasHorizontalAlignment.HorizontalAlignmentConstant align) {
-        DOM.setAttribute(getElement(), "align", align.getTextAlignString());
+        DOM.setElementProperty(getElement(), "align", align.getTextAlignString());
     }
 
     public void setVerticalAlignment(final HasVerticalAlignment.VerticalAlignmentConstant align) {
@@ -179,7 +179,7 @@ public abstract class TableRowGroup extends UIObject implements EventListener {
      */
     public void addMouseListener(final MouseListener listener) {
         if (mouseListeners == null) {
-            sinkEvents(TableRowGroup.MOUSEEVENTSALL);
+            //sinkEvents(TableRowGroup.MOUSEEVENTSALL); // no longer works with GWT 1.4's event model changes
             mouseListeners = new ArrayList();
         }
         mouseListeners.add(listener);
@@ -198,7 +198,7 @@ public abstract class TableRowGroup extends UIObject implements EventListener {
         if (mouseListeners != null) {
             mouseListeners.remove(listener);
             if (mouseListeners.isEmpty()) {
-                unsinkEvents(TableRowGroup.MOUSEEVENTSALL);
+                //unsinkEvents(TableRowGroup.MOUSEEVENTSALL); // no longer works with GWT 1.4's event model changes
                 mouseListeners = null; // this is needed else sinkEvents won't be called onAttach
             }
         }

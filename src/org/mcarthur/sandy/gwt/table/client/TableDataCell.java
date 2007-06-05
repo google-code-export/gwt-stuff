@@ -46,7 +46,7 @@ public class TableDataCell extends TableCell {
      * @see <a href="http://www.w3.org/TR/html4/struct/tables.html#adef-headers">HTML Table Data Cell Headers</a>
      */
     public List getHeaders() {
-        final String axis = DOM.getAttribute(getElement(), "headers");
+        final String axis = DOM.getElementProperty(getElement(), "headers");
         return Arrays.asList(axis.split(" "));
     }
 
@@ -57,7 +57,7 @@ public class TableDataCell extends TableCell {
      * @see <a href="http://www.w3.org/TR/html4/struct/tables.html#adef-headers">HTML Table Data Cell Headers</a>
      */
     public void setHeaders(final List headers) {
-        DOM.setAttribute(getElement(), "headers", join(headers, " "));
+        DOM.setElementProperty(getElement(), "headers", join(headers, " "));
     }
 
     /**
@@ -69,6 +69,6 @@ public class TableDataCell extends TableCell {
      * @see <a href="http://www.w3.org/TR/html4/struct/tables.html#adef-headers">HTML Table Data Cell Headers</a>
      */
     public void setHeader(final String header) {
-        DOM.setAttribute(getElement(), "headers", header != null ? header : "");
+        DOM.setElementProperty(getElement(), "headers", header != null ? header : "");
     }
 }

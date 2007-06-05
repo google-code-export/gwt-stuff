@@ -50,7 +50,7 @@ public abstract class TableCell extends SimplePanel {
      * @see <a href="http://www.w3.org/TR/html4/struct/tables.html#adef-abbr">HTML Table Cell Abbr</a>
      */
     public String getAbbr() {
-        return DOM.getAttribute(getElement(), "abbr");
+        return DOM.getElementProperty(getElement(), "abbr");
     }
 
     /**
@@ -60,7 +60,7 @@ public abstract class TableCell extends SimplePanel {
      * @see <a href="http://www.w3.org/TR/html4/struct/tables.html#adef-abbr">HTML Table Cell Abbr</a>
      */
     public void setAbbr(final String abbr) {
-        DOM.setAttribute(getElement(), "abbr", abbr);
+        DOM.setElementProperty(getElement(), "abbr", abbr);
     }
 
     /**
@@ -70,7 +70,7 @@ public abstract class TableCell extends SimplePanel {
      * @see <a href="http://www.w3.org/TR/html4/struct/tables.html#adef-axis">HTML Table Cell Axis</a>
      */
     public List getAxes() {
-        final String axis = DOM.getAttribute(getElement(), "axis");
+        final String axis = DOM.getElementProperty(getElement(), "axis");
         return Arrays.asList(axis.split(","));
     }
 
@@ -81,7 +81,7 @@ public abstract class TableCell extends SimplePanel {
      * @see <a href="http://www.w3.org/TR/html4/struct/tables.html#adef-axis">HTML Table Cell Axis</a>
      */
     public void setAxes(final List axes) {
-        DOM.setAttribute(getElement(), "axis", join(axes, ","));
+        DOM.setElementProperty(getElement(), "axis", join(axes, ","));
     }
 
     /**
@@ -94,7 +94,7 @@ public abstract class TableCell extends SimplePanel {
      * @see <a href="http://www.w3.org/TR/html4/struct/tables.html#adef-axis">HTML Table Cell Axis</a>
      */
     public void setAxis(final String axis) {
-        DOM.setAttribute(getElement(), "axis", axis != null ? axis : "");
+        DOM.setElementProperty(getElement(), "axis", axis != null ? axis : "");
     }
 
     /**
@@ -104,7 +104,7 @@ public abstract class TableCell extends SimplePanel {
      * @see <a href="http://www.w3.org/TR/html4/struct/tables.html#adef-colspan">HTMl Table Cell ColSpan</a>
      */
     public int getColSpan() {
-        return DOM.getIntAttribute(getElement(), "colSpan");
+        return DOM.getElementPropertyInt(getElement(), "colSpan");
     }
 
     /**
@@ -114,7 +114,7 @@ public abstract class TableCell extends SimplePanel {
      * @see <a href="http://www.w3.org/TR/html4/struct/tables.html#adef-colspan">HTMl Table Cell ColSpan</a>
      */
     public void setColSpan(final int colSpan) {
-        DOM.setIntAttribute(getElement(), "colSpan", colSpan);
+        DOM.setElementPropertyInt(getElement(), "colSpan", colSpan);
     }
 
     /**
@@ -124,7 +124,7 @@ public abstract class TableCell extends SimplePanel {
      * @see <a href="http://www.w3.org/TR/html4/struct/tables.html#adef-rowspan">HTML Table Cell RowSpan</a>
      */
     public int getRowSpan() {
-        return DOM.getIntAttribute(getElement(), "rowSpan");
+        return DOM.getElementPropertyInt(getElement(), "rowSpan");
     }
 
     /**
@@ -134,7 +134,7 @@ public abstract class TableCell extends SimplePanel {
      * @see <a href="http://www.w3.org/TR/html4/struct/tables.html#adef-rowspan">HTML Table Cell RowSpan</a>
      */
     public void setRowSpan(final int rowSpan) {
-        DOM.setIntAttribute(getElement(), "rowSpan", rowSpan);
+        DOM.setElementPropertyInt(getElement(), "rowSpan", rowSpan);
     }
 
     /**
@@ -157,7 +157,7 @@ public abstract class TableCell extends SimplePanel {
      * @see <a href="http://www.w3.org/TR/html4/struct/tables.html#adef-align-TD">HTML Table Cell Align</a>
      */
     public void setHorizontalAlignment(final HasHorizontalAlignment.HorizontalAlignmentConstant align) {
-        DOM.setAttribute(getElement(), "align", align.getTextAlignString());
+        DOM.setElementProperty(getElement(), "align", align.getTextAlignString());
     }
 
     /**

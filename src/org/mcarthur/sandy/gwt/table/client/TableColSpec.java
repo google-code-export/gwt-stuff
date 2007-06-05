@@ -53,7 +53,7 @@ public abstract class TableColSpec extends UIObject {
      * @return the number of columns affected by this element.
      */
     public int getSpan() {
-        return DOM.getIntAttribute(getElement(), "span");
+        return DOM.getElementPropertyInt(getElement(), "span");
     }
 
     /**
@@ -70,7 +70,7 @@ public abstract class TableColSpec extends UIObject {
         if (span <= 0) {
             throw new IllegalArgumentException("span must be positive. was: " + span);
         }
-        DOM.setIntAttribute(getElement(), "span", span);
+        DOM.setElementPropertyInt(getElement(), "span", span);
     }
 
     /**
@@ -82,7 +82,7 @@ public abstract class TableColSpec extends UIObject {
      * @return the default width for each column in this column group.
      */
     public String getWidth() {
-        return DOM.getAttribute(getElement(), "width");
+        return DOM.getElementProperty(getElement(), "width");
     }
 
     /**
@@ -99,6 +99,6 @@ public abstract class TableColSpec extends UIObject {
      * @param width the default width for each column in this column group.
      */
     public void setWidth(final String width) {
-        DOM.setAttribute(getElement(), "width", width);
+        DOM.setElementProperty(getElement(), "width", width);
     }
 }

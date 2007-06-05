@@ -172,7 +172,7 @@ public class TestObjectListTable implements EntryPoint {
                     l.add(new Person("Person " + (pCount++), (int)(Math.random() * 100)));
                 }
                 final long start = System.currentTimeMillis();
-                DeferredCommand.add(new Command() {
+                DeferredCommand.addCommand(new Command() {
                     public void execute() {
                         final long end = System.currentTimeMillis();
                         vp.add(new Label("addAll took: " + (end - start)));
@@ -198,7 +198,7 @@ public class TestObjectListTable implements EntryPoint {
             public void onClick(final Widget sender) {
                 final Button attach = (Button)sender;
                 final long start = System.currentTimeMillis();
-                DeferredCommand.add(new Command() {
+                DeferredCommand.addCommand(new Command() {
                     public void execute() {
                         final long end = System.currentTimeMillis();
                         vp.add(new Label("Attach/Detach took: " + (end - start)));
