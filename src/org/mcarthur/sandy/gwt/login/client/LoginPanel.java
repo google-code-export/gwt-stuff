@@ -16,6 +16,7 @@
 
 package org.mcarthur.sandy.gwt.login.client;
 
+import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.ChangeListener;
 import com.google.gwt.user.client.ui.ClickListener;
@@ -33,7 +34,6 @@ import com.google.gwt.user.client.ui.SimplePanel;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
-import com.google.gwt.core.client.GWT;
 
 import java.util.EventListener;
 
@@ -62,7 +62,7 @@ public class LoginPanel extends Composite {
     private final PasswordTextBox password = new PasswordTextBox();
     private final Label passwordLabel = new Label(messages.passwordPrompt());
 
-    private final Image wait = new Image("images/login/wait-24x24.gif");
+    private final Image wait = new Image(GWT.getModuleBaseURL() + "images/login/wait-24x24.gif");
     private final SimplePanel waitPanel = new SimplePanel();
     private final HorizontalPanel loginPanel = new HorizontalPanel();
     private final Button login = new Button(messages.loginButton());
